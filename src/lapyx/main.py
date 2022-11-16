@@ -14,6 +14,7 @@ py_block_end = r"\end{python}"
 inline_py_start = r"\py{"
 
 
+
 def generate_ID() -> str:
     """Generate a random ID for a code block
 
@@ -66,7 +67,8 @@ def process_file(
     output: str = None,
     temp: str = None,
     debug: bool = False,
-    compiler_arguments: str = None
+    compiler_arguments: str = None,
+    keep_figures: bool = False
 ) -> None:
     """Process the LaTeX file at input_file_path, extracting and running the python code, and generating a new LaTeX file.
 
@@ -140,7 +142,7 @@ init("{temp_dir}", "{temp_prefix}")
             latex_out_lines.append(new_latex_line)
             continue
 
-        if py_block_start in line:
+        if py_block_start in line and ("%" not in line or line.find(py_block_start) < line.find("%")):
             new_lines, new_latex_line, skip_lines = handle_py_block(
                 input_lines[i:])
             py_out_lines.extend(new_lines)
@@ -193,6 +195,14 @@ init("{temp_dir}", "{temp_prefix}")
         os.rename(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.pdf"),
                   os.path.join(base_dir, output_file_name))
 
+    if not keep_figures:
+        # remove all figures, stored in `temp_dir/lapyx_figures`
+        figures_dir = os.path.join(temp_dir, "lapyx_figures")
+        if os.path.exists(figures_dir):
+            for file in os.listdir(figures_dir):
+                os.remove(os.path.join(figures_dir, file))
+            os.rmdir(figures_dir)
+            
     if not debug:
         # remove any temporary files starting with `lapyx_temp`
         for file in os.listdir(temp_dir):
@@ -202,6 +212,8 @@ init("{temp_dir}", "{temp_prefix}")
         # if temp_dir is not base_dir, remove it if its empty
         if temp_dir != base_dir and not os.listdir(temp_dir):
             os.rmdir(temp_dir)
+
+
 
 
 def handle_inline_py(line: str) -> Tuple[List[str], str]:

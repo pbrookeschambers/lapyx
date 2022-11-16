@@ -64,7 +64,41 @@
     - setFormat
 
 #### TODO:
-- add "split at rows" option
+- probably a lot
+
+### `Figure` class
+
+- Properties
+    - figure, a maptlotlib figure
+    - caption
+    - label
+    - float?
+    - centered?
+    - size = {width, height, scale}
+- Methods
+    - common matplotlib methods, passed to the figure
+        - plot
+        - scatter
+        - errorbar
+        - hist
+        - imshow
+        - xlabel
+        - ylabel
+        - title
+        - xlim
+        - ylim
+        - legend
+        - savefig
+        
+    - set_caption
+    - set_label
+    - float
+    - center
+    - set_size
+
+#### TODO:
+
+- subfigures...
 
 ## Main file
 

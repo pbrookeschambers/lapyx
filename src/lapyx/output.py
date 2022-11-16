@@ -1,11 +1,12 @@
 # Contains methods which will be called from within the temporary python file
 
-from lapyx.components import Table#, Figure
+from lapyx.components import Table, Figure
 
 output_dict = {}
 current_ID = ""
 base_dir = ""
 prefix = ""
+
 
 
 
@@ -19,11 +20,17 @@ def export(output: str | Table) -> None:
     # For now say that this only takes a string, expand support later
     global output_dict
     global current_ID
+    global base_dir
     if current_ID == "":
         raise Exception("No ID set")
     if isinstance(output, Table):
         output_dict[current_ID].append(output.to_latex())
         return
+
+    if isinstance(output, Figure):
+        output_dict[current_ID].append(output.to_latex(base_dir))
+        return
+
     if isinstance(output, str):
         output_dict[current_ID].append(output)
         return
@@ -48,4 +55,6 @@ def finish() -> None:
     global prefix
     with open(os.path.join(base_dir, f"{prefix}lapyx_output.json"), "w") as output_file:
         json.dump(output_dict, output_file, indent = 2)
+    
+
 
