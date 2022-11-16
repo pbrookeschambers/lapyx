@@ -35,6 +35,37 @@
     - from filename
     - from matplotlib figure; save figure and import in latex
 
+
+### `Table` class
+
+- properties
+    - table data
+    - table headers
+    - float?
+    - caption
+    - label
+    - longtable?
+    - centered?
+    - alignment
+- methods
+    - add_row
+    - add_column
+    - by_row, by_column
+        - should each element of the table data list be a row or a column?
+        - Maybe not needed depending on how the table data is stored
+        - replace with transpose?
+    - center
+    - float
+    - setCaption
+    - setLabel
+    - long
+    - setHeaders
+    - setAlignment
+    - setFormat
+
+#### TODO:
+- add "split at rows" option
+
 ## Main file
 
 Main file should take command line arguments:

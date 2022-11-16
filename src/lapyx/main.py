@@ -6,7 +6,7 @@ import random
 import string
 import os
 import subprocess
-from typing import List
+from typing import List, Tuple
 
 base_dir = ""
 py_block_start = r"\begin{python}"
@@ -15,7 +15,11 @@ inline_py_start = r"\py{"
 
 
 def generate_ID() -> str:
-    """Generates a random ID for the temporary python file"""
+    """Generate a random ID for a code block
+
+    Returns:
+        str: Random 10-character ID from lower- and upper-case letter and digits
+    """    
     return ''.join(
         random.choice(
             string.ascii_uppercase
@@ -25,7 +29,14 @@ def generate_ID() -> str:
 
 
 def find_matching_bracket(string: str) -> int:
-    """Finds the index of the matching bracket in a string"""
+    """Find the offset of a matching bracket in string, assuming that the first character of string is the opening bracket.
+
+    Args:
+        string (str): string in which to find the matching bracket. string[0] should be the opening bracket, one of "(", "[", or "{".
+
+    Returns:
+        int: the index of the matching bracket in string, or None if no matching bracket is found.
+    """    
     bracketPairs = {
         "{": "}",
         "[": "]",
@@ -40,31 +51,74 @@ def find_matching_bracket(string: str) -> int:
             bracketCount -= 1
         if bracketCount == 0:
             return i
+    return None
 
 
 def set_base_dir() -> None:
-    # set the base_dir to the current working directory
     global base_dir
     base_dir = os.getcwd()
 
 
-def process_file(input_file_path: str) -> None:
+def process_file(
+    input_file_path: str,
+    *,
+    compile: bool = True,
+    output: str = None,
+    temp: str = None,
+    debug: bool = False,
+    compiler_arguments: str = None
+) -> None:
+    """Process the LaTeX file at input_file_path, extracting and running the python code, and generating a new LaTeX file.
+
+    Args:
+        input_file_path (str): Path to the LaTeX file. Existance of the file is not checked.
+        compile (bool, optional): If True, the final LATeX document is compiled with pdflatex, and bibtex if appropriate. Defaults to True.
+        output (str, optional): Output file path of the compiled .pdf file. Defaults to None.
+        temp (str, optional): Prefix for all temporary files. Defaults to None.
+        debug (bool, optional): If True, the temporary files are not deleted after completion. Defaults to False.
+        compiler_arguments (str, optional): Additional options to be passed to pdflatex. Defaults to None.
+    """
     import json
     # set the base_dir
     set_base_dir()
+
     jobname = os.path.splitext(os.path.basename(input_file_path))[0]
-    print(jobname)
-    temp_py_lines = []
+
+    if output:
+        # add .pdf extension if not present
+        output_file_name = output + \
+            (".pdf" if not output.endswith(".pdf") else "")
+    else:
+        output_file_name = jobname + ".pdf"
+
+    temp_dir = base_dir
+    temp_prefix = ""
+    if temp:
+        # if temp is an absolute path
+        if os.path.isabs(temp):
+            prefix = ""
+        else:
+            prefix = base_dir
+        temp_dir = os.path.abspath(os.path.join(prefix, os.path.dirname(temp)))
+        temp_prefix = os.path.basename(temp)
+        if temp_prefix:
+            temp_prefix += "__"
+
+    # if temp_dir doesn't exist, create it
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+
+    py_out_lines = []
     latex_out_lines = []
     # assume input_file_path is a valid path, checked by the main program
     with open(input_file_path, "r") as input_file:
         input_text = input_file.read()
 
-    temp_py_lines.append(f"""
+    py_out_lines.append(f"""
 from lapyx.output import init, finish, setID, export
 from lapyx.components import *
 
-init("{base_dir}")
+init("{temp_dir}", "{temp_prefix}")
 """)
 
     skip_lines = 0
@@ -82,33 +136,40 @@ init("{base_dir}")
         if inline_py_start in line:
             # inline python code
             new_py_lines, new_latex_line = handle_inline_py(input_lines[i])
-            temp_py_lines.extend(new_py_lines)
+            py_out_lines.extend(new_py_lines)
             latex_out_lines.append(new_latex_line)
             continue
 
         if py_block_start in line:
             new_lines, new_latex_line, skip_lines = handle_py_block(
                 input_lines[i:])
-            temp_py_lines.extend(new_lines)
+            py_out_lines.extend(new_lines)
             latex_out_lines.append(new_latex_line)
             continue
 
         latex_out_lines.append(line)
 
-    temp_py_lines.append("finish()")
+    py_out_lines.append("finish()")
 
-    # write temp_py_lines to a temporary file `base_dir/lapyx_temp.py`
-    with open(os.path.join(base_dir, "lapyx_temp.py"), "w+") as temp_py_file:
-        temp_py_file.write("\n".join(temp_py_lines))
+    # write py_out_lines to a temporary file `{temp_dir}/{temp_prefix}lapyx_temp.py`
+    with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py"), "w+") as temp_py_file:
+        temp_py_file.write("\n".join(py_out_lines))
 
     # run the temporary python file as a subprocess
-    result = subprocess.run(["python3", os.path.join(
-        base_dir, "lapyx_temp.py")], capture_output=True)
+    result = subprocess.run(
+        [
+            "python3",
+            os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py")
+        ],
+        capture_output=True
+    )
     if result.returncode != 0:
+        print("Error running python file. stdout:\n\n")
+        print(result.stdout.decode("utf-8"))
         raise Exception(result.stderr.decode("utf-8"))
 
     # read the temporary file `lapyx_output.json`
-    with open(os.path.join(base_dir, "lapyx_output.json"), "r") as output_file:
+    with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_output.json"), "r") as output_file:
         output_json = json.load(output_file)
 
     new_text = "\n".join(latex_out_lines)
@@ -118,29 +179,50 @@ init("{base_dir}")
         new_text = new_text.replace(f"\\pyID{{{ID}}}", "\n".join(output))
 
     # write the new text to the output file `base_dir/lapyx_temp.tex`
-    with open(os.path.join(base_dir, "lapyx_temp.tex"), "w+") as output_file:
+    with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.tex"), "w+") as output_file:
         output_file.write(new_text)
 
-    compile(os.path.join(base_dir, "lapyx_temp.tex"))
+    if compile:
+        compile_kwargs = {}
+        if compiler_arguments:
+            compile_kwargs["compiler_arguments"] = compiler_arguments
+        compile_latex(os.path.join(
+            temp_dir, f"{temp_prefix}lapyx_temp.tex"), **compile_kwargs)
 
-    # move newly-created pdf to `jobname.pdf`
-    os.rename(os.path.join(base_dir, "lapyx_temp.pdf"),
-              os.path.join(base_dir, f"{jobname}.pdf"))
-              
-    # remove any temporary files starting with `lapyx_temp`
-    for file in os.listdir(base_dir):
-        if file.startswith("lapyx_temp"):
-            os.remove(os.path.join(base_dir, file))
-    os.remove(os.path.join(base_dir, "lapyx_output.json"))
+        # move newly-created pdf to `jobname.pdf`
+        os.rename(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.pdf"),
+                  os.path.join(base_dir, output_file_name))
+
+    if not debug:
+        # remove any temporary files starting with `lapyx_temp`
+        for file in os.listdir(temp_dir):
+            if file.startswith(f"{temp_prefix}lapyx_temp"):
+                os.remove(os.path.join(temp_dir, file))
+        os.remove(os.path.join(temp_dir, f"{temp_prefix}lapyx_output.json"))
+        # if temp_dir is not base_dir, remove it if its empty
+        if temp_dir != base_dir and not os.listdir(temp_dir):
+            os.rmdir(temp_dir)
 
 
-def handle_inline_py(line: str) -> List[str]:
+def handle_inline_py(line: str) -> Tuple[List[str], str]:
+    """Finds and handles all inline python in a line of text.
+
+    Args:
+        line (str): The line of text to be processed.
+
+    Raises:
+        Exception: If no closing brace can be found to exit the \py environment, and exception is raised.
+
+    Returns:
+        List[str]: A list of lines of python code to be written to the temporary python file.
+        str: The line of text to be written to the output LaTeX file.
+    """    
     new_lines = []
     while inline_py_start in line:
         # find the first instance of inline_py_start
         start_index = line.find(inline_py_start) + len(inline_py_start)
         code_length = find_matching_bracket(line[start_index - 1:])
-        if code_length == -1:
+        if code_length == None:
             raise Exception("No matching bracket found")
         end_index = start_index + code_length - 1
         code = line[start_index:end_index]
@@ -148,6 +230,9 @@ def handle_inline_py(line: str) -> List[str]:
         ID = generate_ID()
         # add setID to output
         new_lines.append(f"setID(\"{ID}\")")
+        # if the code is a single line, does not call export, and does not have an = sign, add export
+        if not ";" in code and not "export(" in code and not "=" in code:
+            code = f"export({code})"
         # add the code to output
         new_lines.append(code)
         # replace the code in the line with the ID
@@ -156,7 +241,17 @@ def handle_inline_py(line: str) -> List[str]:
     return new_lines, line
 
 
-def handle_py_block(lines: List[str]) -> List[str]:
+def handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
+    """Finds and handles the python code block started on the first line of lines
+
+    Args:
+        lines (List[str]): List of all lines of text starting from the line containing the start of the python code block.
+
+    Returns:
+        List[str]: A list of lines of python code to be written to the temporary python file.
+        str: The line of text to be written to the output LaTeX file.
+        int: The number of lines to skip in the main loop.
+    """    
     new_lines = []
     # find the end of the python block
     end_index = 0
@@ -190,31 +285,53 @@ def handle_py_block(lines: List[str]) -> List[str]:
     new_lines.insert(0, f"setID(\"{ID}\")")
     return new_lines, new_latex_line, end_index
 
-def compile(file_path: str, bibtex: bool = False) -> None:
+
+def compile_latex(file_path: str, options: str = "", bibtex: bool = False, bibtex_options: str = "") -> None:
+    """Compiles the temporary LaTeX file using pdflatex
+
+    Args:
+        file_path (str): file to be compiled
+        options (str, optional): Additional command line arguments to be passed to pdflatex. Defaults to "".
+        bibtex (bool, optional): If True, bibtex will be run after pdflatex. Defaults to False.
+        bibtex_options (str, optional): Additional command line arguments to be passed to bibtex. Defaults to "".
+
+    Raises:
+        Exception: Passes forward any errors in the compilation process.
+    """    
+
     # compile the LaTeX file, quitting on errors
-    result = subprocess.run(["pdflatex", "-halt-on-error",
-                            os.path.join(base_dir, "lapyx_temp.tex")], capture_output=True)
+    pdflatex_call = [
+        "pdflatex",
+        "-interaction=nonstopmode",
+        "-output-directory",
+        os.path.dirname(file_path),
+        file_path
+    ]
+    if options:
+        pdflatex_call.extend(options.split())
+    pdflatex_call.append(file_path)
+    result = subprocess.run(pdflatex_call, capture_output=True)
     if result.returncode != 0:
-        raise Exception(result.stderr.decode("utf-8"))
+        raise Exception(result.stdout.decode("utf-8"))
     # compile a second time to get references right
-    result = subprocess.run(["pdflatex", "-halt-on-error",
-                            os.path.join(base_dir, "lapyx_temp.tex")], capture_output=True)
+    result = subprocess.run(pdflatex_call, capture_output=True)
     if result.returncode != 0:
-        raise Exception(result.stderr.decode("utf-8"))
+        raise Exception(result.stdout.decode("utf-8"))
     # compile bibtex if necessary
     if not bibtex:
         # We're done
         return
-    
+
+    bibtex_call = ["bibtex"]
+    if bibtex_options:
+        bibtex_call.extend(bibtex_options.split())
+    # append the file path, but with .aux instead of .tex
+    bibtex_call.append(file_path[:-4] + ".aux")
     # compile bibtex
-    result = subprocess.run(["bibtex", os.path.join(
-        base_dir, "lapyx_temp.aux")], capture_output=True)
+    result = subprocess.run(bibtex_call, capture_output=True)
     if result.returncode != 0:
-        raise Exception(result.stderr.decode("utf-8"))
+        raise Exception(result.stdout.decode("utf-8"))
     # compile a third time to get references right
-    result = subprocess.run(["pdflatex", "-halt-on-error",
-                            os.path.join(base_dir, "lapyx_temp.tex")], capture_output=True)
+    result = subprocess.run(pdflatex_call, capture_output=True)
     if result.returncode != 0:
-        raise Exception(result.stderr.decode("utf-8"))
-
-
+        raise Exception(result.stdout.decode("utf-8"))
