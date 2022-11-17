@@ -7,6 +7,7 @@ import string
 import os
 import subprocess
 from typing import List, Tuple
+import re
 
 base_dir = ""
 py_block_start = r"\begin{python}"
@@ -117,10 +118,10 @@ def process_file(
         input_text = input_file.read()
 
     py_out_lines.append(f"""
-from lapyx.output import init, finish, setID, export
+from lapyx.output import init, finish, setID, export, no_export
 from lapyx.components import *
 
-init("{temp_dir}", "{temp_prefix}")
+init("{base_dir}","{temp_dir}", "{temp_prefix}")
 """)
 
     skip_lines = 0
@@ -243,8 +244,14 @@ def handle_inline_py(line: str) -> Tuple[List[str], str]:
         # add setID to output
         new_lines.append(f"setID(\"{ID}\")")
         # if the code is a single line, does not call export, and does not have an = sign, add export
-        if not ";" in code and not "export(" in code and not "=" in code:
-            code = f"export({code})"
+
+        last_segment = code.split(";")[-1]
+        # if last_segment doesn't have a match to ^\s*\w+?\s*=\s*[\w\(\{\[].*$, add export
+        if len(last_segment.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\w\(\{\[].*$", last_segment):
+            if not last_segment.lstrip().startswith("export("):
+                last_segment = f"export({last_segment})"
+        code = "\n".join(code.split(";")[:-1] + [last_segment])
+
         # add the code to output
         new_lines.append(code)
         # replace the code in the line with the ID
@@ -289,10 +296,21 @@ def handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
     if lines[end_index][:code_end_column].strip() != "":
         new_lines.append(lines[end_index][:code_end_column].rstrip())
 
+    # remove any lines which are just a comment or whitespace
+    new_lines = [line for line in new_lines if not re.match(r"^\s*#.*$", line) and line.strip() != ""]
+
     # de-indent all lines based on the first line
     indent = len(new_lines[0]) - len(new_lines[0].lstrip())
     for i, line in enumerate(new_lines):
         new_lines[i] = line[indent:]
+    
+    last_line = new_lines[-1]
+    # if last_line doesn't have a match to ^\s*\w+?\s*=\s*[\w\(\{\[].*$, add export
+    if len(last_line.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\w\(\{\[].*$", last_line):
+        if not last_line.lstrip().startswith("export("):
+            last_line = f"export({last_line})"
+    new_lines[-1] = last_line
+
     # prepend setID to output
     new_lines.insert(0, f"setID(\"{ID}\")")
     return new_lines, new_latex_line, end_index

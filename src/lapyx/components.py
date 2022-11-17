@@ -33,7 +33,7 @@ class Table:
         self.header_format = ""
         self.max_rows_before_split = None
         self.split_table_into_columns = None
-        self.use_headers = True
+        self.use_header_row = True
 
         # self.data will be a list of lists. Each list is a row, and each element is a cell
         self.data = [[]]
@@ -382,7 +382,7 @@ class Table:
         self.floating = True
 
     def use_headers(self, use: bool = True):
-        self.use_headers = use
+        self.use_header_row = use
 
     def split_after_rows(self, num_rows):
         self.max_rows_before_split = num_rows
@@ -431,7 +431,7 @@ class Table:
                 table_lines.extend(self.construct_tabular(
                     self.headers,
                     self.header_format,
-                    self.use_headers,
+                    self.use_header_row,
                     self.data[used_rows:used_rows + rows],
                     self.alignment,
                     self.column_widths,
@@ -445,7 +445,7 @@ class Table:
                 table_lines.extend(self.construct_tabular(
                     self.headers,
                     self.header_format,
-                    self.use_headers,
+                    self.use_header_row,
                     self.data[i:i+self.max_rows_before_split],
                     self.alignment,
                     self.column_widths,
@@ -456,7 +456,7 @@ class Table:
             table_lines = self.construct_tabular(
                 self.headers,
                 self.header_format,
-                self.use_headers,
+                self.use_header_row,
                 self.data,
                 self.alignment,
                 self.column_widths,
@@ -525,24 +525,41 @@ class Figure:
 
     def __init__(
         self,
-        figure: mplFigure = None
-    ):
+        figure: mplFigure | str = None
+    ):  
+
+        self.using_file = False # Using a pre-existing file instead of a new figure
 
         self.id = generate_ID()
         if figure is None:
             # check for an active figure, creating one if there isn't one already
             figure = plt.gcf()
-        self.figure = figure
-        self.figure_name = self.id # this will be useful when we can also pass a filepath instead of a mplFigure
-
+        if isinstance(figure, mplFigure):
+            self.figure = figure
+            self.figure_name = self.id # this will be useful when we can also pass a filepath instead of a mplFigure
+        elif isinstance(figure, str):
+            self.figure_name = figure
+            self.using_file = True
+            self.figure = None
+        else:
+            raise TypeError("Figure must be a matplotlib figure or a filepath, or not provided")
         self.caption = None
         self.centered = True
         self.floating = False
         self.label = None
         self.size = {"width": None, "height": None, "scale": None}
 
-    def set_figure(self, figure: mplFigure):
-        self.figure = figure
+    def set_figure(self, figure: mplFigure | str):
+        if isinstance(figure, mplFigure):
+            self.figure = figure
+            self.figure_name = self.id
+            self.using_file = False
+        elif isinstance(figure, str):
+            self.figure_name = figure
+            self.using_file = True
+            self.figure = None
+        else:
+            raise TypeError("figure must be a matplotlib figure or a filepath")
 
     def set_caption(self, caption: str):
         self.caption = caption
@@ -577,52 +594,69 @@ class Figure:
 
     ## matplotlib functions --------------------------------------------------------------------
 
+    def check_for_figure(self):
+        if self.figure is None:
+            raise ValueError("There is no matplotlib figure associated with this Figure object.")
+
     def plot(self, *args, **kwargs):
-        self.figure.gca().plot(*args, **kwargs)
+        self.check_for_figure()
+        self.figure.gca().plot(*args, **kwargs)  
     
     def scatter(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().scatter(*args, **kwargs)
     
     def errorbar(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().errorbar(*args, **kwargs)
     
     def hist(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().hist(*args, **kwargs)
     
     def imshow(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().imshow(*args, **kwargs)
 
     def xlabel(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().set_xlabel(*args, **kwargs)
     
     def ylabel(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().set_ylabel(*args, **kwargs)
     
     def title(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().set_title(*args, **kwargs)
     
     def legend(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().legend(*args, **kwargs)
     
     def xlim(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().set_xlim(*args, **kwargs)
     
     def ylim(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.gca().set_ylim(*args, **kwargs)
     
     def savefig(self, *args, **kwargs):
+        self.check_for_figure()
         self.figure.savefig(*args, **kwargs)
 
     # Any other matplotlib functions should be called on the figure directly, otherwise this will get out of hand
 
-    def to_latex(self, base_dir: str):
+    def to_latex(self, base_dir: str, temp_dir: str):
 
-        # if we have a figure, save it to {base_dir}/lapyx_figures/{id}.pdf
-        # create {base_dir}/lapyx_figures if it doesn't exist
-        if not os.path.exists(os.path.join(base_dir, "lapyx_figures")):
-            os.mkdir(os.path.join(base_dir, "lapyx_figures"))
-        if self.figure is not None:
-            self.figure.savefig(os.path.join(base_dir, "lapyx_figures", f"{self.figure_name}.pdf"), bbox_inches='tight')
+        if not self.using_file:
+            # if we have a figure, save it to {temp_dir}/lapyx_figures/{id}.pdf
+            # create {temp_dir}/lapyx_figures if it doesn't exist
+            if not os.path.exists(os.path.join(temp_dir, "lapyx_figures")):
+                os.mkdir(os.path.join(temp_dir, "lapyx_figures"))
+            if self.figure is not None:
+                self.figure.savefig(os.path.join(temp_dir, "lapyx_figures", f"{self.figure_name}.pdf"), bbox_inches='tight')
 
 
         before_lines = []
@@ -653,7 +687,10 @@ class Figure:
             includegraphics_opts.append(f"scale={self.size['scale']}")
         if len(includegraphics_opts) > 0:
             includegraphics_opts = f"[{', '.join(includegraphics_opts)}]"
-        figure_line = rf"\includegraphics{includegraphics_opts}{{{base_dir}/lapyx_figures/{self.figure_name}.pdf}}"
+        if self.using_file:
+            figure_line = rf"\includegraphics{includegraphics_opts}{{{os.path.join(base_dir, self.figure_name)}}}"
+        else:
+            figure_line = rf"\includegraphics{includegraphics_opts}{{{temp_dir}/lapyx_figures/{self.figure_name}.pdf}}"
 
         return "\n".join(before_lines + [figure_line] + after_lines[::-1])
 
