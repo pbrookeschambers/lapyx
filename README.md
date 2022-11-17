@@ -1,23 +1,3 @@
-<style>
-    .sidebyside{
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 1cm;
-        width: 100%;
-    }
-
-    .sidebyside > pre, 
-    .sidebyside > p {
-        width: 40%;
-        flex-grow: 1;
-    }
-
-    .latex {
-        font-family: "Times New Roman", Times, serif;
-    }
-</style>
-
 # LaPyX
 
 LaPyX is a Python library which acts as a preprocessor for LaTeX. It allows for embedding Python code inside LaTeX documents, rendering the output as though it were part of the host document.
