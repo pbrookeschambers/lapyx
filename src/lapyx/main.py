@@ -16,11 +16,13 @@ inline_py_start = r"\py{"
 
 
 
-def generate_ID() -> str:
-    """Generate a random ID for a code block
+def _generate_ID() -> str:
+    """Generate a random 10-character ID
 
-    Returns:
-        str: Random 10-character ID from lower- and upper-case letter and digits
+    Returns
+    -------
+    str
+        A random 10-character ID, consisting of upper- and lower-case letters and digits.
     """    
     return ''.join(
         random.choice(
@@ -30,15 +32,20 @@ def generate_ID() -> str:
         ) for _ in range(10))
 
 
-def find_matching_bracket(string: str) -> int:
-    """Find the offset of a matching bracket in string, assuming that the first character of string is the opening bracket.
+def _find_matching_bracket(string: str) -> int:
+    """Find the offset of a matching bracket in `string`, assuming that the first character of `string` is the opening bracket.
 
-    Args:
-        string (str): string in which to find the matching bracket. string[0] should be the opening bracket, one of "(", "[", or "{".
+    Parameters
+    ----------
+    string : str
+        The tring in which to find the matching bracket.
 
-    Returns:
-        int: the index of the matching bracket in string, or None if no matching bracket is found.
+    Returns
+    -------
+    int
+        The index of the matching bracket, or None if no matching bracket is found.
     """    
+
     bracketPairs = {
         "{": "}",
         "[": "]",
@@ -56,7 +63,7 @@ def find_matching_bracket(string: str) -> int:
     return None
 
 
-def set_base_dir() -> None:
+def _set_base_dir() -> None:
     global base_dir
     base_dir = os.getcwd()
 
@@ -71,19 +78,28 @@ def process_file(
     compiler_arguments: str = None,
     keep_figures: bool = False
 ) -> None:
-    """Process the LaTeX file at input_file_path, extracting and running the python code, and generating a new LaTeX file.
+    """Process a LaPyX file, extracting and running any Python code, then generating and optionally compiling the LaTeX file.
 
-    Args:
-        input_file_path (str): Path to the LaTeX file. Existance of the file is not checked.
-        compile (bool, optional): If True, the final LATeX document is compiled with pdflatex, and bibtex if appropriate. Defaults to True.
-        output (str, optional): Output file path of the compiled .pdf file. Defaults to None.
-        temp (str, optional): Prefix for all temporary files. Defaults to None.
-        debug (bool, optional): If True, the temporary files are not deleted after completion. Defaults to False.
-        compiler_arguments (str, optional): Additional options to be passed to pdflatex. Defaults to None.
+    Parameters
+    ----------
+    input_file_path : str
+        The file path to the LaPyX file. This is not checked for validity; it is assumed this has already been done.    
+    compile : bool, optional
+        If `False`, the generated LaTeX file is not compiled, by default True
+    output : str, optional
+        If provided, this will be used as the base name and path for the final compiled .pdf file, by default None
+    temp : str, optional
+        If provided, any temporary files created by LaPyX will be prefixed by this file path, creating directories if necessary, by default None
+    debug : bool, optional
+        If `True`, all temporary files created by LaPyX will not be deleted after compilation, by default False
+    compiler_arguments : str, optional
+        Additional arguments to be passed to the LaTeX compiler. This should be a single string, by default None
+    keep_figures : bool, optional
+        If `True`, any temporary figures created by LaPyX will not be deleted after compilation, by default False
     """
     import json
     # set the base_dir
-    set_base_dir()
+    _set_base_dir()
 
     jobname = os.path.splitext(os.path.basename(input_file_path))[0]
 
@@ -118,10 +134,10 @@ def process_file(
         input_text = input_file.read()
 
     py_out_lines.append(f"""
-from lapyx.output import init, finish, setID, export, no_export
+from lapyx.output import _init, _finish, _setID, export, no_export
 from lapyx.components import *
 
-init("{base_dir}","{temp_dir}", "{temp_prefix}")
+_init("{base_dir}","{temp_dir}", "{temp_prefix}")
 """)
 
     skip_lines = 0
@@ -138,13 +154,13 @@ init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
         if inline_py_start in line:
             # inline python code
-            new_py_lines, new_latex_line = handle_inline_py(input_lines[i])
+            new_py_lines, new_latex_line = _handle_inline_py(input_lines[i])
             py_out_lines.extend(new_py_lines)
             latex_out_lines.append(new_latex_line)
             continue
 
         if py_block_start in line and ("%" not in line or line.find(py_block_start) < line.find("%")):
-            new_lines, new_latex_line, skip_lines = handle_py_block(
+            new_lines, new_latex_line, skip_lines = _handle_py_block(
                 input_lines[i:])
             py_out_lines.extend(new_lines)
             latex_out_lines.append(new_latex_line)
@@ -152,7 +168,7 @@ init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
         latex_out_lines.append(line)
 
-    py_out_lines.append("finish()")
+    py_out_lines.append("_finish()")
 
     # write py_out_lines to a temporary file `{temp_dir}/{temp_prefix}lapyx_temp.py`
     with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py"), "w+") as temp_py_file:
@@ -189,7 +205,7 @@ init("{base_dir}","{temp_dir}", "{temp_prefix}")
         compile_kwargs = {}
         if compiler_arguments:
             compile_kwargs["compiler_arguments"] = compiler_arguments
-        compile_latex(os.path.join(
+        _compile_latex(os.path.join(
             temp_dir, f"{temp_prefix}lapyx_temp.tex"), **compile_kwargs)
 
         # move newly-created pdf to `jobname.pdf`
@@ -217,32 +233,40 @@ init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
 
 
-def handle_inline_py(line: str) -> Tuple[List[str], str]:
-    """Finds and handles all inline python in a line of text.
+def _handle_inline_py(line: str) -> Tuple[List[str], str]:
+    """Finds (non-recursively) and handles all inline python in a line of text.
 
-    Args:
-        line (str): The line of text to be processed.
+    Parameters
+    ----------
+    line : str
+        The line of text to be processed.
 
-    Raises:
-        Exception: If no closing brace can be found to exit the \py environment, and exception is raised.
+    Returns
+    -------
+    new_lines: List[str]
+        The new lines of Python code to be added to the temporary Python file.
+    line: str
+        The line to be written to the output LaTeX file in place of the input line.        
 
-    Returns:
-        List[str]: A list of lines of python code to be written to the temporary python file.
-        str: The line of text to be written to the output LaTeX file.
+    Raises
+    ------
+    Exception
+        If no closing brace can be found to exit the `\py` macro argument, an exception is raised.
     """    
+
     new_lines = []
     while inline_py_start in line:
         # find the first instance of inline_py_start
         start_index = line.find(inline_py_start) + len(inline_py_start)
-        code_length = find_matching_bracket(line[start_index - 1:])
+        code_length = _find_matching_bracket(line[start_index - 1:])
         if code_length == None:
             raise Exception("No matching bracket found")
         end_index = start_index + code_length - 1
         code = line[start_index:end_index]
         # generate an ID for this code block
-        ID = generate_ID()
+        ID = _generate_ID()
         # add setID to output
-        new_lines.append(f"setID(\"{ID}\")")
+        new_lines.append(f"_setID(\"{ID}\")")
         # if the code is a single line, does not call export, and does not have an = sign, add export
 
         last_segment = code.split(";")[-1]
@@ -260,17 +284,23 @@ def handle_inline_py(line: str) -> Tuple[List[str], str]:
     return new_lines, line
 
 
-def handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
+def _handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
     """Finds and handles the python code block started on the first line of lines
 
-    Args:
-        lines (List[str]): List of all lines of text starting from the line containing the start of the python code block.
+    Parameters
+    ----------
+    lines : List[str]
+        List of all lines of text starting from the line containing the start of the python code block.
 
-    Returns:
-        List[str]: A list of lines of python code to be written to the temporary python file.
-        str: The line of text to be written to the output LaTeX file.
-        int: The number of lines to skip in the main loop.
-    """    
+    Returns
+    -------
+    new_lines: List[str]
+        The new lines of Python code to be added to the temporary Python file.
+    line: str
+        The line to be written to the output LaTeX file in place of the input line.
+    line_index: int
+        The number of lines to skip in the main loop. This is the number of lines in the python code block, including the `\begin` and `\end` environment lines.
+    """  
     new_lines = []
     # find the end of the python block
     end_index = 0
@@ -284,7 +314,7 @@ def handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
     code_end_column = lines[end_index].find(py_block_end)
     post_latex = lines[end_index][code_end_column + len(py_block_end):]
     # generate ID
-    ID = generate_ID()
+    ID = _generate_ID()
     new_latex_line = pre_latex + f"\pyID{{{ID}}}" + post_latex
     # add the code to output
     # if there is code on the first line, add it
@@ -312,22 +342,29 @@ def handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
     new_lines[-1] = last_line
 
     # prepend setID to output
-    new_lines.insert(0, f"setID(\"{ID}\")")
+    new_lines.insert(0, f"_setID(\"{ID}\")")
     return new_lines, new_latex_line, end_index
 
 
-def compile_latex(file_path: str, options: str = "", bibtex: bool = False, bibtex_options: str = "") -> None:
+def _compile_latex(file_path: str, options: str = "", bibtex: bool = False, bibtex_options: str = "") -> None:
     """Compiles the temporary LaTeX file using pdflatex
 
-    Args:
-        file_path (str): file to be compiled
-        options (str, optional): Additional command line arguments to be passed to pdflatex. Defaults to "".
-        bibtex (bool, optional): If True, bibtex will be run after pdflatex. Defaults to False.
-        bibtex_options (str, optional): Additional command line arguments to be passed to bibtex. Defaults to "".
+    Parameters
+    ----------
+    file_path : str
+        file path to be compiled
+    options : str, optional
+        Additional command line arguments to be passed to `pdflatex` as a string, by default ""
+    bibtex : bool, optional
+        If `True`, `bibtex` will be run after `pdflatex`, by default False
+    bibtex_options : str, optional
+        Additional command line arguments to be passed to `bibtex` as a string, by default ""
 
-    Raises:
-        Exception: Passes forward any errors in the compilation process.
-    """    
+    Raises
+    ------
+    Exception
+        If `pdflatex` or `bibtex` encounter an error, compilation will be halted and the error will be passed forward as an exception.
+    """
 
     # compile the LaTeX file, quitting on errors
     pdflatex_call = [
