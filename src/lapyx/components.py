@@ -1190,7 +1190,7 @@ class Figure:
 
     # Any other matplotlib functions should be called on the figure directly, otherwise this will get out of hand
 
-    def to_latex(self, base_dir: str, temp_dir: str) -> str:
+    def to_latex(self, base_dir: str, temp_dir: str, **kwargs) -> str:
         """Convert the figure to LaTeX syntax, obeying all the formatting options set. If there is
         a matplotlib figure associated with this object, it will be saved to a temporary file with
         a random file name, then included with `\\includegraphics`.
@@ -1208,15 +1208,23 @@ class Figure:
             The LATeX syntax for the figure.
         """            
 
-
+        figure_file_name = os.path.join(base_dir, self.figure_name)
         if not self.using_file:
             # if we have a figure, save it to {temp_dir}/lapyx_figures/{id}.pdf
             # create {temp_dir}/lapyx_figures if it doesn't exist
             if not os.path.exists(os.path.join(temp_dir, "lapyx_figures")):
                 os.mkdir(os.path.join(temp_dir, "lapyx_figures"))
             if self.figure is not None:
-                self.figure.savefig(os.path.join(
-                    temp_dir, "lapyx_figures", f"{self.figure_name}.pdf"), bbox_inches='tight')
+                figure_file_name = os.path.join(
+                        temp_dir, 
+                        "lapyx_figures", 
+                        f"{self.figure_name}.{kwargs['extension'] if 'extension' in kwargs else 'pdf'}"
+                    )
+                self.figure.savefig(
+                    figure_file_name, 
+                    bbox_inches='tight',
+                    **kwargs
+                )
 
         before_lines = []
         after_lines = []
@@ -1236,6 +1244,9 @@ class Figure:
 
         if self.caption is not None:
             after_lines.append(f"\caption{{{self.caption}}}")
+        elif self.label is not None:
+            # add empty caption if there is a label but no caption
+            after_lines.append(f"\caption{{}}")
 
         includegraphics_opts = []
         if self.size["width"] is not None:
@@ -1246,10 +1257,12 @@ class Figure:
             includegraphics_opts.append(f"scale={self.size['scale']}")
         if len(includegraphics_opts) > 0:
             includegraphics_opts = f"[{', '.join(includegraphics_opts)}]"
-        if self.using_file:
-            figure_line = rf"\includegraphics{includegraphics_opts}{{{os.path.join(base_dir, self.figure_name)}}}"
-        else:
-            figure_line = rf"\includegraphics{includegraphics_opts}{{{temp_dir}/lapyx_figures/{self.figure_name}.pdf}}"
+        # if self.using_file:
+        #     figure_line = rf"\includegraphics{includegraphics_opts}{{{figure_file_name}}}"
+        # else:
+        #     figure_line = rf"\includegraphics{includegraphics_opts}{{{temp_dir}/lapyx_figures/{self.figure_name}.pdf}}"
+        figure_line = rf"\includegraphics{includegraphics_opts}{{{figure_file_name}}}"
+
 
         return "\n".join(before_lines + [figure_line] + after_lines[::-1])
 

@@ -76,7 +76,10 @@ def process_file(
     temp: str = None,
     debug: bool = False,
     compiler_arguments: str = None,
-    keep_figures: bool = False
+    keep_figures: bool = False,
+    verbose: bool = False,
+    quiet: bool = False,
+    latex_comments: bool = False
 ) -> None:
     """Process a LaPyX file, extracting and running any Python code, then generating and optionally compiling the LaTeX file.
 
@@ -96,6 +99,10 @@ def process_file(
         Additional arguments to be passed to the LaTeX compiler. This should be a single string, by default None
     keep_figures : bool, optional
         If `True`, any temporary figures created by LaPyX will not be deleted after compilation, by default False
+    verbose : bool, optional
+        If `True`, LaPyX will print the output of the LaTeX compiler to the console, by default False
+    quiet : bool, optional
+        If `True`, LaPyX will not print any output to the console, except in the event of an error, by default False
     """
     import json
     # set the base_dir
@@ -125,13 +132,12 @@ def process_file(
 
     # if temp_dir doesn't exist, create it
     if not os.path.exists(temp_dir):
+        if verbose:
+            print(f"Creating directory {temp_dir} for temporary files")
         os.makedirs(temp_dir)
 
     py_out_lines = []
     latex_out_lines = []
-    # assume input_file_path is a valid path, checked by the main program
-    with open(input_file_path, "r") as input_file:
-        input_text = input_file.read()
 
     py_out_lines.append(f"""
 from lapyx.output import _init, _finish, _setID, export, no_export
@@ -139,6 +145,13 @@ from lapyx.components import *
 
 _init("{base_dir}","{temp_dir}", "{temp_prefix}")
 """)
+
+    # assume input_file_path is a valid path, checked by the main program
+    with open(input_file_path, "r") as input_file:
+        input_text = input_file.read()
+    
+    if not quiet:
+        print(f"Found file {input_file_path}, extracting Python code...", end = "", flush = True)
 
     skip_lines = 0
     input_lines = input_text.splitlines()
@@ -154,14 +167,16 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
         if inline_py_start in line:
             # inline python code
-            new_py_lines, new_latex_line = _handle_inline_py(input_lines[i])
+            new_py_lines, new_latex_line = _handle_inline_py(input_lines[i], latex_comments = latex_comments)
             py_out_lines.extend(new_py_lines)
             latex_out_lines.append(new_latex_line)
             continue
 
         if py_block_start in line and ("%" not in line or line.find(py_block_start) < line.find("%")):
             new_lines, new_latex_line, skip_lines = _handle_py_block(
-                input_lines[i:])
+                input_lines[i:],
+                latex_comments = latex_comments
+            )
             py_out_lines.extend(new_lines)
             latex_out_lines.append(new_latex_line)
             continue
@@ -170,15 +185,24 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
     py_out_lines.append("_finish()")
 
+    if not quiet:
+        print(" Done")
+
     # write py_out_lines to a temporary file `{temp_dir}/{temp_prefix}lapyx_temp.py`
-    with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py"), "w+") as temp_py_file:
+    temp_py_file_name = os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py")
+    if verbose:
+        print(f"Writing extracted Python code to file {temp_py_file_name}")
+
+    with open(temp_py_file_name, "w+") as temp_py_file:
         temp_py_file.write("\n".join(py_out_lines))
 
     # run the temporary python file as a subprocess
+    if not quiet:
+        print("Running extracted Python code as subprocess...", end = "", flush = True)
     result = subprocess.run(
         [
             "python3",
-            os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py")
+            temp_py_file_name
         ],
         capture_output=True
     )
@@ -186,7 +210,15 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
         print("Error running python file. stdout:\n\n")
         print(result.stdout.decode("utf-8"))
         raise Exception(result.stderr.decode("utf-8"))
-
+    if not quiet:
+        print(" Done")
+    if verbose:
+        temp_output = result.stdout.decode("utf-8")
+        if len(temp_output.strip()) > 0:
+            print(f"Python code output:\n{'OUTPUT START':-^40}")
+            print(temp_output + f"\n{'OUTPUT END':-^40}\n")
+        else:
+            print("Python code produced no output to stdout")
     # read the temporary file `lapyx_output.json`
     with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_output.json"), "r") as output_file:
         output_json = json.load(output_file)
@@ -194,26 +226,41 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
     new_text = "\n".join(latex_out_lines)
 
     # replace all instances of \pyID{ID} with the corresponding output
+    if verbose:
+        print("Replacing Python blocks with output...", end = "", flush = True)
     for ID, output in output_json.items():
         new_text = new_text.replace(f"\\pyID{{{ID}}}", "\n".join(output))
+    if verbose:
+        print(" Done")
+
 
     # write the new text to the output file `base_dir/lapyx_temp.tex`
-    with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.tex"), "w+") as output_file:
+    latex_temp_file_name = os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.tex")
+    if verbose:
+        print(f"Writing LaTeX output to file {latex_temp_file_name}")
+    with open(latex_temp_file_name, "w+") as output_file:
         output_file.write(new_text)
 
     if compile:
         compile_kwargs = {}
         if compiler_arguments:
             compile_kwargs["compiler_arguments"] = compiler_arguments
-        _compile_latex(os.path.join(
-            temp_dir, f"{temp_prefix}lapyx_temp.tex"), **compile_kwargs)
+        _compile_latex(latex_temp_file_name, verbose = verbose, quiet = quiet, **compile_kwargs)
 
         # move newly-created pdf to `jobname.pdf`
+        if verbose:
+            print(f"Moving {latex_temp_file_name[:-4]}.pdf to {output_file_name}")
         os.rename(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.pdf"),
                   os.path.join(base_dir, output_file_name))
+    elif not quiet:
+        print("Skikping compilation")
 
     if not keep_figures:
         # remove all figures, stored in `temp_dir/lapyx_figures`
+        if verbose:
+            print(f"Removing figures in {temp_dir}/lapyx_figures")
+        elif not quiet:
+            print("Cleaning temporary figures")
         figures_dir = os.path.join(temp_dir, "lapyx_figures")
         if os.path.exists(figures_dir):
             for file in os.listdir(figures_dir):
@@ -221,6 +268,8 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
             os.rmdir(figures_dir)
             
     if not debug:
+        if not quiet:
+            print("Cleaning temporary files")
         # remove any temporary files starting with `lapyx_temp`
         for file in os.listdir(temp_dir):
             if file.startswith(f"{temp_prefix}lapyx_temp"):
@@ -233,7 +282,7 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
 
 
-def _handle_inline_py(line: str) -> Tuple[List[str], str]:
+def _handle_inline_py(line: str, latex_comments: bool = False) -> Tuple[List[str], str]:
     """Finds (non-recursively) and handles all inline python in a line of text.
 
     Parameters
@@ -272,7 +321,7 @@ def _handle_inline_py(line: str) -> Tuple[List[str], str]:
         last_segment = code.split(";")[-1]
         # if last_segment doesn't have a match to ^\s*\w+?\s*=\s*[\w\(\{\[].*$, add export
         if len(last_segment.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\w\(\{\[].*$", last_segment):
-            if not last_segment.lstrip().startswith("export("):
+            if not last_segment.lstrip().startswith("export(") and not last_segment.lstrip().startswith("import"):
                 last_segment = f"export({last_segment})"
         code = "\n".join(code.split(";")[:-1] + [last_segment])
 
@@ -284,7 +333,7 @@ def _handle_inline_py(line: str) -> Tuple[List[str], str]:
     return new_lines, line
 
 
-def _handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
+def _handle_py_block(lines: List[str], latex_comments: bool = False) -> Tuple[List[str], str, int]:
     """Finds and handles the python code block started on the first line of lines
 
     Parameters
@@ -328,6 +377,9 @@ def _handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
 
     # remove any lines which are just a comment or whitespace
     new_lines = [line for line in new_lines if not re.match(r"^\s*#.*$", line) and line.strip() != ""]
+    if latex_comments:
+        # remove any lines which start with "%"
+        new_lines = [line for line in new_lines if not line.lstrip().startswith("%")]
 
     # de-indent all lines based on the first line
     indent = len(new_lines[0]) - len(new_lines[0].lstrip())
@@ -335,9 +387,12 @@ def _handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
         new_lines[i] = line[indent:]
     
     last_line = new_lines[-1]
-    # if last_line doesn't have a match to ^\s*\w+?\s*=\s*[\w\(\{\[].*$, add export
-    if len(last_line.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\w\(\{\[].*$", last_line):
-        if not last_line.lstrip().startswith("export("):
+    # if any line matches "\Wexport\(.*?\)" or "\WnoExport\(.*?\)", don't add export
+    addExport = not any([re.match(r"^\s*export\(.*?\)", line) or re.match(r"^\s*noExport\(.*?\)", line) for line in new_lines])
+
+    # if last_line doesn't have a match to ^\s*\w+?\s*=\s*[\w\(\{\[].*$ and no previous line has called export or noExport, add export
+    if addExport and len(last_line.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\w\(\{\[].*$", last_line) :
+        if not last_line.lstrip().startswith("export(") and not last_line.lstrip().startswith("import"):
             last_line = f"export({last_line})"
     new_lines[-1] = last_line
 
@@ -346,7 +401,7 @@ def _handle_py_block(lines: List[str]) -> Tuple[List[str], str, int]:
     return new_lines, new_latex_line, end_index
 
 
-def _compile_latex(file_path: str, options: str = "", bibtex: bool = False, bibtex_options: str = "") -> None:
+def _compile_latex(file_path: str, verbose: bool = False, quiet: bool = False, options: str = "", bibtex: bool = False, bibtex_options: str = "") -> None:
     """Compiles the temporary LaTeX file using pdflatex
 
     Parameters
@@ -374,19 +429,31 @@ def _compile_latex(file_path: str, options: str = "", bibtex: bool = False, bibt
         os.path.dirname(file_path),
         file_path
     ]
+
+    if not quiet and not verbose:
+        print("Compiling LaTeX file...", end="", flush=True)
+    if verbose:
+        print(f"Compiling LaTeX file {file_path}")
+
     if options:
         pdflatex_call.extend(options.split())
     pdflatex_call.append(file_path)
     result = subprocess.run(pdflatex_call, capture_output=True)
     if result.returncode != 0:
         raise Exception(result.stdout.decode("utf-8"))
+    elif verbose:
+        print(result.stdout.decode("utf-8"))
     # compile a second time to get references right
     result = subprocess.run(pdflatex_call, capture_output=True)
     if result.returncode != 0:
         raise Exception(result.stdout.decode("utf-8"))
+    elif verbose:
+        print(result.stdout.decode("utf-8"))
     # compile bibtex if necessary
     if not bibtex:
         # We're done
+        if not quiet and not verbose:
+            print(" Done")
         return
 
     bibtex_call = ["bibtex"]
@@ -398,7 +465,11 @@ def _compile_latex(file_path: str, options: str = "", bibtex: bool = False, bibt
     result = subprocess.run(bibtex_call, capture_output=True)
     if result.returncode != 0:
         raise Exception(result.stdout.decode("utf-8"))
+    elif verbose:
+        print(result.stdout.decode("utf-8"))
     # compile a third time to get references right
     result = subprocess.run(pdflatex_call, capture_output=True)
     if result.returncode != 0:
         raise Exception(result.stdout.decode("utf-8"))
+    elif verbose:
+        print(result.stdout.decode("utf-8"))

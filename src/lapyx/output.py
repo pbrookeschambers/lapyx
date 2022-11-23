@@ -36,7 +36,7 @@ def no_export() -> None:
     global should_export
     should_export = False
 
-def export(output: str | Table | Figure) -> None:
+def export(output: str | Table | Figure, **kwargs) -> None:
     """Signals that the contents should be added to the generated LaTeX file.
 
     Parameters
@@ -68,7 +68,7 @@ def export(output: str | Table | Figure) -> None:
         return
 
     if isinstance(output, Figure):
-        output_dict[current_ID].append(output.to_latex(base_dir, temp_dir))
+        output_dict[current_ID].append(output.to_latex(base_dir, temp_dir, **kwargs))
         return
 
     if isinstance(output, str):
