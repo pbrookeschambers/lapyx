@@ -24,8 +24,8 @@ def parse_arguments():
     parser.add_argument("-o", "--output", type=str, default="",
                         help="Specify the output file path for the compiled .pdf file.")
     parser.add_argument("-t", "--temp", type=str, default="",
-                        help="Specify the file path for the temporary files." 
-                        + "If terminated with a slash, this will be a directory for the temporary files."
+                        help="Specify the file path for the temporary files. " 
+                        + "If terminated with a slash, this will be a directory for the temporary files. "
                         + "Otherwise, this will be a prefix for the temporary files.")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Do not delete the temporary files.")
@@ -38,7 +38,7 @@ def parse_arguments():
     parser.add_argument("-q", "--quiet", action="store_true",
                         help="Print no output, unless an error occurs.")
     parser.add_argument("-l", "--latex-comments", action="store_true",
-                        help="Interpret lines starting % as comments even within code blocks.")
+                        help="Interpret lines starting '%%' as comments even within code blocks.")
 
     parser.add_argument("file", type=str, help="The LaTeX file to compile.")
     return parser.parse_args()

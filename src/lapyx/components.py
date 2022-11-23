@@ -2,7 +2,8 @@
 
 
 import io
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Type
+from abc import ABC, abstractmethod
 try:
     import numpy as np
     has_numpy = True
@@ -762,40 +763,18 @@ class Table:
         """        
         self.split_table_into_columns = num_columns
 
+
     def to_latex(self) -> str:
-        """Convert the table to LaTeX syntax, obeying all the formatting options set.
 
-        Returns
-        -------
-        str
-            The LaTeX syntax for the table.
-        """        
-        before_lines = []
-        after_lines = []
-        table_lines = []
-
-        if self.floating:
-            before_lines.append(rf"\begin{{table}}[{self.floating_pos if self.floating_pos is not None else 'ht!'}]")
-            after_lines.append(r"\end{table}")
-        if self.centered:
-            if self.floating:
-                before_lines.append(r"\centering")
-            else:
-                before_lines.append(r"\begin{center}")
-                after_lines.append(r"\end{center}")
-        if self.caption is not None and self.caption_position == "top":
-            before_lines.append(f"\caption{{{self.caption}}}")
-        if self.label is not None:
-            after_lines.append(f"\label{{{self.label}}}")
-
-        # if we're splitting the table into columns, we need to do that now
+        container = EmptyEnvironment()
+        
         if self.split_table_into_columns is not None:
             # work out how many rows should be in each column to be most evenly distributed
             rows_per_column = self.num_rows // self.split_table_into_columns
             # the first n_extended_columns will have an extra row
             n_extended_columns = self.num_rows % self.split_table_into_columns
 
-            table_lines = []
+            tabulars = []
             used_rows = 0
             for i in range(self.split_table_into_columns):
                 # the first n_extended_columns columns will have an extra row
@@ -804,10 +783,10 @@ class Table:
                 else:
                     rows = rows_per_column
                 if i > 0:
-                    table_lines.append(r"\hspace{1cm}")
+                    tabulars.append(r"\hspace{1cm}")
 
                 # get the table lines for this column
-                table_lines.extend(self.__construct_tabular(
+                tabulars.append(self.__construct_tabular(
                     self.headers,
                     self.header_format,
                     self.use_header_row,
@@ -817,11 +796,10 @@ class Table:
                     self.format
                 ))
                 used_rows += rows
-
         elif self.max_rows_before_split is not None and self.num_rows > self.max_rows_before_split:
-            table_lines = []
+            tabulars = []
             for i in range(0, self.num_rows, self.max_rows_before_split):
-                table_lines.extend(self.__construct_tabular(
+                tabulars.append(self.__construct_tabular(
                     self.headers,
                     self.header_format,
                     self.use_header_row,
@@ -830,9 +808,9 @@ class Table:
                     self.column_widths,
                     self.format
                 ))
-                table_lines.append(r"\hspace{1cm}")
+                tabulars.append(r"\hspace{1cm}")
         else:
-            table_lines = self.__construct_tabular(
+            tabulars = self.__construct_tabular(
                 self.headers,
                 self.header_format,
                 self.use_header_row,
@@ -841,13 +819,35 @@ class Table:
                 self.column_widths,
                 self.format
             )
-
-        if self.caption is not None and self.caption_position == "bottom":
-            after_lines.append(f"\caption{{{self.caption}}}")
-        before = "\n".join(before_lines)
-        table = "\n".join(table_lines)
-        after = "\n".join(after_lines[::-1])
-        return before + table + after
+        
+        
+        if self.floating:
+            table = Environment("table")
+            container.add_content(table)
+            if self.floating_pos is not None:
+                table.add_argument(self.floating_pos, optional = True)
+            else:
+                table.add_argument("ht!", optional = True)
+            if self.centered:
+                table.add_content(Macro("centering"))
+            if self.caption is not None and self.caption_position == "top":
+                table.add_content(Macro("caption", arguments = self.caption))
+            table.add_content(tabulars)
+            if self.caption is not None and self.caption_position == "bottom":
+                table.add_content(Macro("caption", arguments = self.caption))
+            if self.label is not None:
+                table.add_content(Macro("label", arguments = self.label))
+        else:
+            if self.centered:
+                center = Environment("center")
+                center.add_content(tabulars)
+                container.add_content(center)
+            else:
+                container.add_content(tabulars)
+        return str(container)
+        
+            
+        
 
     @staticmethod
     def __construct_tabular(
@@ -858,9 +858,9 @@ class Table:
         alignment: list,
         column_widths: list,
         format_strings: list
-    ) -> list:
+    ) -> "Environment":
 
-        begin_tab_line = r"\begin{tabular}{"
+        tabular = Environment("tabular")
 
         alignment_map = {
             "l": "p",
@@ -868,36 +868,24 @@ class Table:
             "r": "b"
         }
 
-        begin_tab_line += "|"
-        begin_tab_line += "|".join([
+        alignment_string = "|" + "|".join([
             f"{alignment_map[align]}{{{width}}}" if width is not None else align for align, width in zip(alignment, column_widths)
-        ])
+        ]) + "|"
 
-        begin_tab_line += "|}\hline"
-        table_lines = []
-
-        table_lines.append(begin_tab_line)
+        tabular.add_argument(alignment_string)
+        tabular.add_content(r"\hline")
 
         if use_headers:
-            table_lines.append(" & ".join(
-                [f"{header_format}{{{h}}}" for h in headers]))
+            tabular.add_content(" & ".join(
+                [f"{header_format if header_format is not None else ''}{{{h}}}" for h in headers]) + r"\\\hline\hline")
 
         for row in data:
             # for each element in row, format using the corresponding format string as f"{val:format_string}", or just f"{val}" if format_string is None
             row = [f"{val:{format_string}}" if format_string is not None else f"{val}" for val,
                    format_string in zip(row, format_strings)]
-            table_lines.append(" & ".join([str(e) for e in row]))
+            tabular.add_content(" & ".join([str(e) for e in row]) + r"\\\hline")
 
-        if use_headers:
-            table_lines[1] += r"\\\hline\hline"
-            table_lines[2:] = [line + r"\\\hline" for line in table_lines[2:]]
-        else:
-            table_lines[1:] = [line + r"\\\hline" for line in table_lines[1:]]
-
-        table_lines.append(r"\end{tabular}")
-        # strip empty lines
-        table_lines = [line for line in table_lines if line.strip() != ""]
-        return table_lines
+        return tabular
 
 
 class Figure:
@@ -1206,7 +1194,9 @@ class Figure:
         -------
         str
             The LATeX syntax for the figure.
-        """            
+        """ 
+
+        container = EmptyEnvironment()           
 
         figure_file_name = os.path.join(base_dir, self.figure_name)
         if not self.using_file:
@@ -1226,44 +1216,311 @@ class Figure:
                     **kwargs
                 )
 
-        before_lines = []
-        after_lines = []
 
+        
+        includegraphics_opts = KWArgs()
+        if self.width is not None:
+            includegraphics_opts.add_arg("width", self.width)
+        if self.height is not None:
+            includegraphics_opts.add_arg("height", self.height)
+        if self.scale is not None:
+            includegraphics_opts.add_arg("scale", self.scale)
+        
+        includegraphics = Macro("includegraphics")
+        if not includegraphics_opts.is_empty():
+            includegraphics.add_arg(OptArg(includegraphics_opts))
+        includegraphics.add_arg(figure_file_name)
+
+        
         if self.floating:
-            before_lines.append(rf"\begin{{figure}}[{self.floating_pos if self.floating_pos is not None else 'ht!'}]")
-            after_lines.append(r"\end{figure}")
+            outer_figure = Environment("figure")
+            container.add_content(outer_figure)
+            if self.floating_pos is not None:
+                outer_figure.set_optional_arg(self.floating_pos)
+            else:
+                outer_figure.set_optional_arg("ht!")
+            outer_figure.add_content(includegraphics)
             if self.centered:
-                before_lines.append(r"\centering")
+                outer_figure.add_content(r"\centering")
+            if self.caption is not None:
+                outer_figure.add_content(Macro("caption", arguments = self.caption))
+            if self.label is not None:
+                outer_figure.add_content(Macro("label", arguments = self.label))
         else:
             if self.centered:
-                before_lines.append(r"\begin{center}")
-                after_lines.append(r"\end{center}")
+                center = Environment("center")
+                container.add(center)
+                center.add_content(includegraphics)
+            else:
+                container.add_content(includegraphics)
+        return str(container)
 
-        if self.label is not None:
-            after_lines.append(f"\label{{{self.label}}}")
+class KWArgs:
 
-        if self.caption is not None:
-            after_lines.append(f"\caption{{{self.caption}}}")
-        elif self.label is not None:
-            # add empty caption if there is a label but no caption
-            after_lines.append(f"\caption{{}}")
+    def __init__(self, args: dict = None):
+        if args is None:
+            args = {}
+        self.args = args
+        self._check_values()
+        
+    def _check_values(self):
 
-        includegraphics_opts = []
-        if self.size["width"] is not None:
-            includegraphics_opts.append(f"width={self.size['width']}")
-        if self.size["height"] is not None:
-            includegraphics_opts.append(f"height={self.size['height']}")
-        if self.size["scale"] is not None:
-            includegraphics_opts.append(f"scale={self.size['scale']}")
-        if len(includegraphics_opts) > 0:
-            includegraphics_opts = f"[{', '.join(includegraphics_opts)}]"
-        # if self.using_file:
-        #     figure_line = rf"\includegraphics{includegraphics_opts}{{{figure_file_name}}}"
-        # else:
-        #     figure_line = rf"\includegraphics{includegraphics_opts}{{{temp_dir}/lapyx_figures/{self.figure_name}.pdf}}"
-        figure_line = rf"\includegraphics{includegraphics_opts}{{{figure_file_name}}}"
-
-
-        return "\n".join(before_lines + [figure_line] + after_lines[::-1])
+        #check that all values are either strings or `Arg` instances
+        for key, value in self.args.items():
+            if  (
+                not isinstance(value, str) and 
+                not isinstance(value, int) and
+                not isinstance(value, float) and
+                not isinstance(value, bool) and 
+                not isinstance(value, Arg) 
+            ):
+                raise TypeError(f"Value for argument {key} must be a string or an `Arg` instance.")
 
 
+    def add_arg(self, key: str, value: str):
+        self.args[key] = value
+        self._check_values()
+    
+    def set_arg(self, key: str, value: str):
+        self.add_arg(key, value)
+
+    def remove_arg(self, key: str):
+        del self.args[key]
+
+    def set_args(self, new_values: dict):
+        self.args = {**self.args, **new_values}
+        self._check_values()
+
+    def remove_args(self, keys: List[str]):
+        for key in keys:
+            self.remove_arg(key)
+
+    def __str__(self):
+        arg_strings = []
+        for key, value in self.args.items():
+            if isinstance(value, Arg):
+                arg_strings.append(f"{key} = {value}")
+            else:
+                arg_strings.append(f"{key} = {{{value}}}")
+        return ", ".join(arg_strings)
+
+    def is_empty(self):
+        return len(self.args) == 0
+
+class Arg:
+
+    brackets = ("{", "}")
+
+    def __init__(self, value: str = None):
+        self.set_values(value)
+    
+    def set_values(self, new_values = None):
+        if new_values is not None:
+            if not isinstance(new_values, List):
+                if isinstance(new_values, tuple):
+                    new_values = list(new_values)
+                elif isinstance(new_values, dict):
+                    new_values = [KWArgs(new_values)]
+                else:
+                    new_values = [new_values]
+            else: 
+                # it is a list, so check if any of the elements are dicts
+                for i, v in enumerate(new_values):
+                    if isinstance(v, dict):
+                        new_values[i] = KWArgs(v)
+                    elif isinstance(v, list) or isinstance(v, tuple):
+                        raise TypeError("Nested lists are not allowed.")
+            self.value = new_values
+        else:
+            self.value = []
+
+    def add_value(self, value: str):
+        if isinstance(value, dict):
+            value = KWArgs(value)
+            self.value.append(value)
+            return
+        if not isinstance(value, str) and not isinstance(value, KWArgs):
+            raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
+        self.value.append(value)
+    
+    def set_value(self, value: str, index: int):
+        # check if index is in range
+        if index >= len(self.value):
+            raise IndexError(f"Cannot set value, index {index} is out of range.")
+        if isinstance(value, dict):
+            value = KWArgs(value)
+            self.value[index] = value
+            return
+        if not isinstance(value, str) and not isinstance(value, KWArgs):
+            raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
+        self.value[index] = value
+    
+    def insert_value(self, value: str, index: int):
+        # check if index is in range
+        if index > len(self.value):
+            raise IndexError(f"Cannot insert value, index {index} is out of range.")
+        if isinstance(value, dict):
+            value = KWArgs(value)
+            self.value.insert(index, value)
+            return
+        if not isinstance(value, str) and not isinstance(value, KWArgs):
+            raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
+        self.value.insert(index, value)
+    
+    def remove_value(self, index: int):
+        # check if index is in range
+        if index >= len(self.value):
+            raise IndexError(f"Cannot remove value, index {index} is out of range.")
+        del self.value[index]
+    
+    def __str__(self):
+        return self.brackets[0] + ", ".join([str(v) for v in self.value]) + self.brackets[1]
+
+    def __repr__(self):
+        return f"Args({self.value})"
+
+class OptArg(Arg):
+    brackets = ("[", "]")
+
+    def __repr__(self):
+        return f"OptArgs({self.value})"
+
+class CommandBase(ABC):
+    def __init__(
+        self,
+        name: str,
+        arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None
+    ):
+        self.name = name
+        self.arguments = []
+        if arguments is None:
+            arguments = []
+        elif not isinstance(arguments, list):
+            if isinstance(arguments, tuple):
+                arguments = list(arguments)
+            else:
+                arguments = [arguments]
+        for a in arguments:
+            self.add_argument(a)
+
+
+    def add_argument(self, argument: Arg | OptArg | str, optional: bool = False):
+        if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
+            if optional:
+                argument = OptArg(argument)
+            else:
+                argument = Arg(argument)
+        self.arguments.append(argument)
+    
+    def set_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
+        # Set an option at a specific index. If the index is out of range, raise an error
+        if index >= len(self.arguments):
+            raise IndexError(f"Cannot set option: index {index} is out of range for options list of length {len(self.arguments)}")
+        if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
+            if optional:
+                argument = OptArg(argument)
+            else:
+                argument = Arg(argument)
+        self.arguments[index] = argument
+
+    def insert_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
+        # Insert an option at a specific index. If the index is out of range, raise an error
+        if index > len(self.arguments):
+            raise IndexError(f"Cannot insert option: index {index} is out of range for options list of length {len(self.arguments)}")
+        if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
+            if optional:
+                argument = OptArg(argument)
+            else:
+                argument = Arg(argument)
+        self.arguments.insert(index, argument)
+    
+    def remove_argument(self, index: int):
+        # Remove an option at a specific index. If the index is out of range, raise an error
+        if index >= len(self.arguments):
+            raise IndexError(f"Cannot remove option: index {index} is out of range for options list of length {len(self.arguments)}")
+        del self.arguments[index]
+    
+    @abstractmethod
+    def __str__(self):
+        pass
+
+class Macro(CommandBase):
+    def __init__(
+        self,
+        name: str,
+        arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None
+    ):
+        super().__init__(name, arguments)
+
+    def __str__(self):
+        return f"\\{self.name}" + "".join([str(a) for a in self.arguments])
+
+    def __repr__(self):
+        return f"Macro({self.name}, {self.arguments})"
+
+class Environment(CommandBase):
+
+    def __init__(
+        self, 
+        name: str, 
+        arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None,
+        content: str | Table | Figure | List[ str | Table | Figure]  = None 
+        # can also be Environment or list of Environments, but for type hints only in python >= 3.11   
+    ):
+        super().__init__(name, arguments)
+        
+        if content is None:
+            self.content = []
+        elif not isinstance(content, list):
+            self.content = [content]
+        else:
+            self.content = content
+    
+    def add_content(self, content: str | Table | Figure):
+        # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
+        if isinstance(content, list) or isinstance(content, tuple):
+            self.content.extend(content)
+        else:
+            self.content.append(content)
+
+    def set_content(self, content: str | Table | Figure, index: int):
+        # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
+        # Set an option at a specific index. If the index is out of range, raise an error
+        if index >= len(self.content):
+            raise IndexError(f"Cannot set content: index {index} is out of range for content list of length {len(self.content)}")
+        self.content[index] = content
+    
+    def insert_content(self, content: str | Table | Figure, index: int):
+        # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
+        # Insert an option at a specific index. If the index is out of range, raise an error, unless the index is the length of the array in which case just append
+        if index > len(self.content):
+            raise IndexError(f"Cannot insert content: index {index} is out of range for content list of length {len(self.content)}")
+        self.content.insert(index, content)
+    
+    def remove_content(self, index: int):
+        # Remove an option at a specific index. If the index is out of range, raise an error
+        if index >= len(self.content):
+            raise IndexError(f"Cannot remove content: index {index} is out of range for content list of length {len(self.content)}")
+        del self.content[index]
+
+    def set_parent(self, other):
+        if not isinstance(other, Environment):
+            raise TypeError(f"Cannot set parent: {other} is not an Environment")
+        other.add_content(self)
+
+    def __str__(self):
+        # start_line = f"\\begin{{{self.name}}}{''.join([str(o) for o in self.arguments])}"
+        start_line = str(Macro("begin", [self.name] + self.arguments))
+        # end_line = f"\\end{{{self.name}}}"
+        end_line = str(Macro("end", [self.name]))
+        mid_lines = "\n".join([str(item) for item in self.content])
+        # indent each of mid_lines by one tab
+        mid_lines = "\n".join(["\t" + line for line in mid_lines.split("\n")])
+        return start_line + "\n" + mid_lines + "\n" + end_line
+    
+class EmptyEnvironment(Environment):
+    def __init__(self, content = None):
+        super().__init__(name = None, content = content)
+
+    def __str__(self):
+        return "\n".join([str(item) for item in self.content])
