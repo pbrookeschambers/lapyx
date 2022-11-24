@@ -1219,17 +1219,17 @@ class Figure:
 
         
         includegraphics_opts = KWArgs()
-        if self.width is not None:
-            includegraphics_opts.add_arg("width", self.width)
-        if self.height is not None:
-            includegraphics_opts.add_arg("height", self.height)
-        if self.scale is not None:
-            includegraphics_opts.add_arg("scale", self.scale)
+        if self.size["width"] is not None:
+            includegraphics_opts.add_argument("width", self.size["width"])
+        if self.size["height"] is not None:
+            includegraphics_opts.add_argument("height", self.size["height"])
+        if self.size["scale"] is not None:
+            includegraphics_opts.add_argument("scale", self.size["scale"])
         
         includegraphics = Macro("includegraphics")
         if not includegraphics_opts.is_empty():
-            includegraphics.add_arg(OptArg(includegraphics_opts))
-        includegraphics.add_arg(figure_file_name)
+            includegraphics.add_argument(OptArg(includegraphics_opts))
+        includegraphics.add_argument(figure_file_name)
 
         
         if self.floating:
@@ -1239,13 +1239,17 @@ class Figure:
                 outer_figure.set_optional_arg(self.floating_pos)
             else:
                 outer_figure.set_optional_arg("ht!")
-            outer_figure.add_content(includegraphics)
             if self.centered:
                 outer_figure.add_content(r"\centering")
+            outer_figure.add_content(includegraphics)
             if self.caption is not None:
                 outer_figure.add_content(Macro("caption", arguments = self.caption))
             if self.label is not None:
+                if self.caption is None:
+                    # Empty caption to show figure number
+                    outer_figure.add_content(Macro("caption", arguments = ""))
                 outer_figure.add_content(Macro("label", arguments = self.label))
+
         else:
             if self.centered:
                 center = Environment("center")
@@ -1277,23 +1281,23 @@ class KWArgs:
                 raise TypeError(f"Value for argument {key} must be a string or an `Arg` instance.")
 
 
-    def add_arg(self, key: str, value: str):
+    def add_argument(self, key: str, value: str):
         self.args[key] = value
         self._check_values()
     
-    def set_arg(self, key: str, value: str):
-        self.add_arg(key, value)
+    def set_argument(self, key: str, value: str):
+        self.add_argument(key, value)
 
-    def remove_arg(self, key: str):
+    def remove_argument(self, key: str):
         del self.args[key]
 
-    def set_args(self, new_values: dict):
+    def set_arguments(self, new_values: dict):
         self.args = {**self.args, **new_values}
         self._check_values()
 
-    def remove_args(self, keys: List[str]):
+    def remove_arguments(self, keys: List[str]):
         for key in keys:
-            self.remove_arg(key)
+            self.remove_argument(key)
 
     def __str__(self):
         arg_strings = []
@@ -1524,3 +1528,360 @@ class EmptyEnvironment(Environment):
 
     def __str__(self):
         return "\n".join([str(item) for item in self.content])
+
+class Itemize(Environment):
+    def __init__(self, arguments: List = None, content: List = None):
+        super().__init__(name = "itemize", arguments = arguments)
+        
+        if content is not None:
+            self.add_content(content)
+    
+    def add_content(self, content: str | Environment | List[str | Environment]):
+        if isinstance(content, list) or isinstance(content, tuple):
+            for item in content:
+                if isinstance(item, list) or isinstance(item, tuple):
+                    self.add_content(self.__class__(content = item))
+                else:
+                    self.content.append(item)
+        else:
+            self.content.append(content)
+    
+    def set_content(self, content: str | Environment | List[str | Environment], index: int):
+        if index >= len(self.content):
+            raise IndexError(f"Cannot set content: index {index} is out of range for content list of length {len(self.content)}")
+        
+        if isinstance(content, list) or isinstance(content, tuple):
+            self.content[index] = self.__class__(content = content)
+        else:
+            self.content[index] = content
+
+    def insert_content(self, content: str | Environment | List[str | Environment], index: int):
+        if index > len(self.content):
+            raise IndexError(f"Cannot insert content: index {index} is out of range for content list of length {len(self.content)}")
+        
+        if isinstance(content, list) or isinstance(content, tuple):
+            self.content.insert(index, self.__class__(content = content))
+        else:
+            self.content.insert(index, content)
+
+    def __str__(self):
+        # start_line = f"\\begin{{{self.name}}}{''.join([str(o) for o in self.arguments])}"
+        start_line = str(Macro("begin", [self.name] + self.arguments))
+        # end_line = f"\\end{{{self.name}}}"
+        end_line = str(Macro("end", [self.name]))
+        mid_lines = "\n".join([("\\item " if not isinstance(item, Itemize) else '') + str(item) for item in self.content])
+        # indent each of mid_lines by one tab
+        mid_lines = "\n".join(["\t" + line for line in mid_lines.split("\n")])
+        return start_line + "\n" + mid_lines + "\n" + end_line
+
+class Enumerate(Itemize):
+    def __init__(self, arguments: List = None, content: List = None):
+        super().__init__(arguments = arguments, content = content)
+        self.name = "enumerate"
+
+
+"""
+Subfigures
+- keep multiple figures, but probably not Figures.
+    - Don't need `Figures.floating`, `Figures.floating_pos`, `Figure.centered`
+    - Need to modify to_latex()
+        - now a `subfigure` environment, not `figure`
+        - new alignment positional argument
+    - Assume individual figures are always centered
+
+"""
+
+class Subfigure(Figure):
+    def __init__(
+        self,
+        figure: mplFigure | str | Figure = None,
+        *args,
+        **kwargs
+    ):
+        if figure is not None:
+            if isinstance(figure, Figure):
+                self.from_Figure(figure)
+            else:
+                super().__init__(figure = figure, *args, **kwargs)
+        else:
+            super().__init__(*args, **kwargs)
+        
+        self.floating = True
+        self.centered = True
+        self.alignment = None
+        self.base_dir = None
+        self.temp_dir = None
+
+    
+    def float(self, *args, **kwargs):
+        print("Warning: subfigures must be floating")
+        
+    def center(self, *args, **kwargs):
+        print("Warning: subfigures are always centered")
+    
+    def __str__(self, **kwargs) -> str:
+        if self.base_dir is None or self.temp_dir is None:
+            raise ValueError("Cannot convert subfigure to LaTeX: base_dir and temp_dir must be set")
+        fig = Environment("subfigure")
+        figure_file_name = os.path.join(self.base_dir, self.figure_name)
+        if not self.using_file:
+            # if we have a figure, save it to {temp_dir}/lapyx_figures/{id}.pdf
+            # create {temp_dir}/lapyx_figures if it doesn't exist
+            if not os.path.exists(os.path.join(self.temp_dir, "lapyx_figures")):
+                os.mkdir(os.path.join(self.temp_dir, "lapyx_figures"))
+            if self.figure is not None:
+                figure_file_name = os.path.join(
+                        self.temp_dir, 
+                        "lapyx_figures", 
+                        f"{self.figure_name}.{kwargs['extension'] if 'extension' in kwargs else 'pdf'}"
+                    )
+                self.figure.savefig(
+                    figure_file_name, 
+                    bbox_inches='tight',
+                    **kwargs
+                )
+
+        includegraphics_opts = KWArgs()
+        if self.size["width"] is not None:
+            fig.add_argument(self.size["width"])
+        else:
+            # we *must* have a width, so default to 0.45\\textwidth
+            fig.add_argument("0.45\\textwidth")
+        if self.size["height"] is not None:
+            includegraphics_opts.add_argument("height", self.size["height"])
+        if self.size["scale"] is not None:
+            includegraphics_opts.add_argument("scale", self.size["scale"])
+        
+        includegraphics = Macro("includegraphics")
+        if not includegraphics_opts.is_empty():
+            includegraphics.add_argument(OptArg(includegraphics_opts))
+        includegraphics.add_argument(figure_file_name)
+
+        if self.alignment is not None:
+            fig.insert_argument(self.alignment, optional = True, index = 0)
+        else:
+            fig.insert_argument("b", optional = True, index = 0) # default to aligning by baseline
+
+        fig.add_content(Macro("centering"))
+        fig.add_content(includegraphics)
+        if self.caption is not None:
+            fig.add_content(Macro("caption", arguments = self.caption))
+        else:
+            fig.add_content(Macro("caption", arguments = ""))
+        if self.label is not None:
+            fig.add_content(Macro("label", arguments = self.label))
+        
+        return str(fig)
+    
+    def set_alignment(self, alignment: str = None):
+        self.alignment = None
+
+    def from_Figure(self, figure: Figure):
+        self.figure = figure.figure
+        self.figure_name = figure.figure_name
+        self.caption = figure.caption
+        self.label = figure.label
+        self.size = figure.size
+        self.using_file = figure.using_file
+        self.id = figure.id
+
+class Subfigures():
+    def __init__(
+        self, 
+        figures: List[Subfigure | Figure] = None, 
+        alignment: str = None,
+        floating_pos: str = None,
+        caption: str = None,
+        label: str = None,
+        gap: str = None
+    ):
+        self.figures_list = []
+
+        if figures is not None:
+            if not isinstance(figures, list) and not isinstance(figures, tuple):
+                figures = [figures]
+            for f in figures:
+                if isinstance(f, Subfigure):
+                    self.figures_list.append(f)
+                elif isinstance(f, Figure):
+                    self.figures_list.append(Subfigure(figure = f))
+                else:
+                    raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(f)}")
+        
+        
+            
+        self.caption = caption
+        self.label = label
+        self.floating_pos = floating_pos
+        self.alignment = alignment
+        self.gap = gap
+
+    def set_alignment(self, alignment: str = None):
+        self.alignment = alignment
+        for f in self.figures_list:
+            f.set_alignment(alignment)
+    
+    def set_floating_pos(self, floating_pos: str = None):
+        self.floating_pos = floating_pos
+
+    def set_caption(self, caption: str = None):
+        self.caption = caption
+
+    def set_label(self, label: str = None):
+        self.label = label
+    
+    def add_figure(self, figure: Subfigure | Figure):
+        if isinstance(figure, Subfigure):
+            self.figures_list.append(figure)
+        elif isinstance(figure, Figure):
+            self.figures_list.append(Subfigure(figure = figure))
+        else:
+            raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(figure)}")
+    
+    def add_figures(self, figures: List[Subfigure | Figure]):
+        if not isinstance(figures, list) and not isinstance(figures, tuple):
+            figures = [figures]
+        for f in figures:
+            if isinstance(f, Subfigure):
+                self.figures_list.append(f)
+            elif isinstance(f, Figure):
+                self.figures_list.append(Subfigure(figure = f))
+            else:
+                raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(f)}")
+        
+    def insert_figure(self, figure: Subfigure | Figure, index: int):
+        if index >= len(self.figures_list):
+            raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
+        if isinstance(figure, Subfigure):
+            self.figures_list.insert(index, figure)
+        elif isinstance(figure, Figure):
+            self.figures_list.insert(index, Subfigure(figure = figure))
+        else:
+            raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(figure)}")
+            
+    def insert_figures(self, figures: List[Subfigure | Figure], index: int):
+        if index >= len(self.figures_list):
+            raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
+        if not isinstance(figures, list) and not isinstance(figures, tuple):
+            figures = [figures]
+        for f in figures[::-1]:
+            if isinstance(f, Subfigure):
+                self.figures_list.insert(index, f)
+            elif isinstance(f, Figure):
+                self.figures_list.insert(index, Subfigure(figure = f))
+            else:
+                raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(f)}")
+    
+    def set_figure(self, figure: Subfigure | Figure, index: int):
+        if index >= len(self.figures_list):
+            raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
+        if isinstance(figure, Subfigure):
+            self.figures_list[index] = figure
+        elif isinstance(figure, Figure):
+            self.figures_list[index] = Subfigure(figure = figure)
+        else:
+            raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(figure)}")
+
+    def remove_figure(self, index: int):
+        if index >= len(self.figures_list):
+            raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
+        self.figures_list.pop(index)
+    
+    # No `remove_figures` method to make it more difficult to accidentally remove more than intended.
+        
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self.figures_list[key]
+        elif isinstance(key, slice):
+            return self.figures_list[key]
+        else:
+            raise TypeError("Subfigures must be indexed with an integer or slice")
+        
+    
+        
+    def to_latex(self, base_dir: str, temp_dir: str) -> str:
+        
+        if len(self.figures_list) == 0:
+            raise ValueError("Subfigures must contain at least one figure before being exported")
+        
+        fig = Environment("figure")
+        if self.floating_pos is not None:
+            fig.add_argument(self.floating_pos, optional = True)
+        else:
+            fig.add_argument("ht!", optional = True)
+        
+        fig.add_content(Macro("centering"))
+
+        gaptext = ""
+        if self.gap is not None:
+            if isinstance(self.gap, int):
+                if self.gap == 0:
+                    gaptext = r"\hspace{0pt}"
+                else:
+                    # assume cm
+                    gaptext = rf"\hspace{{{self.gap}cm}}"
+            elif isinstance(self.gap, str):
+                if not self.gap.startswith(r"\hspace{"):
+                    gaptext = r"\hspace{" + self.gap + "}"
+                else:
+                    gaptext = self.gap
+            elif isinstance(self.gap, Macro):
+                gaptext = str(self.gap)
+            else:
+                raise TypeError(f"Gap must be an int, str, or Macro, not {type(self.gap)}")
+        else:
+            gaptext = "\\hfill"
+        
+        for f in self.figures_list:
+            f.base_dir = base_dir
+            f.temp_dir = temp_dir
+
+        fig.add_content(self.figures_list[0])
+            
+        if len(self.figures_list) > 1:
+            for figure in self.figures_list[1:]:
+                fig.add_content(gaptext)
+                fig.add_content(figure)
+        
+        if self.caption is not None:
+            fig.add_content(Macro("caption", self.caption))
+        elif self.label is not None:
+            fig.add_content(Macro("caption", ""))
+
+        if self.label is not None:
+            fig.add_content(Macro("label", self.label))
+        
+        return str(fig)
+        
+        
+
+
+
+
+
+
+# class Subfigures(Environment):
+#     def __init__(
+#         self,
+#         figures: List[mplFigure | str | Figure] = None,
+#         caption: str = None,
+#         label: str = None,
+#         floating_position: str = "ht!",
+#         centered: bool = True,
+#         width: str = None,
+#         height: str = None,
+#         scale: str = None
+#     ):
+#         super().__init__(name = "figure")
+#         self.figures_list = []
+#         # subfigures must be floating, so we can ignore the floating argument
+#         if figures is not None:
+#             if not isinstance(figures, list) or not isinstance(figures, tuple):
+#                 raise TypeError(f"Cannot create Subfigures: figures must be a list or tuple, not {type(figures)}")
+#             for figure in figures:
+#                 if isinstance(figure, Figure):
+#                     self.figures_list.append(figure)
+#                 else:
+#                     self.figures_list.append(Figure(figure))
+#             for f in self.figures_list:
+#                 f.name = "subfigure"
