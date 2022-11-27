@@ -133,3 +133,6 @@ testing/
 docs/
 
 src/lapyx/markdown.py
+
+numpy_defaults.mustache
+.vscode

@@ -16,20 +16,24 @@
 
 ## General
 
-- Add some sort of caching
-    - take some has of each code block, save along with the output to some hidden file
+- [ ] Add some sort of caching
+    - take some hash of each code block, save along with the output to some hidden file
         - Is it even worth taking a hash? Hidden file could become large for big documents, but surely not concerningly large.
     - Re-use output from cache (especially figures!) for each code block up to the first change - assume that after this change, the output will be different
         - could maybe do some clever tracking on each change to connect blocks together, but this is probably not worth it
-- Subfigures
-- Expand components to generic environments
+    - This could be a problem if we're not setting variables or importing modules because the output hasn't changed. Maybe we only do this for figures? 
+        - Maybe look into using `shelve` to save state after each code block, then restore last unchanged state
+        - Would also need to track imports
+- [x] Subfigures
+- [ ] Follow `input` and `include` macros
+- [x] Expand components to generic environments
     - base class with
         - environment name
         - content (list of strings or other components)
         - list of arguments
             - each argument can be a string, dictionary, or a list of strings and dictionaries
             - need some way to specify which arguments are optional, and the order.
-- Some way to recognise verbatim blocks and not try to run them
+- [ ] Some way to recognise verbatim blocks and not try to run them
     - Similar loop to extract code blocks, replacing verbatim with an ID and storing original verbatim
     - Then run normal code block processing loop
     - Then replace IDs with original verbatim
@@ -42,14 +46,16 @@
         - `\begin{lstlisting}`
         - `\begin{qolisting}`
 
-- Some way to place the original code block in the output, formatted nicely?
+- [ ] Some way to place the original code block in the output, formatted nicely?
     - maybe add a variable to each code block which is the original code, and allow a user to handle this in the output
-- `itemize`/`enumerate` components
-- add support for parsing markdown with pandoc?
+    - This should be a LaTeX macro, not a Python function, so that outputting the code doesn't have to be part of the outputted code (i.e., otherwise every listing would include some `export(this)` line)
+    - Can still be processed in python if needed
+- [x] `itemize`/`enumerate` components
+- [ ] add support for parsing markdown with pandoc?
     - requires pandoc to be installed, \textbf{and} the pandoc python package. Could get very complicated with mixing markdown and latex.
     - Alternative; just implement basics, like bold, italics, lists, inline code, sections etc.
     - Should be able to avoid accidentally parsing non-markdown text as markdown since it will need to be in a `\begin{markdown}...\end{markdown}` environment
-- Some toggle for using QoLaTeX packages?
+- [ ] Some toggle for using QoLaTeX packages?
 
 
 ## KWArgs

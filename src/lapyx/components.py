@@ -29,9 +29,7 @@ except ImportError:
 import os
 
 
-class Table:
-    """A helper class for generating LaTeX tables and tabulars from a variety of sources."""    
-    
+class Table:    
 
     def __init__(
         self, 
@@ -54,68 +52,85 @@ class Table:
         csv_reader:                 str             =  None,
         csv_options:                dict            =  {}
     ):
-        """Creates a Table object for storing and manipulating data to be exported as a LaTeX 
-        table or tabular.
+        """The ``Table`` class is designed to make LaTeX tables less of a headache. Data can be 
+        added, modified, and removed from the table, and all LaTeX formatting can be easily 
+        specified. The ``Table`` object can be passed directly to :meth:`~lapyx.output.export`
+        to be included in the final document.
 
         Parameters
         ----------
-        data : pd.DataFrame | np.ndarray | List[List[Any]] | str, optional
-            The data to be included in the table. If this is a string, it will be treated as a file
-            path to a .csv file and read accordingly. By default None
-        centered : bool, optional
-            If `True`, the resulting LaTeX table will be centered horizontally, either with 
-            `\\centering` or in a `center` environment, whichever is more appropriate. By default 
-            True
-        floating : bool, optional
-            If `True`, the resulting tabular will be eclosed in a `table` environment. By default 
-            False
-        floating_position : str, optional
-            If `floating`, this will be the positional optional string passed to the `table` 
-            environment. By default "ht!"
-        caption : str, optional
-            The caption for the table. If provided, `floating` will automatically be set to `True`.
-            By default None
-        caption_position : str, optional
-            Where to place the caption relative to the tabular in a `table` environment. Should be 
-            either `"top"` or `"bottom"`. By default "bottom"
-        label : str, optional
-            The reference label for the `table` environment. If provided, `floating` will 
-            automatically be set to `True`. By default None
-        long : bool, optional
-            If `True`, the output tabular will instead be a `longtable` environment, allowing for 
-            page breaks. By default False
-        headers : str | List[str], optional
-            Headers for each column in the table. Where possible, this will be extracted from 
-            `data`. By default None
-        use_headers : bool, optional
-            If `True`, `headers` will be used as the first row of the tabular, separated by a 
-            double rule. By default True
-        alignment : str | List[str], optional
-            Text alignments per column. Each element should be "l", "c", or "r"; if `column_widths` 
-            are specified, alignment characters will be adjusted automatically. By default None
-        column_widths : str | List[str], optional
-            The width of each column, including units. Accepts all LaTeX lengths such as 
-            `\\textwidth` etc. By default None
-        format_string : str | List[str], optional
-            Python format string for each column of `data`. These will be passed as 
-            `{value:format_string}` when generating the output table row. By default None
-        header_format : str, optional
-            LaTeX formatting to be applied to each cell of the header row. The final macro can 
-            optionally take the header text as an argument. By default None
-        max_rows_before_split : int, optional
-            If set, the table will be split after every `max_rows_before_split`, outputting 
-            multiple `tabular` environments. By default None
-        split_table_into_columns : int, optional
-            If set, the table will be split into this many separate tabular environments, with rows 
-            distributed as evenly as possible by number (not by rendered height). By default None
-        csv_reader : str, optional
-            If set, a specific library will be used to read any .csv files. Options are `"pandas"`,
-            `"numpy"`, and `"csv"`. This is also the order of preference if `csv_reader` is not 
-            specified. By default None
-        csv_options : dict, optional
-            Optional `kwargs` to be passed to the function used to read any .csv files. This is 
-            passed to either `pandas.read_csv`, `numpy.genfromtxt`, or `csv.reader`. By default {}
-        """                    
+        data : pd.DataFrame | np.ndarray | List[List[Any]] | str, optional, default ``None``
+            The data to be inserted into the table. If a ``str`` is passed, this will be taken as a 
+            file path to a ``.csv`` file. If a ``pandas.DataFrame`` or ``numpy.ndarray`` is passed,
+            this will be converted to a list of lists, keeping the column names as headers if they
+            are present in the ``DataFrame``. 
+        centered : bool, optional, default ``True``
+            If ``True``, the table will be centered in the document, either using a ``center``
+            environment, or with the ``\\centering`` macro if the table is floating.
+        floating : bool, optional, default ``False``
+            If ``True``, the ``tabular`` environment will be wrapped in a floating ``table``
+            environment.
+        floating_position : str, optional, default ``"ht!"``
+            The optional positional argument to be passed to the ``table`` environment if the table
+            is floating. Setting this does not set ``floating`` to ``True``.
+        caption : str, optional, default ``None``
+            The caption to be used for the table. If ``None``, no caption will be used. Setting
+            this sets ``floating`` to ``True``.
+        caption_position : str, optional, default ``"bottom"``
+            The position at which to place the caption relative to the tabular. This is only used
+            if ``caption`` is not ``None``. Valid options are ``"top"`` or ``"bottom"``.
+        label : str, optional, default ``None``
+            The label to use for the ``table`` environment. Setting this sets ``floating`` to
+            ``True``, and forces an empty caption if ``caption`` is ``None``.
+        long : bool, optional, default ``False``
+            If ``True``, the ``tabular`` environment will be replaced by a ``longtable`` 
+            environment. 
+
+            .. warning::
+
+                This is not yet implemented.
+        headers : str | List[str], optional, default ``None``
+            String or list of strings to be used as the column headers for the table. If ``None``,
+            no header row will be produced.
+        use_headers : bool, optional, default ``True``
+            If ``True``, a header row will be included in the output table, provided headers are 
+            given.
+        alignment : str | List[str], optional, default ``None``
+            String or list of strings, each of which will be used for the alignment of the columns.
+            These should be one of ``"l"``, ``"c"``, or ``"r"``, and will be adjusted as necessary
+            if column widths are specified.
+        column_widths : str | List[str], optional, default ``None``
+            String or list of strings to specify the column widths of each table column. These must 
+            be valid LaTeX lengths (i.e., with units or in terms of length macros such as
+            ``\\textwidth``). If any entry is ``None``, the column width will be left unspecified.
+        format_string : str | List[str], optional, default ``None``
+            String or list of strings which specifies the Python format string to be used for each
+            column when converting ``data`` to a string. If ``None``, the default formatting will
+            be used. These will be passed as ``{data:format_string}`` in an f-string.
+        header_format : str, optional, default ``None``
+            String or list of strings specifying the LaTeX formatting to be prepended to each 
+            header cell. If ``None``, no formatting will be applied. The final macro may optionally
+            take the column header as an argument.
+        max_rows_before_split : int, optional, default ``None``
+            The maximum number of rows to be included in a single ``tabular`` environment before
+            splitting the table into multiple columns. If ``None``, the table will not be split
+            unless ``split_table_into_columns`` is specified.
+        split_table_into_columns : int, optional, default ``None``
+            The number of separate ``tabular`` environments to render. The ``data`` will be split 
+            between the ``tabular`` s as equally as possible by number of rows (not by rendered
+            height). If ``None``, the table will not be split unless ``max_rows_before_split`` is
+            set. This argument takes precedence over ``max_rows_before_split``.
+        csv_reader : str, optional, default ``None``
+            If ``data`` is a string, this argument can be used to specify which csv reader to use.
+            Valid options are ``"pandas"`` (which uses ``pandas.read_csv``), ``"numpy"`` (which
+            uses ``numpy.genfromtxt``), or ``"csv"`` (using  ``csv.reader``). This is also the 
+            order of preference if ``csv_reader`` is not specified.
+        csv_options : dict, optional, default ``{}``
+            If specified, these are passed as keyword arguments to whichever csv reader is used to 
+            parse a ``csv`` file specified by ``data``.
+
+        """        
+                  
 
         # default values
         self.centered                   = centered
@@ -141,24 +156,31 @@ class Table:
         self.set_data(data)
 
     def set_data(self, new_data: pd.DataFrame | np.ndarray | List[List[Any]] | str) -> None:
-        """Set the data for the table
+        """Set the data associated with the table, from a ``pandas.DataFrame``, ``numpy.ndarray``,
+        nested list, or ``.csv`` file.
 
         Parameters
         ----------
         new_data : pd.DataFrame | np.ndarray | List[List[Any]] | str
-            The data to be included in the table. If this is a string, it will be treated as a file path to a .csv file and read accordingly.
+            The data to be inserted into the table. If a ``str`` is passed, this will be taken as a 
+            file path to a ``.csv`` file. If a ``pandas.DataFrame`` or ``numpy.ndarray`` is passed,
+            this will be converted to a list of lists, keeping the column names as headers if they
+            are present in the ``DataFrame``. 
 
         Raises
         ------
         ImportError
-            If the requested csv reader could not be found
+            If ``csv_reader`` has been specified as either ``"pandas"`` or ``"numpy"``, but the
+            appropriate package installation cannot be found.
         ValueError
-            If the requested csv reader is not known
+            If the passed ``csv_reader`` is not recognised.
         TypeError
-            If the data is of an unsuitable type
+            If the ``new_data`` passed is not a nested list and cannot be converted to a nested 
+            list.
         ValueError
-            If the data rows do not have consistent lengths
+            If the rows are of unequal length.
         """        
+        
         self.data = [[]]
         if new_data is not None:
             # if data is a string or file object, read it
@@ -260,22 +282,29 @@ class Table:
         new_data: pd.DataFrame | np.ndarray | List[Any] = None, 
         index: int = None
     ):
-        """Add a new row to the table, optionally at a specified index
+        """Add a new row to the table.
 
         Parameters
         ----------
-        new_data : pd.DataFrame | np.ndarray | List[Any], optional
-            The new row to be added. If not provided, a row of empty strings will be added. By default None
-        index : int, optional
-            The index at which the new row should be inserted. If not provided, the row will be appended to the table. By default None
+        new_data : pd.DataFrame | np.ndarray | List[Any], optional, default ``None``
+            The new data to be added. If a ``pandas.DataFrame`` or ``numpy.ndarray`` is passed,
+            it will be converted to a list. If ``None`` is passed, a new row of empty strings
+            will be added.
+        index : int, optional, default ``None``
+            If provided, the new row will be inserted at the given index. Otherwise, it will be
+            appended to the end of the table.
 
         Raises
         ------
         ValueError
-            If the new row contains iterables
+            If the ``new_data`` passed is not 1-dimensional; i.e., if any element of ``new_data``
+            is a list or tuple.
         ValueError
-            if the new row is not the same length as the existing rows
-        """               
+            If the length of ``new_data`` does not match the number of columns in the table.
+        IndexError
+            If ``index`` is provided and is out of range for the table.
+        """        
+                  
         if new_data is None:
             # add a blank row
             new_data = ["" for i in range(self.num_columns)]
@@ -311,6 +340,9 @@ class Table:
                 f"new_data must have the same length as the number of columns in the table: received {len(new_data)}, expected {self.num_columns}")
 
         if index is not None:
+            if index >= len(self.data):
+                raise IndexError(
+                    f"index must be less than the number of rows in the table: received {index}, expected less than {len(self.data)}")
             self.data.insert(index, new_data)
         else:
             self.data.append(new_data)
@@ -321,15 +353,18 @@ class Table:
         new_data: pd.DataFrame | np.ndarray | List[List[Any]], 
         index: int = None
     ):
-        """Add multiple rows to the table, optionally at a specified index
+        """Add multiple new rows to the table.
 
         Parameters
         ----------
         new_data : pd.DataFrame | np.ndarray | List[List[Any]]
-            New rows to be added to the table.
-        index : int, optional
-            The index at which the new rows should be inserted. If multiple rows are added, this will be the index of the first new row. If not provided, the new rows will be appended to the table. By default None
-        """    
+            The new data to be added. If a ``pandas.DataFrame`` or ``numpy.ndarray`` is passed,
+            it will be converted to a list. 
+        index : int, optional, default ``None``
+            If provided, the new rows will be inserted starting at the given index, maintaining
+            their order. Otherwise, they will be appended to the end of the table. 
+        """        
+        
         # if new_data is a pandas dataframe or series, convert to a list
         if has_pandas and isinstance(new_data, pd.DataFrame) or isinstance(new_data, pd.Series):
             new_data = new_data.values.tolist()
@@ -359,24 +394,34 @@ class Table:
         index: int = None, 
         column_name: str = None
     ):
-        """Add a new column to the table, optionally at a specified index, and optionally with a specified header.
+        """Add a new column to the table.
 
         Parameters
         ----------
-        new_data : pd.DataFrame | np.ndarray | List[Any], optional
-            The new column to be added. If not provided, a column of empty strings will be added instead. By default None
-        index : int, optional
-            The index at which the new column should be inserted. By default None
-        column_name : str, optional
-            If provided, the header of the new column. By default None
+        new_data : pd.DataFrame | np.ndarray | List[Any], optional, default ``None``
+            The new data to be added. If a ``pandas.DataFrame`` or ``numpy.ndarray`` is passed,
+            it will be converted to a list. If ``None`` is passed, a new column of empty strings
+            will be added. If the ``DataFrame`` has a column name, it will be extracted and used
+            as the column header. Otherwise, an empty string will be used.
+        index : int, optional, default ``None``
+            If provided, the new column will be inserted at the given index. Otherwise, it will be
+            appended to the end of the table.
+        column_name : str, optional, default ``None``
+            If provided, the new column will be given this name. Otherwise, it will be given the
+            name of the column in the ``pandas.DataFrame`` if one is provided, or an empty string
+            otherwise.
 
         Raises
         ------
         ValueError
-            If the new column contains iterables
+            If the ``new_data`` passed is not 1-dimensional; i.e., if any element of ``new_data``
+            is a list or tuple.
         ValueError
-            If the new column is not the same length as the existing columns
-        """    
+            If the length of ``new_data`` does not match the number of rows in the table.
+        IndexError
+            If ``index`` is provided and is out of range for the table.
+        """        
+        
         if new_data is None:
             # add a column of empty strings
             new_data = [""] * self.num_rows
@@ -414,6 +459,9 @@ class Table:
                 f"new_data must have the same length as the number of rows in the table: received {len(new_data)}, expected {self.num_rows}")
 
         if index is not None:
+            if index >= self.num_columns:
+                raise IndexError(
+                    f"index must be less than the number of columns in the table: received {index}, expected less than {self.num_columns}")
             for i, row in enumerate(self.data):
                 row.insert(index, new_data[i])
             self.headers.insert(index, new_column_name)
@@ -436,17 +484,23 @@ class Table:
         index: int = None, 
         column_names: list = None
     ):
-        """Add multiple columns to the table, optionally at a specified index, and optionally with specified headers.
+        """Add multiple columns to the table.
 
         Parameters
         ----------
         new_data : pd.DataFrame | np.ndarray | List[List[Any]]
-            The new columns to be added.    
-        index : int, optional
-            The index at which the new columns should be inserted. If multiple columns are added, this will be the index of the first new column. If not provided, the new columns will be appended to the table. By default None
-        column_names : list, optional
-            If provided, the headers of the new columns. By default None
-        """    
+            The new data to be added. If a ``pandas.DataFrame`` or ``numpy.ndarray`` is passed,
+            it will be converted to a list. If the ``DataFrame`` has column names, they will be
+            extracted and used as the column headers. Otherwise, empty strings will be used.
+        index : int, optional, default ``None``
+            If provided, the new columns will be inserted at the given index. Otherwise, they will be
+            appended to the end of the table.
+        column_names : list, optional, default ``None``
+            If provided, the new columns will be given these names. Otherwise, they will be given the
+            names of the columns in the ``pandas.DataFrame`` if one is provided, or empty strings
+            otherwise.
+        """        
+        
         # if new_data is a pandas dataframe or series, convert to a list
         if has_pandas and isinstance(new_data, pd.DataFrame) or isinstance(new_data, pd.Series):
             new_data = new_data.values.tolist()
@@ -473,12 +527,12 @@ class Table:
                     column, column_name=column_names[i] if column_names else None)
 
     def transpose(self, include_headers: bool = True):
-        """Transpose the table.
+        """Transpose the table, i.e., swap the rows and columns.
 
         Parameters
         ----------
-        include_headers : bool, optional
-            If `True`, column headers become the first column of the new table. By default True
+        include_headers : bool, optional, default ``True``
+            If ``True``, the headers of the table will become the first column of the transposed table.
         """        
         self.data = list(map(list, zip(*self.data)))
         self.num_columns = len(self.data[0])
@@ -490,40 +544,46 @@ class Table:
         self.headers = [""] * self.num_columns
 
     def center(self, centered: bool = True):
-        """Center the table, either with `\\centering` or a `center` environment, depending on 
-        whether the table is a float or not.
+        """Center the table, either by wrapping the ``tabular`` environment in a ``center`` environment,
+        or using ``\\centering`` if the table is floating.
 
         Parameters
         ----------
-        centered : bool, optional
-            If `True`, the table is centered. By default True
+        centered : bool, optional, default ``True``
+            If ``True``, table will be centered.
         """        
+               
         self.centered = centered
 
     def float(self, floating: bool = True, floating_pos: str = None):
-        """Float the table, optionally specifying the position.
+        """Make the ``tabular`` float by wrapping it in a ``table`` environment, optionally
+        specifying the float position.
 
         Parameters
         ----------
-        floating : bool, optional
-            If `True`, the table becomes a float with the `tabular` environment wrapped in a 
-            `table` environment. By default True
-        pos : str, optional
-            If provided, sets the position optional argument to the `table` environment. By 
-            default None
+        floating : bool, optional, default ``True``
+            If ``True``, table will float.
+        floating_pos : str, optional, default ``None``
+            The optional position argument passed to the ``table`` environment. If ``None``, the
+            current position is kept. 
         """        
+              
         self.floating = floating
         if floating_pos is not None:
             self.floating_pos = floating_pos
 
     def long(self, long: bool = True):
-        """Use a `longtable` environment to allow for page breaks. Currently not implemented.
+        """Allow the table to split at page breaks by replacing it with a ``longtable``.
+
+        .. warning::
+            This is not yet implemented.
 
         Parameters
         ----------
-        long : bool, optional
-            If `True`, a `longtable` environment will be used instead of `tabular`. By default True
+        long : bool, optional, default ``True``
+            If ``True``, table will be a ``longtable``.
         """        
+        
         self.long = long
 
     def __insert_at(
@@ -585,186 +645,235 @@ class Table:
         return destination
 
     def set_headers(self, headers: list | str, column_index: int = None, column_end_index: int = None):
-        """Set the headers for all or some columns in the table. Behaviour is different if 
-        `headers` is a single string or a list.
+        """Set one or more headers for the table. Behaviour is different depending on the type of
+        ``headers``.
 
-        If `headers` is a single string, and no other arguments are provided, all headers are set 
-        to this value. If `column_index` is provided, but `column_end_index` is not, only the 
-        single column at `column_index` is set to this value. If `column_index` and 
-        `column_end_index` are both provided, all columns between `column_index` and 
-        `column_end_index` are set to this value.
+        * If ``headers`` is a string
 
-        If `headers` is a list and no other arguments are provided, if must have length equal to 
-        the number of columns in the table (unless no data has been set). `column_end_index` 
-        is assumed to be `-1` if it is not specified. If `column_index` is provided, `headers` 
-        must have length `column_end_index - column_index`. All specified columns are set to the 
-        corresponding values in `headers`.
+          * If ``column_index`` is not specified, all headers will be set to ``headers``, equivalent to ``table_headers[:] = headers``.
+          * If ``column_index`` is specified but ``column_end_index`` is not, the header at ``column_index`` will be set to ``headers``, equivalent to ``table_headers[column_index] = headers``.
+          * If ``column_index`` and ``column_end_index`` are set, the slice of columns they define will be set to ``headers``, equivalent to ``table_headers[column_index:column_end_index] = headers``.
+
+        * If ``headers`` is a list
+
+          * If ``column_index`` is not set, then it is required that ``len(headers) == num_columns``. If this is the case, all column headings will be set to ``headers``, equivalent to ``table_headers[:] = headers``.
+          * If ``column_index`` is specified, but ``column_end_index`` is not, then it is required that ``headers`` has length equal to ``num_columns - column_index``. If this is the case, the slice of columns starting at ``column_index`` will be set to ``headers``, equivalent to ``table_headers[column_index:] = headers``. 
+          * If ``column_index`` and ``column_end_index`` are set, then it is required that ``len(headers) == column_end_index - column_index``. If this is the case, the slice of columns they define will be set to ``headers``, equivalent to ``table_headers[column_index:column_end_index] = headers``.
 
         Parameters
         ----------
         headers : list | str
-            A list of the headers, or a single header. 
-        column_index : int, optional
-            If provided, the first column index to be set. By default None
-        column_end_index : int, optional
-            if provided, the last column index to be set. By default None
+            The header or headers to be applied to the table.
+        column_index : int, optional, default ``None``
+            The first column to which the header will be applied.
+        column_end_index : int, optional, default ``None``
+            The last column to which the header will be applied.
         """        
+        # Double check that column_end_index does what you claim; might be off by 1 column
+          
         self.headers = self.__insert_at(
             self.headers, headers, column_index, column_end_index)
 
     def set_alignment(self, alignment: list | str, column_index: int = None, column_end_index: int = None):
-        """Set the alignment for all or some columns in the table. Behaviour is different if 
-        `alignment` is a single string or a list.
+        """Set one or more alignments for the table. Behaviour is different depending on the type of
+        ``alignment``. These will automatically be adjusted during compilation if ``column_widths`` 
+        are specified.
 
-        If `alignment` is a single string, and no other arguments are provided, all alignment 
-        specifiers are set to this value. If `column_index` is provided, but `column_end_index` is 
-        not, only the single column at `column_index` is set to this alignment. If `column_index` 
-        and `column_end_index` are both provided, all columns between `column_index` and 
-        `column_end_index` are set to this alignment.
+        * If ``alignment`` is a string
 
-        If `alignment` is a list and no other arguments are provided, if must have length equal to 
-        the number of columns in the table (unless no data has been set). `column_end_index` is 
-        assumed to be `-1` if it is not specified. If `column_index` is provided, `alignment` must 
-        have length `column_end_index - column_index`. All specified columns are set to the 
-        corresponding alignment specifiers in `alignment`.
+          * If ``column_index`` is not specified, all alignments will be set to ``alignment``, equivalent to ``table_alignment[:] = alignment``.
+          * If ``column_index`` is specified but ``column_end_index`` is not, the alignment at ``column_index`` will be set to ``alignment``, equivalent to ``table_alignment[column_index] = alignment``.
+          * If ``column_index`` and ``column_end_index`` are set, the slice of columns they define will be set to ``alignment``, equivalent to ``table_alignment[column_index:column_end_index] = alignment``.
+
+        * If ``alignment`` is a list
+
+          * If ``column_index`` is not set, then it is required that ``len(alignment) == num_columns``. If this is the case, all column alignments will be set to ``alignment``, equivalent to ``table_alignment[:] = alignment``.
+          * If ``column_index`` is specified, but ``column_end_index`` is not, then it is required that ``alignment`` has length equal to ``num_columns - column_index``. If this is the case, the slice of columns starting at ``column_index`` will be set to ``alignment``, equivalent to ``table_alignment[column_index:] = alignment``.
+          * If ``column_index`` and ``column_end_index`` are set, then it is required that ``len(alignment) == column_end_index - column_index``. If this is the case, the slice of columns they define will be set to ``alignment``, equivalent to ``table_alignment[column_index:column_end_index] = alignment``.
+
+
 
         Parameters
         ----------
         alignment : list | str
-            A list of alignments, or a single alignment specifier. 
-        column_index : int, optional
-            If provided, the first column index to be set. By default None
-        column_end_index : int, optional
-            if provided, the last column index to be set. By default None
+            The alignment or alignments to be applied to the table. Each alignment should be one of 
+            ``"l"``, ``"c"``, or ``"r"``.
+        column_index : int, optional, default ``None``
+            The first column to which the alignment will be applied.
+        column_end_index : int, optional, default ``None``
+            The last column to which the alignment will be applied.
         """        
+        
         self.alignment = self.__insert_at(
             self.alignment, alignment, column_index, column_end_index)
 
     def set_column_widths(self, widths: list | str, column_index: int = None, column_end_index: int = None):
-        """Set the column widths for all or some columns in the table. Behaviour is different if 
-        `column_widths` is a single string or a list.
+        """Set one or more column widths for the table. Behaviour is different depending on the 
+        type of ``widths``. A column width of ``None`` indicates that the column should be allowed
+        to resize to fit its contents (the default LaTeX behaviour for alignments like ``l`` and 
+        ``c``).
 
-        If `column_widths` is a single string, and no other arguments are provided, all columns are
-        set to this width. If `column_index` is provided, but `column_end_index` is not, only the 
-        single column at `column_index` is set to this width. If `column_index` and 
-        `column_end_index` are both provided, all columns between `column_index` and 
-        `column_end_index` are set to this width.
+        * If ``widths`` is a string
+        
+          * If ``column_index`` is not specified, all column widths will be set to ``widths``, equivalent to ``table_column_widths[:] = widths``.
+          * If ``column_index`` is specified but ``column_end_index`` is not, the column width at ``column_index`` will be set to ``widths``, equivalent to ``table_column_widths[column_index] = widths``.
+          * If ``column_index`` and ``column_end_index`` are set, the slice of columns they define will be set to ``widths``, equivalent to ``table_column_widths[column_index:column_end_index] = widths``.
 
-        If `column_widths` is a list and no other arguments are provided, if must have length equal
-        to the number of columns in the table (unless no data has been set). `column_end_index` is 
-        assumed to be `-1` if it is not specified. If `column_index` is provided, `column_widths` 
-        must have length `column_end_index - column_index`. All specified columns are set to the 
-        corresponding widths in `column_widths`.
+        * If ``widths`` is a list
+
+          * If ``column_index`` is not set, then it is required that ``len(widths) == num_columns``. If this is the case, all column widths will be set to ``widths``, equivalent to ``table_column_widths[:] = widths``.
+          * If ``column_index`` is specified, but ``column_end_index`` is not, then it is required that ``widths`` has length equal to ``num_columns - column_index``. If this is the case, the slice of columns starting at ``column_index`` will be set to ``widths``, equivalent to ``table_column_widths[column_index:] = widths``.
+          * If ``column_index`` and ``column_end_index`` are set, then it is required that ``len(widths) == column_end_index - column_index``. If this is the case, the slice of columns they define will be set to ``widths``, equivalent to ``table_column_widths[column_index:column_end_index] = widths``.
 
         Parameters
         ----------
-        column_widths : list | str
-            A list of the column widths, or a single width. These must include units, and can include 
-            any LaTeX length (e.g., `\\linewidth`). 
-        column_index : int, optional
-            If provided, the first column index to be set. By default None
-        column_end_index : int, optional
-            if provided, the last column index to be set. By default None
+        widths : list | str
+            The column width or widths to be applied to the table. Column widths should be valid 
+            LaTeX lengths, i.e. they should include units or LaTeX length macros such as 
+            ``\\textwidth``.
+        column_index : int, optional, default ``None``
+            The first column to which the column width will be applied.
+        column_end_index : int, optional, default ``None``
+            The last column to which the column width will be applied.
         """        
+        
         self.column_widths = self.__insert_at(
             self.column_widths, widths, column_index, column_end_index)
 
     def set_format(self, format_string: list | str, column_index: int = None, column_end_index: int = None):
-        """Set the format specifiers for all or some columns in the table. Behaviour is different 
-        if `format_string` is a single string or a list.
+        """Set one or more format strings for the table. Behaviour is different depending on the
+        type of ``format_string``. 
 
-        If `format_string` is a single string, and no other arguments are provided, all format 
-        specifiers are set to this value. If `column_index` is provided, but `column_end_index` is 
-        not, only the single column at `column_index` is set to this specifier. If `column_index` 
-        and `column_end_index` are both provided, all columns between `column_index` and 
-        `column_end_index` are set to this specifier.
+        * If ``format_string`` is a string
 
-        If `format_string` is a list and no other arguments are provided, if must have length equal to 
-        the number of columns in the table (unless no data has been set). `column_end_index` is 
-        assumed to be `-1` if it is not specified. If `column_index` is provided, `format_string` must 
-        have length `column_end_index - column_index`. All specified columns are set to the 
-        corresponding format specifiers in `format_string`.
+          * If ``column_index`` is not specified, all format strings will be set to ``format_string``, equivalent to ``table_format[:] = format_string``.
+          * If ``column_index`` is specified but ``column_end_index`` is not, the format string at ``column_index`` will be set to ``format_string``, equivalent to ``table_format[column_index] = format_string``.
+          * If ``column_index`` and ``column_end_index`` are set, the slice of columns they define will be set to ``format_string``, equivalent to ``table_format[column_index:column_end_index] = format_string``.
+
+        * If ``format_string`` is a list
+
+          * If ``column_index`` is not set, then it is required that ``len(format_string) == num_columns``. If this is the case, all format strings will be set to ``format_string``, equivalent to ``table_format[:] = format_string``.
+          * If ``column_index`` is specified, but ``column_end_index`` is not, then it is required that ``format_string`` has length equal to ``num_columns - column_index``. If this is the case, the slice of columns starting at ``column_index`` will be set to ``format_string``, equivalent to ``table_format[column_index:] = format_string``.
+          * If ``column_index`` and ``column_end_index`` are set, then it is required that ``len(format_string) == column_end_index - column_index``. If this is the case, the slice of columns they define will be set to ``format_string``, equivalent to ``table_format[column_index:column_end_index] = format_string``.
 
         Parameters
         ----------
         format_string : list | str
-            A list of format specifiers, or a single format specifier. 
-        column_index : int, optional
-            If provided, the first column index to be set. By default None
-        column_end_index : int, optional
-            if provided, the last column index to be set. By default None
-        """    
+            The format string or strings to be applied to the table. Each format string should be a 
+            valid Python format specifier, which will be applied to the values in the corresponding
+            column as ``{value:format_string}``. As such, to specify the default formatting for a
+            column, pass an empty string.
+        column_index : int, optional, default ``None``
+            The first column to which the format string will be applied.
+        column_end_index : int, optional, default ``None``
+            The last column to which the format string will be applied.
+        """        
+        
         self.format = self.__insert_at(
             self.format, format_string, column_index, column_end_index)
 
     def set_header_format(self, new_format: str) -> None:
-        """Set the LaTeX format for the header row (e.g., `\\bfseries`)
+        """Set the format for the table headers in LaTeX. This should be valid LaTeX markup, and
+        can optionally end with a macro which would take the header as an argument, such as
+        ``\\bfseries\\textcolor{red}``, where the header would become the second argument to the
+        ``\\textcolor`` macro.
 
         Parameters
         ----------
         new_format : str
-            The LaTeX format for the header row, prepended to each header. The final macro can optionally take the header as an argument.
+            The format for the table headers.
         """        
+            
         self.header_format = new_format
 
     def set_caption(self, caption: str):
-        """Set the LaTeX caption for the table. If it's not already, this will cause the table to float.
+        """Set the caption for the table. If the table is not already floating, it will be made
+        to float unless the ``caption`` is not specified (or ``None``). Passing no caption will
+        remove the caption, but will not unfloat the table - use ``Table.float(False)`` after
+        the call to ``caption()`` for this.
 
         Parameters
         ----------
         caption : str
-            The caption to include in the output LaTeX.
+            The caption for the table.
         """        
+             
         self.caption = caption
         if caption is not None:
             # can't have a caption if we're not floating
             self.floating = True
 
     def set_label(self, label: str):
-        """Set the LaTeX label for the table. If it's not already, this will cause the table to float.
+        """Set the label for the table. If the table is not already floating, it will be made
+        to float unless the ``label`` is not specified (or ``None``). Passing no label will
+        remove the label, but will not unfloat the table - use ``Table.float(False)`` after
+        the call to ``label()`` for this. If a label is specified but no caption is given, a blank
+        caption will be inserted during compilation.
 
         Parameters
         ----------
         label : str
-            The reference label to include in the output LaTeX.
+            The label for the table.
         """        
+           
         self.label = label
         if label is not None:
             # can't have a label if we're not floating
             self.floating = True
 
     def use_headers(self, use: bool = True):
-        """Include or exclude the header row in the output LaTeX.
+        """Set whether the table should use headers. If ``use`` is ``True``, the table will include
+        the headers as the first row, with an additional separator before the data. If ``use`` is
+        ``False``, the headers will not be included and the first row will receive no special
+        formatting.
 
         Parameters
         ----------
-        use : bool, optional
-            If `True`, the headers will be included as the first row of the output LaTeX tabular, by default True
-        """        
+        use : bool, optional, default ``True``
+            Whether the output table should use any headers.
+        """            
         self.use_header_row = use
 
     def split_after_rows(self, num_rows: int):
-        """Split the data into multiple `tabular` environments if the number of rows exceeds this value. If headers are included, the header row will be repeated at the top of each new `tabular` environment. 
+        """Set the maximum number of rows before the ``tabular`` environment should be split into
+        multiple tables. This is useful for tables which are too large to fit on a single page, or 
+        tables with many rows but few columns. This will be overridden if ``split_into_columns`` is
+        specified. ``tabular`` s will be populated to their maximum before moving on to the next
+        table, in contrast to ``split_into_columns`` which attempts to evenly distribute the rows.
 
         Parameters
         ----------
-        num_rows : int--
-            The maximum number of rows in each `tabular` environment.
+        num_rows : int
+            The maximum number of rows in a given ``tabular``.
         """        
+           
         self.max_rows_before_split = num_rows
 
     def split_into_columns(self, num_columns: int):
-        """Split the data into this many `tabular` environments, distributing the number of rows as evenly as possible. If headers are included, the header row will be repeated at the top of each new `tabular` environment.
+        """Set the number of columns into which the ``tabular`` environment should be split. This is
+        useful for tables which are too wide to fit on a single page, or tables with many rows but
+        few columns. This will override ``split_after_rows``. The data rows will be divided as
+        equally as possible between ``num_columns`` tables, preferentially filling earlier tables. 
+        
 
         Parameters
         ----------
         num_columns : int
-            The number of `tabular` environments into which the data should be split.
+            The number of columns into which the ``tabular`` environment should be split.
         """        
+         
         self.split_table_into_columns = num_columns
 
 
     def to_latex(self) -> str:
+        """Export the ``Table`` object to valid LaTeX markup, paying attention to all formatting
+        options which have been applied. 
+
+        Returns
+        -------
+        str
+            The complete LaTeX markup for the table.
+        """        
 
         container = EmptyEnvironment()
         
@@ -889,60 +998,75 @@ class Table:
 
 
 class Figure:
-
-    """A helper class for generating LaTeX figures."""
+    
 
     def __init__(
         self,
         figure: mplFigure | str = None,
-        caption: str = None,
-        label: str = None,
+        centered: bool = True,
         floating: bool = False,
         floating_position: str = "ht!",
-        centered: bool = True,
+        caption: str = None,
+        label: str = None,
         width: str = None,
         height: str = None,
         scale: str = None
-    ):
-        """Creates a Figure object for storing and manipulating a `matplotlib` figure or image file 
-        to be exported to a LaTeX figure.
+    ):      
+        """The ``Figure`` class is designed to handle the storing and exporting of matplotlib
+        figures and image files to LaTeX markup. Changes to a matplotlib figure associated with
+        a ``Figure`` object can be made either by directly manipulating the ``Figure`` object's
+        ``Figure.figure`` attribute (which is a ``matplotlib.figure.Figure`` object), or by
+        calling a number of convenience functions on the ``Figure`` object itself. The ``Figure``
+        object can be passed directly to ``export()`` to be included in the final document.
+
+        .. warning::
+            It is important to not ``plt.show()`` any figures from within a LaPyX document, as
+            there is no timeout condition during compilation, so the compilation will hang
+            indefinitely while the figure is "shown" in the background.
 
         Parameters
         ----------
-        figure : mplFigure | str, optional
-            The figure to be associated with this object. If this is a string, it will be treated 
-            as a file path to an image. If this is not provided, an active `matplotlib` figure will
-            be found or created, by default None
-        caption : str, optional
-            The caption for the figure. If provided, `floating` will be automatically set to True, 
-            by default None
-        label : str, optional
-            The reference label for the `figure` environment. If provided, `floating` will 
-            automatically be set to `True`. By default None
-        floating : bool, optional
-            If `True`, the resulting image will be eclosed in a `figure` environment. By default 
-            False
-        floating_position : str, optional
-            If `floating`, this will be the positional optional string passed to the `table` 
-            environment. By default "ht!"
-        centered : bool, optional
-            If `True`, the resulting LaTeX table will be centered horizontally, either with 
-            `\\centering` or in a `center` environment, whichever is more appropriate. By default 
-            True
-        width : str, optional
-            Width of the output image. This must include units, but can also include any valid 
-            LaTeX length such as `\\textwidth`. By default None
-        height : str, optional
-            Height of the output image. This must include units, but can also include any valid 
-            LaTeX length such as `\\textwidth`. By default None
-        scale : str, optional
-            Scale of the output image, by default None
+        figure : mplFigure | str, optional, default ``None``
+            The figure to associate with this object. If a string is passed, it will be considered
+            a file path to a valid, LaTeX-compatible image file. If a maptlotlib figure is passed,
+            it will be used directly. If ``None`` is passed, LaPyX will search for any most recently
+            active matplotlib figure, and use that if it exists. If no matplotlib figure is found,
+            a new figure will be created.
+        centered : bool, optional, default ``True``
+            If ``True``, the figure will be centered in the document, either using a ``center``
+            environment, or with the ``\\centering`` macro, depending on whether the figure is
+            floating.
+        floating : bool, optional, default ``False``
+            If ``True``, the figure will be placed in a ``figure`` environment. If ``False``, the
+            figure will simply be a call to ``\\includegraphics`` without the floating ``figure`` 
+            environment.
+        floating_position : str, optional, default ``"ht!"``
+            The optional positional argument to be passed to the ``figure`` environment if the
+            figure is floating. Setting this does not set ``floating`` to ``True``.
+        caption : str, optional, default ``None``
+            The caption to be used for the figure. If ``None``, no caption will be used. Setting 
+            this sets ``floating`` to ``True``.
+        label : str, optional, default ``None``
+            The label to be used for the figure. Setting this sets ``floating`` to ``True``, and 
+            forces an empty caption if ``caption`` is ``None``. 
+        width : str, optional, default ``None``
+            The width of the image in the final figure, i.e. the value of the ``width`` argument
+            passed to ``\\includegraphics``. This must be a valid LaTeX length, i.e. with units or
+            in terms of a LaTeX length macro such as ``\\textwidth``.
+        height : str, optional, default ``None``
+            The height of the image in the final figure, i.e. the value of the ``height`` argument
+            passed to ``\\includegraphics``. This must be a valid LaTeX length, i.e. with units or
+            in terms of a LaTeX length macro such as ``\\textwidth``.
+        scale : str, optional, default ``None``
+            The scale of the image in the final figure, i.e. the value of the ``scale`` argument
+            passed to ``\\includegraphics``. 
+
 
         Raises
         ------
         TypeError
-            If the provided `figure` is not a `matplotlib` figure or a string
-        """        
+            If the ``figure`` argument is provided but is not a string or a matplotlib figure.
+        """          
 
         self.using_file = False  # Using a pre-existing file instead of a new figure
 
@@ -969,19 +1093,21 @@ class Figure:
         self.size = {"width": width, "height": height, "scale": scale}
 
     def set_figure(self, figure: mplFigure | str):
-        """Set the `matplotlib` figure or file path associated with this Figure.
+        """Set the figure associated with this object. If a string is passed, it will be considered
+        a file path to a valid, LaTeX-compatible image file. If a maptlotlib figure is passed, it
+        will be used directly.
 
         Parameters
         ----------
         figure : mplFigure | str
-            The figure to be associated with this object. If this is a string, it will be treated 
-            as a file path to an image.
+            The figure to associate with this object.
 
         Raises
         ------
         TypeError
-            If the provided `figure` is not a `matplotlib` figure or a string
+            If the ``figure`` passed is not a string or a matplotlib figure.
         """        
+               
         if isinstance(figure, mplFigure):
             self.figure = figure
             self.figure_name = self.id
@@ -994,43 +1120,56 @@ class Figure:
             raise TypeError("figure must be a matplotlib figure or a filepath")
 
     def set_caption(self, caption: str):
-        """Set the LaTeX caption for the figure. If it's not already, this will cause the figure to float.
+        """Set the caption for this figure. If the figure is not already floating, it will be made
+        to float unless the ``caption`` is not specified (or ``None``). Passing no caption will
+        remove the caption, but will not unflaot the figure - use ``Figure.flaot(False)`` after the
+        call to ``caption()`` for this.
 
         Parameters
         ----------
         caption : str
-            The caption to include in the output LaTeX.
-        """        
+            The caption to be used for the figure.
+        """
+         
         self.caption = caption
         if caption is not None:
             self.floating = True  # if we have a caption, we need to be floating
 
     def set_label(self, label: str):
-        """Set the LaTeX label for the figure. If it's not already, this will cause the figure to float.
+        """Set the label for this figure. If the figure is not already floating, it will be made
+        to float unless the ``label`` is not specified (or ``None``). Passing no label will remove
+        the label, but will not unflaot the figure - use ``Figure.flaot(False)`` after the call to
+        ``label()`` for this. If a label is specified but no caption is given, a blank caption will 
+        be inserted during compilation.
 
         Parameters
         ----------
         label : str
-            The reference label to include in the output LaTeX.
+            The label to be used for the figure.
         """        
+        
         self.label = label
         if label is not None:
             self.floating = True
 
     def set_size(self, width: float = None, height: float = None, scale: float = None):
-        """Set multiple size parameters for the output image simultaneously.
+        """Set the width, height, and/or scale of the image in the final figure. 
 
         Parameters
         ----------
-        width : float, optional
-            Width of the output image. This must include units, but can also include any valid 
-            LaTeX length such as `\\textwidth`. By default None
-        height : str, optional
-            Height of the output image. This must include units, but can also include any valid 
-            LaTeX length such as `\\textwidth`. By default None
-        scale : str, optional
-            Scale of the output image, by default None
+        width : float, optional, default ``None``
+            The width of the image in the final figure, i.e. the value of the ``width`` argument
+            passed to ``\\includegraphics``. This must be a valid LaTeX length, i.e. with units or
+            in terms of a LaTeX length macro such as ``\\textwidth``.
+        height : float, optional, default ``None``
+            The height of the image in the final figure, i.e. the value of the ``height`` argument
+            passed to ``\\includegraphics``. This must be a valid LaTeX length, i.e. with units or
+            in terms of a LaTeX length macro such as ``\\textwidth``.
+        scale : float, optional, default ``None``
+            The scale of the image in the final figure, i.e. the value of the ``scale`` argument
+            passed to ``\\includegraphics``.
         """        
+            
         if width is not None:
             self.size["width"] = width
         if height is not None:
@@ -1039,61 +1178,68 @@ class Figure:
             self.size["scale"] = scale
 
     def set_width(self, width: float):
-        """Set the width of the output image.
+        """Set the width of the image in the final figure, i.e. the value of the ``width`` argument
+        passed to ``\\includegraphics``. This must be a valid LaTeX length, i.e. with units or
+        in terms of a LaTeX length macro such as ``\\textwidth``.
 
         Parameters
         ----------
         width : float
-            Width of the output image. This must include units, but can also include any valid 
-            LaTeX length such as `\\textwidth`. By default None
+            The width of the image in the final figure.
         """        
+            
         self.set_size(width=width)
 
     def set_height(self, height: float):
-        """Set the height of the output image.
+        """Set the height of the image in the final figure, i.e. the value of the ``height`` argument
+        passed to ``\\includegraphics``. This must be a valid LaTeX length, i.e. with units or
+        in terms of a LaTeX length macro such as ``\\textwidth``.
 
         Parameters
         ----------
         height : float
-            Height of the output image. This must include units, but can also include any valid 
-            LaTeX length such as `\\textwidth`. By default None
+            The height of the image in the final figure.
         """        
+        
         self.set_size(height=height)
 
     def set_scale(self, scale: float):
-        """Set the scale of the output image.
+        """Set the scale of the image in the final figure, i.e. the value of the ``scale`` argument
+        passed to ``\\includegraphics``.
 
         Parameters
         ----------
         scale : float
-            Scale of the output image, by default None
+            The scale of the image in the final figure.
         """        
+        
         self.set_size(scale=scale)
 
     def float(self, floating: bool = True, floating_pos: str = None):
-        """Float the image inside a `figure` environment, optionally specifying the position.
+        """Make the image float by wrapping it in a ``figure`` environment, optionally specifying
+        the float position. 
 
         Parameters
         ----------
-        floating : bool, optional
-            If `True`, the image becomes a float with the `\\includegraphics` macro wrapped in a 
-            `figure` environment. By default True
-        floating_pos : str, optional
-            If provided, sets the position optional argument to the `figure` environment. By 
-            default None
+        floating : bool, optional, default ``True``
+            If ``True``, the image will float. 
+        floating_pos : str, optional, default ``None``
+            The optional position argument passed to the ``figure`` environment. If ``None``, the
+            current position is kept.
         """        
+        
         self.floating = floating
         if floating_pos is not None:
             self.floating_pos = floating_pos
 
     def center(self, centered: bool = True):
-        """Center the table, either with `\\centering` or a `center` environment, depending on 
-        whether the image is a float or not.
+        """Center the figure, either by wrapping the call to ``\\includegraphics`` in a ``center``
+        environment, or using ``\\centering`` if the figure is floating. 
 
         Parameters
         ----------
-        centered : bool, optional
-            If `True`, the figure is centered. By default True
+        centered : bool, optional, default ``True``
+            If ``True``, the figure will be centered.
         """        
         self.centered = centered
 
@@ -1105,96 +1251,192 @@ class Figure:
                 "There is no matplotlib figure associated with this Figure object.")
 
     def plot(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.plot` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().plot``. All arguments and keyword
+        arguments are passed directly to the ``plot`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """
         self.__check_for_figure()
         self.figure.gca().plot(*args, **kwargs)
 
     def scatter(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.scatter` function.
+        """A wrapper for ``matplotlib.figure.Figure.gca().scatter``. All arguments and keyword
+        arguments are passed directly to the ``scatter`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
         """        
         self.__check_for_figure()
         self.figure.gca().scatter(*args, **kwargs)
 
     def errorbar(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.errorbar` function.
-        """
+        """A wrapper for ``matplotlib.figure.Figure.gca().errorbar``. All arguments and keyword
+        arguments are passed directly to the ``errorbar`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """        
+        
         self.__check_for_figure()
         self.figure.gca().errorbar(*args, **kwargs)
 
     def hist(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.hist` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().hist``. All arguments and keyword
+        arguments are passed directly to the ``hist`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().hist(*args, **kwargs)
 
     def imshow(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.imshow` function.
-        """    
+        """A wrapper for ``matplotlib.figure.Figure.gca().imshow``. All arguments and keyword
+        arguments are passed directly to the ``imshow`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().imshow(*args, **kwargs)
 
     def xlabel(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.xlabel` function.    
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().xlabel``. All arguments and keyword
+        arguments are passed directly to the ``xlabel`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().set_xlabel(*args, **kwargs)
 
     def ylabel(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.ylabel` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().ylabel``. All arguments and keyword
+        arguments are passed directly to the ``ylabel`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().set_ylabel(*args, **kwargs)
 
     def title(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.title` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().title``. All arguments and keyword
+        arguments are passed directly to the ``title`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().set_title(*args, **kwargs)
 
     def legend(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.legend` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().legend``. All arguments and keyword
+        arguments are passed directly to the ``legend`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().legend(*args, **kwargs)
 
     def xlim(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.xlim` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().xlim``. All arguments and keyword
+        arguments are passed directly to the ``xlim`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().set_xlim(*args, **kwargs)
 
     def ylim(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.ylim` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().ylim``. All arguments and keyword
+        arguments are passed directly to the ``ylim`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.gca().set_ylim(*args, **kwargs)
 
     def savefig(self, *args, **kwargs):
-        """A wrapper for the `matplotlib.pyplot.savefig` function.
-        """        
+        """A wrapper for ``matplotlib.figure.Figure.gca().savefig``. All arguments and keyword
+        arguments are passed directly to the ``savefig`` function.
+
+        Raises
+        ------
+
+        ValueError
+            If there is no matplotlib figure associated with this Figure object.
+        """      
         self.__check_for_figure()
         self.figure.savefig(*args, **kwargs)
 
     # Any other matplotlib functions should be called on the figure directly, otherwise this will get out of hand
 
     def to_latex(self, base_dir: str, temp_dir: str, **kwargs) -> str:
-        """Convert the figure to LaTeX syntax, obeying all the formatting options set. If there is
-        a matplotlib figure associated with this object, it will be saved to a temporary file with
-        a random file name, then included with `\\includegraphics`.
+        """Export the ``Figure`` object to valid LaTeX markup, paying attention to all formatting 
+        options which have been applied. If the ``Figure`` was initialised with a file path, or
+        has been given a file path with the ``Figure.set_figure`` method, this file will be passed
+        to ``\\includegraphics`` directly. If there is a matplotlib figure associated with this
+        ``Figure``, it will first be saved, with the file path determined by the ``base_dir`` and
+        ``temp_dir`` arguments. Any additional keyword arguments are passed directly to the
+        ``matplotlib.figure.Figure.savefig`` function.
 
+        .. warning::
+            It is advised that you do not call this method directly, and instead pass the ``Figure`` 
+            object to ``export()`` directly. This will ensure that ``base_dir`` and ``temp_dir`` are
+            correctly set, and temporary files can be cleaned after compilation.
+        
         Parameters
         ----------
         base_dir : str
-            The directory in which the original LaPyX file is located.
+            The base directory of the LaTeX document. This will be supplied automatically by the
+            ``export()`` function.
         temp_dir : str
-            The directory and prefix in which to save the temporary files.
+            The temporary directory and prefix for the figure file. This will be supplied automatically
+            by the ``export()`` function.
 
         Returns
         -------
         str
-            The LATeX syntax for the figure.
-        """ 
+            The complete LaTeX markup for the figure.
+        """        
 
         container = EmptyEnvironment()           
 
@@ -1262,6 +1504,17 @@ class Figure:
 class KWArgs:
 
     def __init__(self, args: dict = None):
+        """``KWArgs`` is a helper class for storing key-value paris of LaTeX arguments, and 
+        simplifying the process of converting them to LaTeX markup. ``KWArgs`` will throw an error
+        if an argument is passed which is not a string or an instance of ``Arg`` (or by extension 
+        ``OptArg``).
+
+        Parameters
+        ----------
+        args : dict, optional, default ``None``
+            An initial dictionary of arguments to add to the ``KWArgs`` object. The value of each
+            key-value pair should be a string, or an instance of ``Arg``.
+        """        
         if args is None:
             args = {}
         self.args = args
@@ -1282,20 +1535,64 @@ class KWArgs:
 
 
     def add_argument(self, key: str, value: str):
+        """Add an argument to the ``KWArgs`` object. The value of the argument should be a string,
+        or an instance of ``Arg``.
+
+        Parameters
+        ----------
+
+        key : str
+            The name of the argument.
+        value : str
+            The value of the argument. This should be a string, or an instance of ``Arg``.
+        """
         self.args[key] = value
         self._check_values()
     
     def set_argument(self, key: str, value: str):
+        """Set an argument in the ``KWArgs`` object. If the argument does not already exist, it
+        will be added. The value of the argument should be a string, or an instance of ``Arg``.
+
+        Parameters
+        ----------
+        key : str
+            The name of the argument.
+        value : str
+            The value of the argument. This should be a string, or an instance of ``Arg``.
+        """        
         self.add_argument(key, value)
 
     def remove_argument(self, key: str):
+        """Remove an argument from the ``KWArgs`` object.
+
+        Parameters
+        ----------
+
+        key : str
+            The name of the argument to remove.
+        """
         del self.args[key]
 
     def set_arguments(self, new_values: dict):
+        """Set multiple key-value pairs simultaneously. The values of the arguments should be strings,
+        or instances of ``Arg``. Any keys which already exist will be overwritten.
+
+        Parameters
+        ----------
+        new_values : dict
+            A dictionary of key-value pairs to add to the ``KWArgs`` object.
+        """        
         self.args = {**self.args, **new_values}
         self._check_values()
 
     def remove_arguments(self, keys: List[str]):
+        """Remove multiple arguments from the ``KWArgs`` object.
+
+        Parameters
+        ----------
+        keys : List[str]
+            A list of the names of the arguments to remove.
+        """        
         for key in keys:
             self.remove_argument(key)
 
@@ -1308,17 +1605,45 @@ class KWArgs:
                 arg_strings.append(f"{key} = {{{value}}}")
         return ", ".join(arg_strings)
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
+        """Returns ``True`` if the ``KWArgs`` object is empty, ``False`` otherwise.
+
+        Returns
+        -------
+        bool
+            ``True`` if the ``KWArgs`` object is empty, ``False`` otherwise.
+        """        
         return len(self.args) == 0
 
 class Arg:
 
     brackets = ("{", "}")
 
-    def __init__(self, value: str = None):
+    def __init__(self, value: str | List[str | KWArgs] | KWArgs = None):
+        """``Arg`` is a helper class for storing LaTeX arguments, and simplifying the process of
+        converting them to LaTeX markup. Argument values can only be strings, lists of strings, or
+        ``KWArgs`` instances.
+
+        Parameters
+        ----------
+        value : str | List[str | KWArgs] | KWArgs, optional, default ``None``
+            The value of the argument. This should be a string, list of strings, or ``KWArgs`` instance(s).
+        """        
         self.set_values(value)
     
-    def set_values(self, new_values = None):
+    def set_values(self, new_values: str | List[str | KWArgs] | KWArgs = None):
+        """Set the value(s) of the argument. This will replace any existing values.
+
+        Parameters
+        ----------
+        new_values : str | List[str | KWArgs] | KWArgs, optional, default ``None``
+            The new value(s) to be stored in the argument.
+
+        Raises
+        ------
+        TypeError
+            If a nested list is passed as an argument value.
+        """        
         if new_values is not None:
             if not isinstance(new_values, List):
                 if isinstance(new_values, tuple):
@@ -1338,16 +1663,44 @@ class Arg:
         else:
             self.value = []
 
-    def add_value(self, value: str):
+    def add_value(self, value: str | KWArgs):
+        """Append a single value to the argument.
+
+        Parameters
+        ----------
+        value : str | KWArgs
+            Value to be added to the argument.
+
+        Raises
+        ------
+        TypeError
+            If the new value is not a string or ``KWArgs`` instance.
+        """        
         if isinstance(value, dict):
             value = KWArgs(value)
             self.value.append(value)
             return
         if not isinstance(value, str) and not isinstance(value, KWArgs):
-            raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
+            raise TypeError(f"Value must be a string, dictionary, or ``KWArgs`` instance.")
         self.value.append(value)
     
-    def set_value(self, value: str, index: int):
+    def set_value(self, value: str | KWArgs, index: int):
+        """Set one of the values of the argument at a given index.
+
+        Parameters
+        ----------
+        value : str | KWArgs
+            The new value to be stored in the argument.
+        index : int
+            The which should be replaced.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of values in the argument
+        TypeError
+            If the new value is not a string or ``KWArgs`` instance.
+        """         
         # check if index is in range
         if index >= len(self.value):
             raise IndexError(f"Cannot set value, index {index} is out of range.")
@@ -1359,7 +1712,23 @@ class Arg:
             raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
         self.value[index] = value
     
-    def insert_value(self, value: str, index: int):
+    def insert_value(self, value: str | KWArgs, index: int):
+        """Insert a new value into the argument at a given index.
+
+        Parameters
+        ----------
+        value : str | KWArgs
+            The new value to be stored in the argument.
+        index : int
+            The index at which the value should be inserted.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of values in the argument.
+        TypeError
+            If the new value is not a string or ``KWArgs`` instance.
+        """        
         # check if index is in range
         if index > len(self.value):
             raise IndexError(f"Cannot insert value, index {index} is out of range.")
@@ -1372,6 +1741,18 @@ class Arg:
         self.value.insert(index, value)
     
     def remove_value(self, index: int):
+        """Remove the value at a given index from the argument.
+
+        Parameters
+        ----------
+        index : int
+            The index of the value to be removed.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of values in the argument.
+        """        
         # check if index is in range
         if index >= len(self.value):
             raise IndexError(f"Cannot remove value, index {index} is out of range.")
@@ -1384,6 +1765,10 @@ class Arg:
         return f"Args({self.value})"
 
 class OptArg(Arg):
+    """``OptArg`` extends ``Arg`` to represent optional arguments. It is identical in all aspects
+    except that it uses square brackets instead of curly braces when converting to LaTeX markup.
+    """    
+
     brackets = ("[", "]")
 
     def __repr__(self):
@@ -1409,6 +1794,16 @@ class CommandBase(ABC):
 
 
     def add_argument(self, argument: Arg | OptArg | str, optional: bool = False):
+        """Add an argument to the macro or environment.
+
+        Parameters
+        ----------
+        argument : Arg | OptArg | str
+            Argument to add
+        optional : bool, optional, default ``False``
+            If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
+            ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
+        """        
         if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
             if optional:
                 argument = OptArg(argument)
@@ -1417,6 +1812,23 @@ class CommandBase(ABC):
         self.arguments.append(argument)
     
     def set_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
+        """Set an argument at a given index.
+
+        Parameters
+        ----------
+        argument : Arg | OptArg | str
+            The new argument to be stored.
+        index : int
+            The index of the argument to be replaced.
+        optional : bool, optional, default ``False``
+            If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
+            ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of arguments in the macro or environment.
+        """         
         # Set an option at a specific index. If the index is out of range, raise an error
         if index >= len(self.arguments):
             raise IndexError(f"Cannot set option: index {index} is out of range for options list of length {len(self.arguments)}")
@@ -1428,6 +1840,23 @@ class CommandBase(ABC):
         self.arguments[index] = argument
 
     def insert_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
+        """Insert an argument at a given index, without replacing any existing arguments.
+
+        Parameters
+        ----------
+        argument : Arg | OptArg | str
+            The new argument to be stored.
+        index : int
+            The index at which the argument should be inserted.
+        optional : bool, optional, default ``False``
+            If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
+            ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of arguments in the macro or environment.
+        """        
         # Insert an option at a specific index. If the index is out of range, raise an error
         if index > len(self.arguments):
             raise IndexError(f"Cannot insert option: index {index} is out of range for options list of length {len(self.arguments)}")
@@ -1439,6 +1868,18 @@ class CommandBase(ABC):
         self.arguments.insert(index, argument)
     
     def remove_argument(self, index: int):
+        """Remove the argument at a given index.
+
+        Parameters
+        ----------
+        index : int
+            The index of the argument to be removed.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of arguments in the macro or environment.
+        """        
         # Remove an option at a specific index. If the index is out of range, raise an error
         if index >= len(self.arguments):
             raise IndexError(f"Cannot remove option: index {index} is out of range for options list of length {len(self.arguments)}")
@@ -1454,6 +1895,18 @@ class Macro(CommandBase):
         name: str,
         arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None
     ):
+        """``Macro`` is a helper class for storing and outputting LaTeX macros with (ordered) 
+        optional and required arguments.
+
+        Parameters
+        ----------
+        name : str
+            Name fo the macro as a string, without the leading ``\\``.
+        arguments : Arg | OptArg | str | List[str  |  Arg  |  OptArg], optional, default ``None``
+            A list of arguments to be passed to the macro. Each element should be a string, 
+            ``Arg``, or ``OptArg`` instance. ``KWArgs`` instances must be wrapped in an ``Arg``
+            or ``OptArg`` instance. If a single argument is passed, it will be wrapped in a list.
+        """    
         super().__init__(name, arguments)
 
     def __str__(self):
@@ -1471,6 +1924,28 @@ class Environment(CommandBase):
         content: str | Table | Figure | List[ str | Table | Figure]  = None 
         # can also be Environment or list of Environments, but for type hints only in python >= 3.11   
     ):
+        """A helper class for storing LaTeX environments and their arguments, possibly in a nested 
+        structure.
+
+        Parameters
+        ----------
+        name : str
+            The name of the environment, which will be rendered as ``\\begin{name}`` and
+            ``\\end{name}``.
+        arguments : Arg | OptArg | str | List[str  |  Arg  |  OptArg], optional, default ``None``
+            Argument or list of arguments for the environment. Each element should be a string,
+            ``Arg``, or ``OptArg`` instance. ``KWArgs`` instances must be wrapped in an ``Arg``
+            or ``OptArg`` instance. If a single argument is passed, it will be wrapped in a list.
+        content : str | Table | Figure | Macro | Environment | List[ str  |  Table  |  Figure Macro | Environment], optional, default ``None``
+            The content to be stored in and rendered in the environment. Any ``lapyx.components`` 
+            class is acceptable, except those derived from ``Arg`` or ``KWArgs``, including 
+            other Environments. A list of the same is also acceptable. These will be rendered in 
+            the order in which they are added.
+
+            .. warning::
+                Be careful not to add an ``Environment`` to its own content or that of its
+                children. Recursion is not checked, and will result in an infinite loop.  
+        """        
         super().__init__(name, arguments)
         
         if content is None:
@@ -1480,21 +1955,61 @@ class Environment(CommandBase):
         else:
             self.content = content
     
-    def add_content(self, content: str | Table | Figure):
+    def add_content(self, content: str | Table | Figure | Macro):
+        """Add content to the end of the environment.
+
+        Parameters
+        ----------
+        content : str | Table | Figure | Macro | Environment
+            The new content to be added. Any ``lapyx.components`` class is acceptable, except
+            those derived from ``Arg`` or ``KWArgs``, including other Environments. A list of 
+            the same is also acceptable and will be added in order. This will be appended as the 
+            last item within the environment.
+        """        
         # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
         if isinstance(content, list) or isinstance(content, tuple):
             self.content.extend(content)
         else:
             self.content.append(content)
 
-    def set_content(self, content: str | Table | Figure, index: int):
+    def set_content(self, content: str | Table | Figure | Macro, index: int):
+        """Set the content at a given index.
+
+        Parameters
+        ----------
+        content : str | Table | Figure | Macro | Environment
+            The new content to be stored. Any ``lapyx.components`` class is acceptable, except
+            those derived from ``Arg`` or ``KWArgs``, including other Environments.
+        index : int
+            The index of the content to be replaced.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of content items in the environment.
+        """        
         # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
         # Set an option at a specific index. If the index is out of range, raise an error
         if index >= len(self.content):
             raise IndexError(f"Cannot set content: index {index} is out of range for content list of length {len(self.content)}")
         self.content[index] = content
     
-    def insert_content(self, content: str | Table | Figure, index: int):
+    def insert_content(self, content: str | Table | Figure | Macro, index: int):
+        """Insert content at a given index, without replacing any existing content.
+
+        Parameters
+        ----------
+        content : str | Table | Figure | Macro | Environment
+            The new content to be stored. Any ``lapyx.components`` class is acceptable, except
+            those derived from ``Arg`` or ``KWArgs``, including other Environments.
+        index : int
+            The index at which the content should be inserted.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of content items in the environment.
+        """        
         # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
         # Insert an option at a specific index. If the index is out of range, raise an error, unless the index is the length of the array in which case just append
         if index > len(self.content):
@@ -1502,12 +2017,36 @@ class Environment(CommandBase):
         self.content.insert(index, content)
     
     def remove_content(self, index: int):
+        """Remove the content at a given index.
+
+        Parameters
+        ----------
+        index : int
+            The index of the content to be removed.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of content items in the environment.
+        """        
         # Remove an option at a specific index. If the index is out of range, raise an error
         if index >= len(self.content):
             raise IndexError(f"Cannot remove content: index {index} is out of range for content list of length {len(self.content)}")
         del self.content[index]
 
     def set_parent(self, other):
+        """Adds this environment to the content of another environment.
+
+        Parameters
+        ----------
+        other : Environment
+            The environment to which this environment should be appended as content.
+
+        Raises
+        ------
+        TypeError
+            If the other object is not an ``Environment`` instance.
+        """        
         if not isinstance(other, Environment):
             raise TypeError(f"Cannot set parent: {other} is not an Environment")
         other.add_content(self)
@@ -1523,20 +2062,61 @@ class Environment(CommandBase):
         return start_line + "\n" + mid_lines + "\n" + end_line
     
 class EmptyEnvironment(Environment):
-    def __init__(self, content = None):
+    """``EmptyEnvironment`` is a convenience class for creating an ``Environment`` object which 
+    will not be rendered in the final output, but **will** render its content. This is useful 
+    for consistency within Python, but has exactly the same effect as passing each element of
+    ``content`` to ``export()`` directly.
+
+    Parameters
+    ----------
+    content : str | Table | Figure | Macro | Environment | List[ str  |  Table  |  Figure Macro | Environment], optional, default ``None``
+        The content to be stored in and rendered in the environment. Any ``lapyx.components`` 
+        class is acceptable, except those derived from ``Arg`` or ``KWArgs``, including 
+        other Environments. A list of the same is also acceptable. These will be rendered in 
+        the order in which they are added.
+    """        
+    def __init__(self, content: str | Table | Figure | List[ str | Table | Figure] = None):
         super().__init__(name = None, content = content)
 
     def __str__(self):
         return "\n".join([str(item) for item in self.content])
 
 class Itemize(Environment):
-    def __init__(self, arguments: List = None, content: List = None):
+    def __init__(
+            self, 
+            arguments:  Arg | OptArg | str | List[str | Arg | OptArg] = None, 
+            content: str | Table | Figure | List[ str | Table | Figure]  = None
+        ):
+        """``Itemize`` is a convenience class for creating unordered lists in LaTeX.
+
+        Parameters
+        ----------
+        arguments :  Arg | OptArg | str | List[str | Arg | OptArg] , optional, default ``None``
+            The arguments to be passed to the ``itemize`` environment. 
+        content : str | Table | Figure | Environment | List[ str | Table | Figure | Environment] , optional, default ``None``
+            The content to be added to the ``itemize`` environment. Any ``lapyx.components``
+            class is acceptable, except those derived from ``Arg`` or ``KWArgs``, including
+            other Environments. A list of the same is also acceptable. Unlike other 
+            ``Environments``, a nested list is also acceptable, with each list being rendered as a
+            nested ``itemize`` environment. These will be rendered in the order in which they are 
+            added.
+        """        
         super().__init__(name = "itemize", arguments = arguments)
         
         if content is not None:
             self.add_content(content)
     
-    def add_content(self, content: str | Environment | List[str | Environment]):
+    def add_content(self, content: str | Table | Figure | Macro | Environment | List[str | Table | Figure | Macro | Environment]):
+        """Append content to the ``itemize`` environment.
+
+        Parameters
+        ----------
+        content : str | Table | Figure | Macro | Environment | List[str | Table | Figure | Macro | Environment]
+            The new content to be added. Any ``lapyx.components`` class is acceptable, except
+            those derived from ``Arg`` or ``KWArgs``, including other Environments. A list of the
+            same is also acceptable. Unlike other ``Environments``, a nested list is also
+            acceptable, with each list being rendered as a nested ``itemize`` environment. 
+        """        
         if isinstance(content, list) or isinstance(content, tuple):
             for item in content:
                 if isinstance(item, list) or isinstance(item, tuple):
@@ -1546,7 +2126,24 @@ class Itemize(Environment):
         else:
             self.content.append(content)
     
-    def set_content(self, content: str | Environment | List[str | Environment], index: int):
+    def set_content(self, content: str | Table | Figure | Macro | Environment | List[str | Table | Figure | Macro | Environment], index: int):
+        """Set the content at a given index, replacing the existing content.
+
+        Parameters
+        ----------
+        content : str | Table | Figure | Macro | Environment | List[str | Table | Figure | Macro | Environment]
+            The new content to be added. Any ``lapyx.components`` class is acceptable, except
+            those derived from ``Arg`` or ``KWArgs``, including other Environments. A list of the
+            same is also acceptable. Unlike other ``Environments``, a nested list is also
+            acceptable, with each list being rendered as a nested ``itemize`` environment.
+        index : int
+            The index of the content to be replaced.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of content items in the environment.
+        """        
         if index >= len(self.content):
             raise IndexError(f"Cannot set content: index {index} is out of range for content list of length {len(self.content)}")
         
@@ -1555,7 +2152,24 @@ class Itemize(Environment):
         else:
             self.content[index] = content
 
-    def insert_content(self, content: str | Environment | List[str | Environment], index: int):
+    def insert_content(self, content: str | Table | Figure | Macro | Environment | List[str | Table | Figure | Macro | Environment], index: int):
+        """Insert content at a given index, shifting the existing content to the right.
+
+        Parameters
+        ----------
+        content : str | Table | Figure | Macro | Environment | List[str | Table | Figure | Macro | Environment]
+            The new content to be added. Any ``lapyx.components`` class is acceptable, except
+            those derived from ``Arg`` or ``KWArgs``, including other Environments. A list of the
+            same is also acceptable. Unlike other ``Environments``, a nested list is also
+            acceptable, with each list being rendered as a nested ``itemize`` environment.
+        index : int
+            The index at which the content should be inserted.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of content items in the environment.
+        """        
         if index > len(self.content):
             raise IndexError(f"Cannot insert content: index {index} is out of range for content list of length {len(self.content)}")
         
@@ -1575,23 +2189,21 @@ class Itemize(Environment):
         return start_line + "\n" + mid_lines + "\n" + end_line
 
 class Enumerate(Itemize):
+    """Extends the ``Itemize`` class to create an ``enumerate`` environment, which will render an
+    ordered list. Any automatically generated ``Environment`` s arising from nested lists will also
+    be ``Enumerate`` instances instead of ``Itemize`` instances.
+    """
+
     def __init__(self, arguments: List = None, content: List = None):
         super().__init__(arguments = arguments, content = content)
         self.name = "enumerate"
 
 
-"""
-Subfigures
-- keep multiple figures, but probably not Figures.
-    - Don't need `Figures.floating`, `Figures.floating_pos`, `Figure.centered`
-    - Need to modify to_latex()
-        - now a `subfigure` environment, not `figure`
-        - new alignment positional argument
-    - Assume individual figures are always centered
-
-"""
-
 class Subfigure(Figure):
+    """Extends the ``Figure`` class for correct formatting of subfigures with the ``subcaption``
+    package. The ``subcaption`` package must be loaded in the preamble for this class to work
+    correctly.
+    """   
     def __init__(
         self,
         figure: mplFigure | str | Figure = None,
@@ -1674,9 +2286,24 @@ class Subfigure(Figure):
         return str(fig)
     
     def set_alignment(self, alignment: str = None):
+        """Set the vertical alignment of the subfigures within the outer ``figure`` LaTeX 
+        environment. 
+
+        Parameters
+        ----------
+        alignment : str, optional, default ``None``
+            The alignment optional argument to the ``subfigure`` environment. 
+        """        
         self.alignment = None
 
     def from_Figure(self, figure: Figure):
+        """Create a ``Subfigure`` instance from a ``Figure`` instance. 
+
+        Parameters
+        ----------
+        figure : Figure
+            The source ``Figure`` to be converted.
+        """        
         self.figure = figure.figure
         self.figure_name = figure.figure_name
         self.caption = figure.caption
@@ -1695,6 +2322,35 @@ class Subfigures():
         label: str = None,
         gap: str = None
     ):
+        """Create a ``Subfigures`` instance, which will render a ``figure`` environment with
+        multiple ``subfigure`` s using the ``subcaption`` package. The ``subcaption`` package must
+        be loaded in the preamble for this class to work correctly.
+
+        Parameters
+        ----------
+        figures : List[Subfigure  |  Figure], optional, default ``None``
+            A list of figures to be included. These must be ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instances, not ``matplotlib.figure.Figure`` instances.
+        alignment : str, optional, default ``None``
+            Alignment of the subfigures within the outer ``figure`` LaTeX environment.
+        floating_pos : str, optional, default ``None``
+            The optional positional argument to be passed to the ``figure`` environment if the 
+            figure is floating. Setting this does not set ``floating`` to ``True``.
+        caption : str, optional, default ``None``
+            The caption to be used for the outer ``figure`` environment. Setting this sets
+            ``floating`` to ``True``.
+        label : str, optional, default ``None``
+            The label to be used for the outer ``figure`` environment. Setting this sets
+            ``floating`` to ``True``, and forces an empty caption if ``caption`` is ``None``.
+        gap : str, optional, default ``None``
+            The horizontal gap between each subfigure. This must be a valid LaTeX length.
+
+        Raises
+        ------
+        TypeError
+            If any element of ``figures`` is not a ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instance.
+        """        
         self.figures_list = []
 
         if figures is not None:
@@ -1717,20 +2373,63 @@ class Subfigures():
         self.gap = gap
 
     def set_alignment(self, alignment: str = None):
+        """Set the vertical alignment of the subfigures within the outer ``figure`` LaTeX
+        environment.
+
+        Parameters
+        ----------
+        alignment : str, optional, default ``None``
+            The alignment optional argument to the ``subfigure`` environment.
+        """        
         self.alignment = alignment
         for f in self.figures_list:
             f.set_alignment(alignment)
     
     def set_floating_pos(self, floating_pos: str = None):
+        """Set the position of the outer ``figure`` LaTeX environment.
+
+        Parameters
+        ----------
+        floating_pos : str, optional, default ``None``
+            The optional position argument passed to the ``figure`` environment.
+        """        
         self.floating_pos = floating_pos
 
     def set_caption(self, caption: str = None):
+        """Set the caption of the outer ``figure`` LaTeX environment.
+
+        Parameters
+        ----------
+        caption : str, optional, default ``None``
+            The caption to be used for the outer ``figure`` environment.
+        """
         self.caption = caption
 
     def set_label(self, label: str = None):
+        """Set the label of the outer ``figure`` LaTeX environment.
+
+        Parameters
+        ----------
+        label : str, optional, default ``None``
+            The label to be used for the outer ``figure`` environment.
+        """        
         self.label = label
     
     def add_figure(self, figure: Subfigure | Figure):
+        """Append a new figure to the list of figures.
+
+        Parameters
+        ----------
+        figure : Subfigure | Figure
+            The figure to be added. This must be a ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instance, not a ``matplotlib.figure.Figure`` instance.
+            
+        Raises
+        ------
+        TypeError
+            If ``figure`` is not a ``lapyx.components.Figure`` or ``lapyx.components.Subfigure``
+            instance.
+        """        
         if isinstance(figure, Subfigure):
             self.figures_list.append(figure)
         elif isinstance(figure, Figure):
@@ -1739,6 +2438,20 @@ class Subfigures():
             raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(figure)}")
     
     def add_figures(self, figures: List[Subfigure | Figure]):
+        """Append multiple figures to the list of figures.
+
+        Parameters
+        ----------
+        figures : List[Subfigure  |  Figure]
+            The new figures to be added. These must be ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instances, not ``matplotlib.figure.Figure`` instances.
+
+        Raises
+        ------
+        TypeError
+            If any element of ``figures`` is not a ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instance.
+        """        
         if not isinstance(figures, list) and not isinstance(figures, tuple):
             figures = [figures]
         for f in figures:
@@ -1750,6 +2463,25 @@ class Subfigures():
                 raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(f)}")
         
     def insert_figure(self, figure: Subfigure | Figure, index: int):
+        """Insert a new figure into the list of figures at the specified index, shifting all
+        subsequent figures to the right.
+
+        Parameters
+        ----------
+        figure : Subfigure | Figure
+            The new figure to be inserted. This must be a ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instance, not a ``matplotlib.figure.Figure`` instance.
+        index : int
+            The index at which to insert the new figure.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of figures.
+        TypeError
+            If ``figure`` is not a ``lapyx.components.Figure`` or ``lapyx.components.Subfigure``
+            instance.
+        """        
         if index >= len(self.figures_list):
             raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
         if isinstance(figure, Subfigure):
@@ -1760,6 +2492,25 @@ class Subfigures():
             raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(figure)}")
             
     def insert_figures(self, figures: List[Subfigure | Figure], index: int):
+        """Insert multiple new figures into the list of figures at the specified index, shifting
+        all subsequent figures to the right.
+
+        Parameters
+        ----------
+        figures : List[Subfigure  |  Figure]
+            The new figures to be inserted. These must be ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instances, not ``matplotlib.figure.Figure`` instances.
+        index : int
+            The index at which to insert the new figures.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of figures.
+        TypeError
+            If any element of ``figures`` is not a ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instance.
+        """        
         if index >= len(self.figures_list):
             raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
         if not isinstance(figures, list) and not isinstance(figures, tuple):
@@ -1773,6 +2524,24 @@ class Subfigures():
                 raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(f)}")
     
     def set_figure(self, figure: Subfigure | Figure, index: int):
+        """Replace the figure at the specified index with a new figure.
+
+        Parameters
+        ----------
+        figure : Subfigure | Figure
+            The new figure to be inserted. This must be a ``lapyx.components.Figure`` or
+            ``lapyx.components.Subfigure`` instance, not a ``matplotlib.figure.Figure`` instance.
+        index : int
+            The index of the figure to be replaced.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of figures. 
+        TypeError
+            If ``figure`` is not a ``lapyx.components.Figure`` or ``lapyx.components.Subfigure``
+            instance.
+        """        
         if index >= len(self.figures_list):
             raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
         if isinstance(figure, Subfigure):
@@ -1783,6 +2552,18 @@ class Subfigures():
             raise TypeError(f"Subfigures must be a list of Subfigure objects, not {type(figure)}")
 
     def remove_figure(self, index: int):
+        """Remove the figure at the specified index.
+
+        Parameters
+        ----------
+        index : int
+            The index of the figure to be removed.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range for the number of figures.
+        """        
         if index >= len(self.figures_list):
             raise IndexError(f"Could not insert figure. Index {index} out of range for list of length {len(self.figures_list)}")
         self.figures_list.pop(index)
@@ -1800,6 +2581,39 @@ class Subfigures():
     
         
     def to_latex(self, base_dir: str, temp_dir: str) -> str:
+        """Export the ``Subfigures`` object to valid LaTeX markup, paying attention to all 
+        formatting options which have been applied. Each ``Subfigure`` object within the 
+        ``Subfigures`` instance will be exported according to  
+        ``lapyx.components.Figure.to_latex``, saving the matplotlib figures to a temporary
+        file. 
+
+        .. warning::
+            It is advised that you do not call this method directly, and instead pass the ``Figure`` 
+            object to ``export()`` directly. This will ensure that ``base_dir`` and ``temp_dir`` are
+            correctly set, and temporary files can be cleaned after compilation.
+
+        Parameters
+        ----------
+        base_dir : str
+            The base directory of the LaTeX document. This will be supplied automatically by the
+            ``export()`` function.
+        temp_dir : str
+            The temporary directory and prefix for the figure file. This will be supplied automatically
+            by the ``export()`` function.
+
+        Returns
+        -------
+        str
+            The complete LaTeX markup for the figure and subfigures.
+
+        Raises
+        ------
+        ValueError
+            If the ``Subfigures`` object has no figures.
+        TypeError
+            If the gap cannot be converted to a valid LaTeX length.
+        """        
+        
         
         if len(self.figures_list) == 0:
             raise ValueError("Subfigures must contain at least one figure before being exported")
@@ -1854,34 +2668,3 @@ class Subfigures():
         return str(fig)
         
         
-
-
-
-
-
-
-# class Subfigures(Environment):
-#     def __init__(
-#         self,
-#         figures: List[mplFigure | str | Figure] = None,
-#         caption: str = None,
-#         label: str = None,
-#         floating_position: str = "ht!",
-#         centered: bool = True,
-#         width: str = None,
-#         height: str = None,
-#         scale: str = None
-#     ):
-#         super().__init__(name = "figure")
-#         self.figures_list = []
-#         # subfigures must be floating, so we can ignore the floating argument
-#         if figures is not None:
-#             if not isinstance(figures, list) or not isinstance(figures, tuple):
-#                 raise TypeError(f"Cannot create Subfigures: figures must be a list or tuple, not {type(figures)}")
-#             for figure in figures:
-#                 if isinstance(figure, Figure):
-#                     self.figures_list.append(figure)
-#                 else:
-#                     self.figures_list.append(Figure(figure))
-#             for f in self.figures_list:
-#                 f.name = "subfigure"
