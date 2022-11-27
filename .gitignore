@@ -130,7 +130,9 @@ dmypy.json
 
 testing/
 
-docs/
+docs/build
+docs/docs
+docs/generate*
 
 src/lapyx/markdown.py
 
