@@ -409,3 +409,4 @@ def _compile_latex(file_path: str, verbose: bool = False, quiet: bool = False, o
         raise Exception(result.stdout.decode("utf-8"))
     elif verbose:
         print(result.stdout.decode("utf-8"))
+
