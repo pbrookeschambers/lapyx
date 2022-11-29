@@ -11,7 +11,7 @@ jobs:
           pip install sphinx pydata-sphinx-theme sphinx-copybutton numpydoc numpy pandas matplotlib progressbar2 beautifulsoup4
       - name: Sphinx build
         run: |
-          sphinx-build docs/source _build && cd ./source && python3 ./postprocess.py
+          sphinx-build docs/source _build && cd ./docs/source && python3 ./postprocess.py
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' }}
