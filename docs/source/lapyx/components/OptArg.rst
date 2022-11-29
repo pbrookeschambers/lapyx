@@ -1,3 +1,5 @@
+.. _lapyx.components.OptArg:
+    
 OptArg
 ======
 
@@ -9,6 +11,11 @@ OptArg
     OptArg/set_value
     OptArg/insert_value
     OptArg/remove_value
+
+.. include:: OptArg_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.OptArg
     :members:

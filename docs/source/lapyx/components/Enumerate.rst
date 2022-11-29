@@ -1,3 +1,5 @@
+.. _lapyx.components.Enumerate:
+    
 Enumerate
 =========
 
@@ -13,6 +15,11 @@ Enumerate
     Enumerate/add_content
     Enumerate/set_content
     Enumerate/insert_content
+
+.. include:: Enumerate_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Enumerate
     :members:

@@ -1,3 +1,5 @@
+.. _lapyx.components.EmptyEnvironment:
+    
 EmptyEnvironment
 ================
 
@@ -13,6 +15,11 @@ EmptyEnvironment
     EmptyEnvironment/insert_content
     EmptyEnvironment/remove_content
     EmptyEnvironment/set_parent
+
+.. include:: EmptyEnvironment_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.EmptyEnvironment
     :members:

@@ -1,3 +1,5 @@
+.. _lapyx.components.Subfigure:
+    
 Subfigure
 =========
 
@@ -28,6 +30,11 @@ Subfigure
     Subfigure/center
     Subfigure/set_alignment
     Subfigure/from_Figure
+
+.. include:: Subfigure_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Subfigure
     :members:

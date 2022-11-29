@@ -1,3 +1,5 @@
+.. _RST lapyx.main:
+
 lapyx.main
 ==========
 
@@ -5,6 +7,11 @@ lapyx.main
     :hidden:
 
     main/process_file
+
+.. include:: main_extras.rst
+
+Contents
+--------
 
 .. automodule:: lapyx.main
     :members:

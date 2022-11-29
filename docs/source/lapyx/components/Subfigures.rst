@@ -1,3 +1,5 @@
+.. _lapyx.components.Subfigures:
+    
 Subfigures
 ==========
 
@@ -15,6 +17,11 @@ Subfigures
     Subfigures/set_figure
     Subfigures/remove_figure
     Subfigures/to_latex
+
+.. include:: Subfigures_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Subfigures
     :members:

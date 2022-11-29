@@ -1,3 +1,5 @@
+.. _RST lapyx:
+
 lapyx
 =====
 
@@ -7,6 +9,10 @@ lapyx
     lapyx/components
     lapyx/main
     lapyx/output
+
+.. include:: lapyx_extras.rst
+
+
 
 .. automodule:: lapyx
     :members:

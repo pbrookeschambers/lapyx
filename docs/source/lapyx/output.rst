@@ -1,3 +1,5 @@
+.. _RST lapyx.output:
+
 lapyx.output
 ============
 
@@ -6,6 +8,11 @@ lapyx.output
 
     output/no_export
     output/export
+
+.. include:: output_extras.rst
+
+Contents
+--------
 
 .. automodule:: lapyx.output
     :members:

@@ -1,3 +1,5 @@
+.. _lapyx.components.Arg:
+    
 Arg
 ===
 
@@ -9,6 +11,11 @@ Arg
     Arg/set_value
     Arg/insert_value
     Arg/remove_value
+
+.. include:: Arg_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Arg
     :members:

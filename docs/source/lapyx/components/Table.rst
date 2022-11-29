@@ -1,3 +1,5 @@
+.. _lapyx.components.Table:
+    
 Table
 =====
 
@@ -24,6 +26,11 @@ Table
     Table/split_after_rows
     Table/split_into_columns
     Table/to_latex
+
+.. include:: Table_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Table
     :members:

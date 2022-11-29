@@ -1,3 +1,5 @@
+.. _RST lapyx.components:
+
 lapyx.components
 ================
 
@@ -16,6 +18,11 @@ lapyx.components
     components/Enumerate
     components/Subfigure
     components/Subfigures
+
+.. include:: components_extras.rst
+
+Contents
+--------
 
 .. automodule:: lapyx.components
     :members:

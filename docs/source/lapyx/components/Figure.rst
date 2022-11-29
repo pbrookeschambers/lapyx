@@ -1,3 +1,5 @@
+.. _lapyx.components.Figure:
+    
 Figure
 ======
 
@@ -26,6 +28,11 @@ Figure
     Figure/ylim
     Figure/savefig
     Figure/to_latex
+
+.. include:: Figure_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Figure
     :members:

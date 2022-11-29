@@ -1,3 +1,5 @@
+.. _lapyx.components.KWArgs:
+    
 KWArgs
 ======
 
@@ -10,6 +12,11 @@ KWArgs
     KWArgs/set_arguments
     KWArgs/remove_arguments
     KWArgs/is_empty
+
+.. include:: KWArgs_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.KWArgs
     :members:

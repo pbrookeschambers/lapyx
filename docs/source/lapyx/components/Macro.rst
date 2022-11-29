@@ -1,3 +1,5 @@
+.. _lapyx.components.Macro:
+    
 Macro
 =====
 
@@ -8,6 +10,11 @@ Macro
     Macro/set_argument
     Macro/insert_argument
     Macro/remove_argument
+
+.. include:: Macro_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Macro
     :members:

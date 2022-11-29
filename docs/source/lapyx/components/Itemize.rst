@@ -1,3 +1,5 @@
+.. _lapyx.components.Itemize:
+    
 Itemize
 =======
 
@@ -13,6 +15,11 @@ Itemize
     Itemize/add_content
     Itemize/set_content
     Itemize/insert_content
+
+.. include:: Itemize_extras.rst
+
+Contents
+--------
     
 .. autoclass:: lapyx.components.Itemize
     :members:
