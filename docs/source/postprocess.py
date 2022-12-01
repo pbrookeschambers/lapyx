@@ -95,7 +95,11 @@ def parse_link(link, root_path):
         return link.replace('.', '/') + '.html', external
 
 def main():
-    root_path = '../build/html'
+    # check for ../_build
+    if os.path.isdir('../_build'):
+        root_path = '../_build/html'
+    else:
+        root_path = '../build/html'
     files = get_all_files(root_path)
     for file in progressbar.progressbar(files, redirect_stdout=True):
         replace_codelinks(file, root_path)
