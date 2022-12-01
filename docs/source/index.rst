@@ -7,6 +7,6 @@
 .. toctree::
    :hidden:
 
-   lapyx.rst
+   lapyx
 
 .. include:: lapyx.rst

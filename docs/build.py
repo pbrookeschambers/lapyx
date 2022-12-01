@@ -4,23 +4,42 @@
 import argparse
 import subprocess
 import os
+from termcolor import colored
 
 def parse_args():
     # Parse command line arguments
     # -r, --regenerate: If true, regenerate the entire .rst file structure
+    # -p, --plots: If true, regenerate the plots
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-r", "--regenerate", action="store_true",
                         help="regenerate the entire .rst file structure.")
+    parser.add_argument("-p", "--plots", action="store_true",
+                        help="regenerate the plots.")
+    
     return parser.parse_args()
 
-def build(regenerate: bool):
+def build(regenerate: bool, plots: bool):
+    if plots:
+        separator("Example Plots")
+        os.chdir("source")
+        result = subprocess.run(
+            [
+                "python3", 
+                "./example_figures.py"
+            ]
+        )
+        if result.returncode != 0:
+            raise ValueError("Process failed")
+        os.chdir("..")
+
     if regenerate:
         separator('less')
 
         result = subprocess.run(
             [
                 "lessc",
+                "--verbose",
                 "./source/_static/css/custom.less",
                 "./source/_static/css/custom.css"
             ]
@@ -61,7 +80,7 @@ def build(regenerate: bool):
     
 def main():
     args = parse_args()
-    build(args.regenerate)
+    build(args.regenerate, args.plots)
 
 def separator(string):
     # try getting terminal width, defaulting it to 80 if it fails
@@ -69,7 +88,7 @@ def separator(string):
         term_width = os.get_terminal_size().columns
     except OSError:
         term_width = 80
-    print(f"\n{'| ' + string + ' |':-^{term_width}}\n")
+    print(f"\n{'| ' + colored(string, 'green') + ' |':-^{term_width}}\n")
 
 
 if __name__ == "__main__":

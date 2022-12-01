@@ -1495,7 +1495,7 @@ class Figure:
         else:
             if self.centered:
                 center = Environment("center")
-                container.add(center)
+                container.add_content(center)
                 center.add_content(includegraphics)
             else:
                 container.add_content(includegraphics)
@@ -2084,15 +2084,13 @@ class EmptyEnvironment(Environment):
 class Itemize(Environment):
     def __init__(
             self, 
-            arguments:  Arg | OptArg | str | List[str | Arg | OptArg] = None, 
-            content: str | Table | Figure | List[ str | Table | Figure]  = None
+            content: str | Table | Figure | List[ str | Table | Figure]  = None,
+            arguments:  Arg | OptArg | str | List[str | Arg | OptArg] = None
         ):
         """``Itemize`` is a convenience class for creating unordered lists in LaTeX.
 
         Parameters
         ----------
-        arguments :  Arg | OptArg | str | List[str | Arg | OptArg] , optional, default ``None``
-            The arguments to be passed to the ``itemize`` environment. 
         content : str | Table | Figure | Environment | List[ str | Table | Figure | Environment] , optional, default ``None``
             The content to be added to the ``itemize`` environment. Any ``lapyx.components``
             class is acceptable, except those derived from ``Arg`` or ``KWArgs``, including
@@ -2100,6 +2098,8 @@ class Itemize(Environment):
             ``Environments``, a nested list is also acceptable, with each list being rendered as a
             nested ``itemize`` environment. These will be rendered in the order in which they are 
             added.
+        arguments :  Arg | OptArg | str | List[str | Arg | OptArg] , optional, default ``None``
+            The arguments to be passed to the ``itemize`` environment. 
         """        
         super().__init__(name = "itemize", arguments = arguments)
         
@@ -2194,7 +2194,11 @@ class Enumerate(Itemize):
     be ``Enumerate`` instances instead of ``Itemize`` instances.
     """
 
-    def __init__(self, arguments: List = None, content: List = None):
+    def __init__(
+        self, 
+        content: List = None,
+        arguments: List = None
+    ):
         super().__init__(arguments = arguments, content = content)
         self.name = "enumerate"
 
@@ -2256,9 +2260,11 @@ class Subfigure(Figure):
         includegraphics_opts = KWArgs()
         if self.size["width"] is not None:
             fig.add_argument(self.size["width"])
+            includegraphics_opts.add_argument("width", "\\textwidth")
         else:
             # we *must* have a width, so default to 0.45\\textwidth
             fig.add_argument("0.45\\textwidth")
+            includegraphics_opts.add_argument("width", "\\textwidth")
         if self.size["height"] is not None:
             includegraphics_opts.add_argument("height", self.size["height"])
         if self.size["scale"] is not None:
@@ -2578,7 +2584,15 @@ class Subfigures():
         else:
             raise TypeError("Subfigures must be indexed with an integer or slice")
         
-    
+    # def get_figures(self) -> List[Subfigure]:
+    #     """Return a list of the figures in the subfigure group
+
+    #     Returns
+    #     -------
+    #     List[:class:`lapyx.components.Subfigure`]
+    #         The figures associated with this subfigure group.
+    #     """        
+    #     return self.figures_list
         
     def to_latex(self, base_dir: str, temp_dir: str) -> str:
         """Export the ``Subfigures`` object to valid LaTeX markup, paying attention to all 

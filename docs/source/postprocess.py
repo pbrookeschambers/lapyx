@@ -12,8 +12,8 @@ def get_all_files(path):
     for root, dirs, filenames in os.walk(path):
         for f in filenames:
             if f.endswith('.html'):
-                # if the file was modified within the last 10 seconds, add it
-                if os.path.getmtime(os.path.join(root, f)) > time.time() - 10:
+                # if the file was modified within the last 30 seconds, add it
+                if os.path.getmtime(os.path.join(root, f)) > time.time() - 30:
                     files.append(os.path.join(root, f))
     return files
 
@@ -79,6 +79,9 @@ def parse_link(link, root_path):
             # We don't know what the file is, so we can't do anything
             return "", external
     else:
+        if link.endswith("()"):
+            # it's a function, so file name will not have brackets
+            link = link[:-2]
         if "." not in link:
             # traverse the directory structure recursively to find the file, adding .html extension
             # if it exists, return the file as relative from root_path

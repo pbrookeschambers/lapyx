@@ -1,6 +1,6 @@
 # Contains methods which will be called from within the temporary python file
 
-from lapyx.components import Table, Figure
+from lapyx.components import Table, Figure, Subfigures, Itemize, Enumerate, Environment, Macro, EmptyEnvironment
 
 output_dict = {}
 current_ID = ""
@@ -58,6 +58,11 @@ def export(output: str | Table | Figure, **kwargs) -> None:
     if isinstance(output, Figure):
         output_dict[current_ID].append(output.to_latex(base_dir, temp_dir, **kwargs))
         return
+
+    if isinstance(output, Subfigures):
+        output_dict[current_ID].append(output.to_latex(base_dir, temp_dir, **kwargs))
+        return
+
 
     if isinstance(output, str):
         output_dict[current_ID].append(output)

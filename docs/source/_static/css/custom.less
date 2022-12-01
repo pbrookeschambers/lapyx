@@ -1,3 +1,8 @@
+body {
+  counter-reset: latex-figure-counter latex-table-counter
+    latex-subfigure-counter;
+}
+
 html {
   --ctp-mocha-rosewater: #f5e0dc;
   --ctp-mocha-rosewater-1: #eac3bc;
@@ -423,6 +428,12 @@ html[data-theme="dark"] {
   --color-mantle-3: var(--ctp-mocha-mantle-3);
   --color-mantle-4: var(--ctp-mocha-mantle-4);
   --color-mantle-5: var(--ctp-mocha-mantle-5);
+  --color-lavender: var(--ctp-mocha-lavender);
+  --color-lavender-1: var(--ctp-mocha-lavender-1);
+  --color-lavender-2: var(--ctp-mocha-lavender-2);
+  --color-lavender-3: var(--ctp-mocha-lavender-3);
+  --color-lavender-4: var(--ctp-mocha-lavender-4);
+  --color-lavender-5: var(--ctp-mocha-lavender-5);
 }
 
 html[data-theme="light"] {
@@ -546,6 +557,12 @@ html[data-theme="light"] {
   --color-mantle-3: var(--ctp-latte-mantle-3);
   --color-mantle-4: var(--ctp-latte-mantle-4);
   --color-mantle-5: var(--ctp-latte-mantle-5);
+  --color-lavender: var(--ctp-latte-lavender);
+  --color-lavender-1: var(--ctp-latte-lavender-1);
+  --color-lavender-2: var(--ctp-latte-lavender-2);
+  --color-lavender-3: var(--ctp-latte-lavender-3);
+  --color-lavender-4: var(--ctp-latte-lavender-4);
+  --color-lavender-5: var(--ctp-latte-lavender-5);
 }
 
 html {
@@ -657,9 +674,13 @@ html[data-theme="light"] {
   padding-inline: 1ch;
 }
 
-dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple)
+dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(
+    .simple
+  )
   dt.field-even,
-dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple)
+dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(
+    .simple
+  )
   dt.field-odd {
   border-left: 3px solid var(--color-orange);
   padding-inline: 2ch;
@@ -712,16 +733,17 @@ dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.
   src: url("./fonts/cmunrm.ttf");
 }
 
-.latex {
+.docutils.container.latex {
   font-family: "Computer Modern";
   border-radius: 1ch;
-  border: 1px solid var(--color-overlay);
+  border: 2px solid var(--color-lavender);
   background: var(--color-surface);
-  padding: 2em;
+  padding: 1rem;
   & table.table {
     all: revert;
     border-collapse: collapse;
     font-style: normal;
+    margin-block-end: 1rem;
     & colgroup {
       display: none;
     }
@@ -748,10 +770,69 @@ dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.
       margin: 0px;
     }
   }
+  & > p:last-child {
+    margin-bottom: 0px;
+  }
+  & li > * {
+    margin-inline-start: 1ch;
+  }
+
+  margin-block-end: 1rem;
+}
+
+.latex-figure {
+  & > img {
+    width: 75%;
+  }
+  & > *:last-child {
+    &::before {
+      counter-increment: latex-figure-counter;
+      content: "Figure " counter(latex-figure-counter) ":";
+      margin-inline-end: 2ch;
+      font-weight: bold;
+    }
+  }
+}
+
+.subfigures {
+  counter-reset: latex-subfigure-counter;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4in, 1fr));
+  justify-content: stretch;
+
+  & > *:last-child {
+    grid-column-start: 1;
+    grid-column-end: -1;
+    text-align: center;
+    &::before {
+      counter-increment: latex-figure-counter;
+      content: "Figure " counter(latex-figure-counter) ":";
+      margin-inline-end: 2ch;
+      font-weight: bold;
+    }
+  }
+}
+
+.latex-subfigure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  & > img {
+    width: 100%;
+  }
+  & > *:last-child {
+    &::before {
+      counter-increment: latex-subfigure-counter;
+      content: "(" counter(latex-subfigure-counter, lower-alpha) ")";
+      margin-inline-end: 2ch;
+    }
+  }
 }
 
 .latex.center {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   & > * {
@@ -760,8 +841,8 @@ dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.
 }
 
 mjx-container {
-    font-size: 100% !important;
-    font-family: 'Computer Modern' !important;
+  font-size: 100% !important;
+  font-family: "Computer Modern" !important;
 }
 
 .sidenote {
@@ -770,4 +851,83 @@ mjx-container {
   font-style: italic;
   border-top: 1px solid var(--color-subtext);
   border-bottom: 1px solid var(--color-subtext);
+}
+
+.cli-arg.docutils.container {
+  margin-inline-start: 5ch;
+  & > p:first-child {
+    & code {
+      border: none;
+      background: none;
+      font-weight: bold;
+    }
+  }
+  & > *:not(:first-child) {
+    margin-inline-start: 10ch;
+  }
+}
+
+.highlight button.copybtn {
+  color: var(--color-text) !important;
+  &:hover {
+    &:not(.success) {
+      background-color: var(--color-orange-4);
+    }
+    &.success {
+      background-color: var(--color-green-4);
+    }
+  }
+}
+
+html[data-theme="dark"] .bd-content img:not(.only-dark):not(.dark-light) {
+  background: revert;
+  border-radius: revert;
+}
+
+html[data-theme="dark"] img:not(.only-dark):not(.dark-light) {
+  filter: revert;
+}
+
+html[data-theme="light"] .light-dark-mode.docutils.container {
+  // We're in light mode, so show the first child and hide the last
+  & > *:first-child {
+    // display: revert;
+  }
+  & > *:last-child {
+    display: none;
+  }
+}
+
+html[data-theme="dark"] .light-dark-mode.docutils.container {
+  // We're in dark mode, so show the last child and hide the first
+  & > *:first-child {
+    display: none;
+  }
+  & > *:last-child {
+    // display: revert;
+  }
+}
+
+.bd-article-container {
+  max-width: 100% !important;
+}
+
+.latex.docutils.container ol ol {
+  list-style-type: lower-alpha;
+  & > li::marker {
+    content: "(" counter(list-item, lower-alpha) ") ";
+  }
+}
+
+.example-dropdown {
+  --sd-color-card-border: var(--color-green) !important;
+  & summary {
+    // --pst-sd-dropdown-color: var(--color-green) !important;
+    &::before {
+      opacity: 0.3 !important;
+    }
+  }
+  & .sd-summary-title code {
+    margin-inline: 1ch;
+  }
 }

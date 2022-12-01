@@ -35,7 +35,8 @@ extensions = [
     'numpydoc',
     'sphinx_copybutton',
     'sphinx.ext.napoleon',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.mathjax',
+    'sphinx_design',
     # 'autoapi.extension'
 ]
 
