@@ -4,4 +4,4 @@ LaPyX is a Python library which acts as a preprocessor for LaTeX. It allows for 
 
 -----
 
-LaPyX is a work-in-progress. Please see [the documentation](pbrookeschambers.github.io/lapyx) for more information.
+LaPyX is a work-in-progress. Please see [the documentation](https://pbrookeschambers.github.io/lapyx) for more information.

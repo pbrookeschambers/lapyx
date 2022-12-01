@@ -96,8 +96,8 @@ def parse_link(link, root_path):
 
 def main():
     # check for ../_build
-    if os.path.isdir('../_build'):
-        root_path = '../_build/html'
+    if os.path.isdir('../../_build'):
+        root_path = '../../_build/html'
     else:
         root_path = '../build/html'
     files = get_all_files(root_path)

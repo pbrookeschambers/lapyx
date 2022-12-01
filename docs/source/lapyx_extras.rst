@@ -613,3 +613,38 @@ Two other simple helper classes are included, :codelink:`Itemize` and :codelink:
         #. Black
 
         #. White
+
+Additional Classes
+^^^^^^^^^^^^^^^^^^
+
+In addition to the above, LaPyX provides a few more general helper classes:
+
+:codelink:`Macro`
+#################
+
+A simple class for making the programmatic generation of macros easier, especially the handling of their arguments.
+
+:codelink:`Environment`
+#######################
+
+A class for containing, managing, and exporting LaTeX environments in a nestable, DOM-like way.
+
+:codelink:`EmptyEnvironment`
+############################
+
+An extension of :codelink:`Environment` for managing content without adding any LaTeX markup to the content.
+
+:codelink:`KWArgs`
+##################
+
+A class for managing LaTeX key-value pairs to be passed to macros and environments.
+
+:codelink:`Arg`
+###############
+
+A class for consistent handling of arguments to be passed to macros and environments. This class will mostly be used internally, but is publicly available.
+
+:codelink:`OptArg`
+##################
+
+An extension of :codelink:`Arg` for optional arguments. This class will mostly be used internally, but is publicly available.
