@@ -18,7 +18,7 @@ EmptyEnvironment
 
 .. include:: EmptyEnvironment_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.EmptyEnvironment

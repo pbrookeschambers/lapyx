@@ -18,7 +18,7 @@ Enumerate
 
 .. include:: Enumerate_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.Enumerate

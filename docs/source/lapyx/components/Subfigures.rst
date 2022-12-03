@@ -20,7 +20,7 @@ Subfigures
 
 .. include:: Subfigures_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.Subfigures

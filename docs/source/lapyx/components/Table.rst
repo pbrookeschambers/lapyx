@@ -29,7 +29,7 @@ Table
 
 .. include:: Table_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.Table

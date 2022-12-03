@@ -866,3 +866,9 @@ html[data-theme="dark"] .light-dark-mode.docutils.container > *:first-child {
 .example-dropdown .sd-summary-title code {
   margin-inline: 1ch;
 }
+.bd-page-width {
+  max-width: 100rem !important;
+}
+body > div.bd-container .bd-sidebar-primary {
+  max-width: 20%;
+}

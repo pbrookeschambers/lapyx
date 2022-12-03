@@ -21,7 +21,7 @@ lapyx.components
 
 .. include:: components_extras.rst
 
-Contents
+Contains
 --------
 
 .. automodule:: lapyx.components

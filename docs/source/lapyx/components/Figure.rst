@@ -31,7 +31,7 @@ Figure
 
 .. include:: Figure_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.Figure

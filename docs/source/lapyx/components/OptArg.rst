@@ -14,7 +14,7 @@ OptArg
 
 .. include:: OptArg_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.OptArg

@@ -57,6 +57,10 @@ LaPyX requires Python 3.10 or later. The following are necessary for some functi
 
 LaPyX can be installed using pip:
 
+.. note::
+
+    Coming soon!
+
 .. code-block:: bash
 
     pip install lapyx
@@ -263,245 +267,18 @@ LaPyX provides a number of helper classes to make handling various LaTeX feature
 ``Table``
 ^^^^^^^^^
 
-Creating tables in LaTeX is notoriously annoying. To help alleviate this, LaPyX provides a :codelink:`Table` class which can hold and manipulate data before generating a (optionally floating) tabular environment, with a variety of formatting options. Data can be read form a CSV file, a ``pandas.DataFrame``, ``numpy.ndarray``, or a nested list, or added manually. The following example creates a table of random numbers, then adds a new column with any shared prime factors:
-
-.. dropdown:: Table Example
-    :class-container: example-dropdown
-    :icon: code-square
-    :animate: fade-in-slide-down
-    
-    .. code-block:: python
-
-        \begin{python}
-            import numpy as np
-            from sympy.ntheory import primefactors
-
-            # Create a list of random numbers:
-            rnd = np.random.randint(100, size=(10, 2))
-
-            # Create a table from rnd:
-            table = Table(rnd, headers = ["$R_1$", "$R_2$"])
-
-            # generate the list of prime factors (as strings)
-            factors = []
-            for r1, r2 in rnd:
-                f1, f2 = primefactors(r1), primefactors(r2)
-                # check for any shared factors
-                shared = [str(f) for f in f1 if f in f2]
-                if shared:
-                    factors.append(", ".join(shared))
-                else:
-                    factors.append(r"\textit{none}")
-
-            # Add the new column
-            table.add_column(factors, column_name = "Shared Prime Factors")
-
-            # Add a caption
-            table.set_caption("Random numbers and their shared prime factors")
-
-            # Export the table
-            export(table)
-        \end{python}
-
-    .. container:: latex center
-
-        .. table::
-
-            +--------------+--------------+-----------------------+
-            | :math:`R_1`  | :math:`R_2`  | Shared Prime Factors  |
-            +==============+==============+=======================+
-            | 65           | 93           | *none*                |
-            +--------------+--------------+-----------------------+
-            | 0            | 46           | *none*                |
-            +--------------+--------------+-----------------------+
-            | 80           | 16           | 2                     |
-            +--------------+--------------+-----------------------+
-            | 21           | 7            | 7                     |
-            +--------------+--------------+-----------------------+
-            | 56           | 36           | 2                     |
-            +--------------+--------------+-----------------------+
-            | 71           | 18           | *none*                |
-            +--------------+--------------+-----------------------+
-            | 67           | 89           | *none*                |
-            +--------------+--------------+-----------------------+
-            | 49           | 68           | *none*                |
-            +--------------+--------------+-----------------------+
-            | 42           | 18           | 2, 3                  |
-            +--------------+--------------+-----------------------+
-            | 74           | 48           | 2                     |
-            +--------------+--------------+-----------------------+
-
-        **Table 1**: Random numbers and their shared prime factors
+.. include:: lapyx/components/Table_extras.rst
 
 ``Figure``
 ^^^^^^^^^^
 
-The :codelink:`Figure` class helps to include `matplotlib` figures which are generated within the document, as well as pre-existing image files. The following example generates a random walk and plots it using ``matplotlib`` (with some appropriate styling applied):
+.. include:: lapyx/components/Figure_extras.rst
 
-.. dropdown:: Figure Example
-    :class-container: example-dropdown
-    :icon: code-square
-    :animate: fade-in-slide-down
-    
-
-    .. code-block:: python
-
-        \begin{python}
-            import numpy as np
-            import matplotlib.pyplot as plt
-
-            # Generate a random walk
-            steps = np.random.randint(0, 4, size=100)
-            x = np.cumsum(np.where(steps == 0, -1, np.where(steps == 1, 1, 0)))
-            y = np.cumsum(np.where(steps == 2, -1, np.where(steps == 3, 1, 0)))
-
-            # Plot the walk
-            fig, ax = plt.subplots()
-            ax.plot(x, y)
-            ax.set_aspect("equal")
-            ax.set_title("Random Walk")
-
-            # Create a figure object
-            figure = Figure(fig, caption = "A random walk in 2D")
-
-            # Export the figure
-            export(figure)
-        \end{python}
-
-
-    .. container:: light-dark-mode
-
-        .. container:: latex center latex-figure
-
-            .. image:: assets/figures/light/random_walk.svg
-
-            A random walk in 2D
-
-        .. container:: latex center latex-figure
-
-            .. image:: assets/figures/dark/random_walk.svg
-
-            A random walk in 2D
 
 ``Subfigures``
 ^^^^^^^^^^^^^^
 
-In addition to the ``Figure`` class, LaPyX provides the :codelink:`Subfigures` class for easier grouping and organising of multiple figures. A ``Subfigures`` instance keeps a list of figures (which should be ``Subfigure`` instances, though ``Figure`` instances will usually be converted automatically - see the :codelink:`Subfigure` documentation for more detail). This allows easy modifications to groups of figures, as well as access to the individual captions and group caption. The below example uses a ``Subfigures`` instance to create a :math:`2\times2` grid of random walks:
-
-.. dropdown:: Subfigures Example
-    :class-container: example-dropdown
-    :icon: code-square
-    :animate: fade-in-slide-down
-        
-    .. code-block:: python
-
-        \begin{python}
-            import numpy as np
-            import matplotlib.pyplot as plt
-            
-            def random_walk(steps: int, bias: int, strength: float):
-                # Generate a random walk of `steps` steps with a `strength`% 
-                # chance of moving in the `bias` direction
-                step_dirs = np.random.randint(0, 4, size = steps)
-                bias_mask = np.random.random(size = steps) < strength
-                step_dirs[bias_mask] = bias
-                # Convert the step directions into x and y coordinates. left: 0, up: 1, right: 2, down: 3
-                x = np.cumsum(np.where(step_dirs == 0, -1, np.where(step_dirs == 2, 1, 0)))
-                y = np.cumsum(np.where(step_dirs == 3, -1, np.where(step_dirs == 1, 1, 0)))
-                return x, y
-            
-            # Create the parent Subfigures object
-            parent = Subfigures(caption = "Random walks with differing biases", label = "fig:random_walks")
-
-            figs = []
-            xlims = [0,0]
-            ylims = [0,0]
-            dirs = ["left", "up", "right", "down"]
-            for bias in range(4):
-                mpl_fig = plt.figure()
-                fig = Figure(mpl_fig)
-                for i in range(4):
-                    x, y = random_walk(500, bias, 0.1)
-                    xlims = [min(xlims[0], x.min()), max(xlims[1], x.max())]
-                    ylims = [min(ylims[0], y.min()), max(ylims[1], y.max())]
-                    fig.plot(x, y, label = f"Walk {i + 1}")
-                fig.set_caption(dirs[bias])
-                fig.legend()
-                figs.append(fig)
-            
-            # Add the subfigures to the parent
-            parent.add_figures(figs)
-
-            # set appropriate axis limits
-            xlims = [xlims[0] - 10, xlims[1] + 10]
-            ylims = [ylims[0] - 10, ylims[1] + 10]
-            for fig in parent:
-                fig.xlim(xlims)
-                fig.ylim(ylims)
-
-            parent.set_caption("Random walks with differing biases")
-
-            export(parent)
-        \end{python}
-
-    .. container:: light-dark-mode
-
-        .. container:: latex subfigures
-            
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/light/random_walk_left.svg
-                
-                left
-        
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/light/random_walk_up.svg
-                
-                up
-
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/light/random_walk_right.svg
-                
-                right
-        
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/light/random_walk_down.svg
-                
-                down
-
-            Random walks with differing biases
-
-
-        .. container:: latex subfigures
-
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/dark/random_walk_left.svg
-                
-                left
-        
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/dark/random_walk_up.svg
-                
-                up
-
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/dark/random_walk_right.svg
-                
-                right
-        
-            .. container:: latex-subfigure
-
-                .. image:: assets/figures/dark/random_walk_down.svg
-                
-                down
-
-            Random walks with differing biases
+.. include:: lapyx/components/Subfigures_extras.rst
 
 ``Itemize`` and ``Enumerate``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

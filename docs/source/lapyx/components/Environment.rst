@@ -18,7 +18,7 @@ Environment
 
 .. include:: Environment_extras.rst
 
-Contents
+Contains
 --------
     
 .. autoclass:: lapyx.components.Environment
