@@ -97,9 +97,17 @@ def parse_link(link, root_path):
 def main():
     # check for ../_build
     if os.path.isdir('../../_build'):
-        root_path = '../../_build/html'
+        root_path = '../../_build'
     else:
         root_path = '../build/html'
+
+    print("\n../\n\t", os.listdir("../"))
+    print("\n../../\n\t", os.listdir("../../"))
+    print("\nroot_path\n\t", os.listdir(root_path))
+    print("\n$HOME\n\t", os.environ["HOME"])
+    print("\n$HOME\n\t", os.listdir(os.environ["HOME"]))
+    print("Current directory:\t", os.getcwd())
+    print("File path:\t\t", os.path.realpath(__file__))
     files = get_all_files(root_path)
     for file in progressbar.progressbar(files, redirect_stdout=True):
         replace_codelinks(file, root_path)

@@ -7,12 +7,6 @@
 #### TODO:
 - longtable
 
-### `Figure` class
-
-#### TODO:
-
-- subfigures... This will be a pain
-
 
 ## General
 
@@ -56,7 +50,7 @@
     - Alternative; just implement basics, like bold, italics, lists, inline code, sections etc.
     - Should be able to avoid accidentally parsing non-markdown text as markdown since it will need to be in a `\begin{markdown}...\end{markdown}` environment
 - [ ] Some toggle for using QoLaTeX packages?
-
+- [ ] Add `-u`, `--usepackages` option, to automatically add necessary packages to the preamble if they aren't already included (e.g., subcaption, longtable, enumitem etc.)
 
 ## KWArgs
 
