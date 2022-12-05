@@ -33,7 +33,7 @@ Subfigure
 
 .. include:: Subfigure_extras.rst
 
-Contains
+Contents
 --------
     
 .. autoclass:: lapyx.components.Subfigure

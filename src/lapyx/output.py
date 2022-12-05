@@ -1,5 +1,6 @@
 # Contains methods which will be called from within the temporary python file
 
+from pathlib import Path
 from lapyx.components import Table, Figure, Subfigures, Itemize, Enumerate, Environment, Macro, EmptyEnvironment
 
 output_dict = {}
@@ -13,10 +14,16 @@ should_export = True
 
 
 
-def _init(base_dir_in: str,temp_dir_in: str, prefix_in: str) -> None:
+def _init(base_dir_in: str | Path, temp_dir_in: str | Path, prefix_in: str) -> None:
     global output_dict, temp_dir, prefix, base_dir
-    temp_dir = temp_dir_in
-    base_dir = base_dir_in
+    if isinstance(base_dir_in, str):
+        base_dir = Path(base_dir_in)
+    else:
+        base_dir = base_dir_in
+    if isinstance(temp_dir_in, str):
+        temp_dir = Path(temp_dir_in)
+    else:
+        temp_dir = temp_dir_in
     output_dict = {}
     prefix = prefix_in
 
@@ -88,7 +95,7 @@ def _finish() -> None:
     global output_dict
     global temp_dir
     global prefix
-    with open(os.path.join(temp_dir, f"{prefix}lapyx_output.json"), "w") as output_file:
+    with open(temp_dir / f"{prefix}lapyx_output.json", "w") as output_file:
         json.dump(output_dict, output_file, indent = 2)
     
 

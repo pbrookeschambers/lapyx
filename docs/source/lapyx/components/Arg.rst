@@ -14,7 +14,7 @@ Arg
 
 .. include:: Arg_extras.rst
 
-Contains
+Contents
 --------
     
 .. autoclass:: lapyx.components.Arg

@@ -2,6 +2,7 @@
 
 
 import io
+from pathlib import Path
 from typing import Any, List, Tuple, Type
 from abc import ABC, abstractmethod
 try:
@@ -1440,18 +1441,16 @@ class Figure:
 
         container = EmptyEnvironment()           
 
-        figure_file_name = os.path.join(base_dir, self.figure_name)
+        if isinstance(base_dir, str):
+            base_dir = Path(base_dir)
+        figure_file_name = Path(base_dir, self.figure_name)
         if not self.using_file:
             # if we have a figure, save it to {temp_dir}/lapyx_figures/{id}.pdf
             # create {temp_dir}/lapyx_figures if it doesn't exist
-            if not os.path.exists(os.path.join(temp_dir, "lapyx_figures")):
-                os.mkdir(os.path.join(temp_dir, "lapyx_figures"))
+            if not Path(temp_dir, "lapyx_figures").exists():
+                Path(temp_dir, "lapyx_figures").mkdir()
             if self.figure is not None:
-                figure_file_name = os.path.join(
-                        temp_dir, 
-                        "lapyx_figures", 
-                        f"{self.figure_name}.{kwargs['extension'] if 'extension' in kwargs else 'pdf'}"
-                    )
+                figure_file_name = temp_dir / "lapyx_figures" / f"{self.figure_name}.{kwargs['extension'] if 'extension' in kwargs else 'pdf'}"
                 self.figure.savefig(
                     figure_file_name, 
                     bbox_inches='tight',
@@ -2239,23 +2238,20 @@ class Subfigure(Figure):
         if self.base_dir is None or self.temp_dir is None:
             raise ValueError("Cannot convert subfigure to LaTeX: base_dir and temp_dir must be set")
         fig = Environment("subfigure")
-        figure_file_name = os.path.join(self.base_dir, self.figure_name)
+        figure_file_name = Path(self.base_dir, self.figure_name)
         if not self.using_file:
             # if we have a figure, save it to {temp_dir}/lapyx_figures/{id}.pdf
             # create {temp_dir}/lapyx_figures if it doesn't exist
-            if not os.path.exists(os.path.join(self.temp_dir, "lapyx_figures")):
-                os.mkdir(os.path.join(self.temp_dir, "lapyx_figures"))
+            if not Path(self.temp_dir, "lapyx_figures").exists():
+                Path(self.temp_dir, "lapyx_figures").mkdir()
             if self.figure is not None:
-                figure_file_name = os.path.join(
-                        self.temp_dir, 
-                        "lapyx_figures", 
-                        f"{self.figure_name}.{kwargs['extension'] if 'extension' in kwargs else 'pdf'}"
-                    )
+                figure_file_name = self.temp_dir / "lapyx_figures" / f"{self.figure_name}.{kwargs['extension'] if 'extension' in kwargs else 'pdf'}"
                 self.figure.savefig(
                     figure_file_name, 
                     bbox_inches='tight',
                     **kwargs
                 )
+
 
         includegraphics_opts = KWArgs()
         if self.size["width"] is not None:

@@ -2,6 +2,7 @@
 # extraction and running of the python code, and the generation and
 # compilation of the LaTeX file.
 
+from pathlib import Path
 import random
 import string
 import os
@@ -45,11 +46,12 @@ def _find_matching_bracket(string: str) -> int:
 
 def _set_base_dir() -> None:
     global base_dir
-    base_dir = os.getcwd()
+    # base_dir = os.getcwd()
+    base_dir = Path(__file__).parent.absolute() 
 
 
 def process_file(
-    input_file_path: str,
+    input_file_path: str | Path,
     *,
     compile: bool = True,
     output: str = None,
@@ -98,34 +100,42 @@ def process_file(
     import json
     # set the base_dir
     _set_base_dir()
+    global base_dir
 
-    jobname = os.path.splitext(os.path.basename(input_file_path))[0]
+    if isinstance(input_file_path, str):
+        input_file_path = Path(input_file_path)
+    jobname = input_file_path.stem
 
     if output:
+        if isinstance(output, str):
+            output = Path(output)
         # add .pdf extension if not present
-        output_file_name = output + \
-            (".pdf" if not output.endswith(".pdf") else "")
+        output_file_name = output.with_suffix(".pdf")
     else:
-        output_file_name = jobname + ".pdf"
+        output_file_name = f"{jobname}.pdf"
 
-    temp_dir = base_dir
-    temp_prefix = ""
+    if isinstance(base_dir, str):
+        base_dir = Path(base_dir)
+
     if temp:
-        # if temp is an absolute path
-        if os.path.isabs(temp):
-            prefix = ""
+        # temp is currently a string.
+        if temp.endswith("/"):
+            temp_dir = Path(temp)
+            temp_prefix = ""
         else:
-            prefix = base_dir
-        temp_dir = os.path.abspath(os.path.join(prefix, os.path.dirname(temp)))
-        temp_prefix = os.path.basename(temp)
-        if temp_prefix:
-            temp_prefix += "__"
+            temp = Path(temp)
+            temp_dir = temp.parent
+            temp_prefix = temp.stem
+    else:
+        temp_dir = base_dir
+        temp_prefix = ""
+        
+    temp_prefix += "__"
+
 
     # if temp_dir doesn't exist, create it
-    if not os.path.exists(temp_dir):
-        if verbose:
-            print(f"Creating directory {temp_dir} for temporary files")
-        os.makedirs(temp_dir)
+    if not temp_dir.exists():
+        temp_dir.mkdir(parents=True)
 
     py_out_lines = []
     latex_out_lines = []
@@ -134,15 +144,15 @@ def process_file(
 from lapyx.output import _init, _finish, _setID, export, no_export
 from lapyx.components import *
 
-_init("{base_dir}","{temp_dir}", "{temp_prefix}")
+_init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
 """)
 
     # assume input_file_path is a valid path, checked by the main program
-    with open(input_file_path, "r") as input_file:
+    with input_file_path.open("r") as input_file:
         input_text = input_file.read()
     
     if not quiet:
-        print(f"Found file {input_file_path}, extracting Python code...", end = "", flush = True)
+        print(f"Found file {input_file_path.absolute()}, extracting Python code...", end = "", flush = True)
 
     skip_lines = 0
     input_lines = input_text.splitlines()
@@ -180,11 +190,11 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
         print(" Done")
 
     # write py_out_lines to a temporary file `{temp_dir}/{temp_prefix}lapyx_temp.py`
-    temp_py_file_name = os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.py")
+    temp_py_file_name = temp_dir / f"{temp_prefix}lapyx_temp.py"
     if verbose:
-        print(f"Writing extracted Python code to file {temp_py_file_name}")
+        print(f"Writing extracted Python code to file {temp_py_file_name.absolute()}")
 
-    with open(temp_py_file_name, "w+") as temp_py_file:
+    with temp_py_file_name.open("w") as temp_py_file:
         temp_py_file.write("\n".join(py_out_lines))
 
     # run the temporary python file as a subprocess
@@ -193,7 +203,7 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
     result = subprocess.run(
         [
             "python3",
-            temp_py_file_name
+            temp_py_file_name.absolute()
         ],
         capture_output=True
     )
@@ -211,7 +221,7 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
         else:
             print("Python code produced no output to stdout")
     # read the temporary file `lapyx_output.json`
-    with open(os.path.join(temp_dir, f"{temp_prefix}lapyx_output.json"), "r") as output_file:
+    with (temp_dir / f"{temp_prefix}lapyx_output.json").open("r") as output_file:
         output_json = json.load(output_file)
 
     new_text = "\n".join(latex_out_lines)
@@ -226,10 +236,10 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
 
     # write the new text to the output file `base_dir/lapyx_temp.tex`
-    latex_temp_file_name = os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.tex")
+    latex_temp_file_name = temp_dir / f"{temp_prefix}lapyx_temp.tex"
     if verbose:
         print(f"Writing LaTeX output to file {latex_temp_file_name}")
-    with open(latex_temp_file_name, "w+") as output_file:
+    with latex_temp_file_name.open("w+") as output_file:
         output_file.write(new_text)
 
     if compile:
@@ -240,35 +250,34 @@ _init("{base_dir}","{temp_dir}", "{temp_prefix}")
 
         # move newly-created pdf to `jobname.pdf`
         if verbose:
-            print(f"Moving {latex_temp_file_name[:-4]}.pdf to {output_file_name}")
-        os.rename(os.path.join(temp_dir, f"{temp_prefix}lapyx_temp.pdf"),
-                  os.path.join(base_dir, output_file_name))
+            print(f"Moving {latex_temp_file_name.absolute()[:-4]}.pdf to {output_file_name.absolute()}")
+        (temp_dir / f"{temp_prefix}lapyx_temp.pdf").rename(output_file_name)
     elif not quiet:
         print("Skikping compilation")
 
     if not keep_figures:
         # remove all figures, stored in `temp_dir/lapyx_figures`
         if verbose:
-            print(f"Removing figures in {temp_dir}/lapyx_figures")
+            print(f"Removing figures in {temp_dir.absolute()}/lapyx_figures")
         elif not quiet:
             print("Cleaning temporary figures")
-        figures_dir = os.path.join(temp_dir, "lapyx_figures")
-        if os.path.exists(figures_dir):
-            for file in os.listdir(figures_dir):
-                os.remove(os.path.join(figures_dir, file))
-            os.rmdir(figures_dir)
+        figures_dir = temp_dir / "lapyx_figures"
+        if figures_dir.exists():
+            for file in figures_dir.iterdir():
+                file.unlink()
+            figures_dir.rmdir()
             
     if not debug:
         if not quiet:
             print("Cleaning temporary files")
         # remove any temporary files starting with `lapyx_temp`
-        for file in os.listdir(temp_dir):
-            if file.startswith(f"{temp_prefix}lapyx_temp"):
-                os.remove(os.path.join(temp_dir, file))
-        os.remove(os.path.join(temp_dir, f"{temp_prefix}lapyx_output.json"))
+        for file in temp_dir.iterdir():
+            if file.name.startswith(f"{temp_prefix}lapyx_temp"):
+                file.unlink()
+        (temp_dir / f"{temp_prefix}lapyx_output.json").unlink()
         # if temp_dir is not base_dir, remove it if its empty
-        if temp_dir != base_dir and not os.listdir(temp_dir):
-            os.rmdir(temp_dir)
+        if temp_dir != base_dir and not list(temp_dir.iterdir()):
+            temp_dir.rmdir()
 
 
 
@@ -362,7 +371,7 @@ def _compile_latex(file_path: str, verbose: bool = False, quiet: bool = False, o
         "pdflatex",
         "-interaction=nonstopmode",
         "-output-directory",
-        os.path.dirname(file_path),
+        str(file_path.parent),
         file_path
     ]
 

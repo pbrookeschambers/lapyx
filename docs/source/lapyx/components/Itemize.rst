@@ -18,7 +18,7 @@ Itemize
 
 .. include:: Itemize_extras.rst
 
-Contains
+Contents
 --------
     
 .. autoclass:: lapyx.components.Itemize

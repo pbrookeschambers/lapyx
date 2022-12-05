@@ -13,7 +13,7 @@ Macro
 
 .. include:: Macro_extras.rst
 
-Contains
+Contents
 --------
     
 .. autoclass:: lapyx.components.Macro

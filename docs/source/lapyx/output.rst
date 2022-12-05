@@ -11,7 +11,7 @@ lapyx.output
 
 .. include:: output_extras.rst
 
-Contains
+Contents
 --------
 
 .. automodule:: lapyx.output

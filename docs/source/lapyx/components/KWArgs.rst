@@ -15,7 +15,7 @@ KWArgs
 
 .. include:: KWArgs_extras.rst
 
-Contains
+Contents
 --------
     
 .. autoclass:: lapyx.components.KWArgs

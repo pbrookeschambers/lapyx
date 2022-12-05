@@ -10,16 +10,19 @@ def parse_args():
     # Parse command line arguments
     # -r, --regenerate: If true, regenerate the entire .rst file structure
     # -p, --plots: If true, regenerate the plots
+    # -v, --verbose: If true, print more information
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-r", "--regenerate", action="store_true",
                         help="regenerate the entire .rst file structure.")
     parser.add_argument("-p", "--plots", action="store_true",
                         help="regenerate the plots.")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="print more information.") 
     
     return parser.parse_args()
 
-def build(regenerate: bool, plots: bool):
+def build(regenerate: bool, plots: bool, verbose: bool):
     if plots:
         separator("Example Plots")
         os.chdir("source")
@@ -72,7 +75,8 @@ def build(regenerate: bool, plots: bool):
     result = subprocess.run(
         [
             "python3",
-            "./postprocess.py"
+            "./postprocess.py",
+            "-q" if not verbose else ""
         ]
     )
     if result.returncode != 0:
@@ -80,7 +84,7 @@ def build(regenerate: bool, plots: bool):
     
 def main():
     args = parse_args()
-    build(args.regenerate, args.plots)
+    build(args.regenerate, args.plots, args.verbose)
 
 def separator(string):
     # try getting terminal width, defaulting it to 80 if it fails

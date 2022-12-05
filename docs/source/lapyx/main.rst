@@ -10,7 +10,7 @@ lapyx.main
 
 .. include:: main_extras.rst
 
-Contains
+Contents
 --------
 
 .. automodule:: lapyx.main
