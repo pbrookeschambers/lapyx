@@ -41,7 +41,7 @@ Creating tables in LaTeX is notoriously annoying. To help alleviate this, LaPyX 
             export(table)
         \end{python}
 
-    .. container:: latex center
+    .. container:: latex center latex-table
 
         .. table::
 
@@ -69,4 +69,4 @@ Creating tables in LaTeX is notoriously annoying. To help alleviate this, LaPyX 
             | 74           | 48           | 2                     |
             +--------------+--------------+-----------------------+
 
-        **Table 1**: Random numbers and their shared prime factors
+        Random numbers and their shared prime factors

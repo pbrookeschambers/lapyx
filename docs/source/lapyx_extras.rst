@@ -24,7 +24,7 @@ For example, including the following in a LaTeX document (with a suitable sample
 
 will result in the following table being included in the compiled document, where the column headings were automatically taken from the first row of the CSV file.
 
-.. container:: latex center
+.. container:: latex center latex-table
 
     .. table::
 
@@ -41,6 +41,8 @@ will result in the following table being included in the compiled document, wher
         +---------------------------------+----------------------+----------------------+----------------------+
         | 180                             | 0                    | -1                   | 0                    |
         +---------------------------------+----------------------+----------------------+----------------------+
+
+    Some sample data
 
 Installation
 ------------
@@ -425,3 +427,13 @@ A class for consistent handling of arguments to be passed to macros and environm
 ##################
 
 An extension of :codelink:`Arg` for optional arguments. This class will mostly be used internally, but is publicly available.
+
+Coming Soon
+-----------
+
+The following features are planned for future releases:
+
+* Some caching of output to minimize the overhead added by LaPyX on repeated runs.
+* Following of ``\input`` and ``\include`` commands to allow for the use of external files.
+* Detection of verbatim input and listings to avoid parsing unwanted content.
+* Similar ``markdown`` environment for parsing Markdown content (*potentially; this may be outside the scope of this project*).

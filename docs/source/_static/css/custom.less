@@ -794,6 +794,17 @@ dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(
   }
 }
 
+.latex-table {
+  & > *:last-child {
+    &::before {
+      counter-increment: latex-table-counter;
+      content: "Table " counter(latex-table-counter) ":";
+      margin-inline-end: 2ch;
+      font-weight: bold;
+    }
+  }
+}
+
 .subfigures {
   counter-reset: latex-subfigure-counter;
   display: grid;
@@ -938,4 +949,55 @@ html[data-theme="dark"] .light-dark-mode.docutils.container {
 
 body > div.bd-container .bd-sidebar-primary {
   max-width: 20%;
+}
+
+html[data-theme="light"] .sd-summary-content div.highlight > pre,
+html[data-theme="dark"] .sd-summary-content div.highlight > pre {
+  border-color: var(--color-green);
+}
+
+html[data-theme="light"] div.highlight > pre,
+html[data-theme="dark"] div.highlight > pre {
+  border-radius: 0.5rem;
+  color: var(--color-text);
+
+  & > span.c1 {
+    color: var(--color-subtext-3);
+  }
+
+  & > span.s1,
+  & > span.s2 {
+    color: var(--color-green);
+  }
+
+  & > span.n,
+  & > span.nu,
+  & > span.nn {
+    color: var(--color-text);
+  }
+
+  & > span.p,
+  & > span.nb {
+    color: var(--color-blue);
+  }
+
+  & > span.o {
+    color: var(--color-red);
+  }
+
+  & > span.mi,
+  & > span.mf {
+    color: var(--color-purple);
+  }
+
+  & > span.k,
+  & > span.ow {
+    color: var(--color-blue);
+  }
+
+  & > span.kn,
+  & > span.sa,
+  & > span.si {
+    color: var(--color-red);
+  }
 }
