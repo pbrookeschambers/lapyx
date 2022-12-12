@@ -640,7 +640,7 @@ html[data-theme="dark"] {
   --pst-color-attention: var(--color-yellow) !important;
   --pst-color-text-base: var(--color-text) !important;
   --pst-color-text-muted: var(--color-subtext) !important;
-  --pst-color-shadow: #212121 !important;
+  --pst-color-shadow: var(--color-surface) !important;
   --pst-color-border: var(--color-overlay) !important;
   --pst-color-inline-code: var(--color-orange) !important;
   --pst-color-target: var(--color-orange) !important;
@@ -656,7 +656,7 @@ html[data-theme="light"] {
   --pst-color-attention: var(--color-yellow) !important;
   --pst-color-text-base: var(--color-text) !important;
   --pst-color-text-muted: var(--color-subtext) !important;
-  --pst-color-shadow: #212121 !important;
+  --pst-color-shadow: var(--color-surface) !important;
   --pst-color-border: var(--color-overlay) !important;
   --pst-color-inline-code: var(--color-teal) !important;
   --pst-color-target: var(--color-orange) !important;
@@ -972,7 +972,8 @@ html[data-theme="dark"] div.highlight > pre {
 
   & > span.n,
   & > span.nu,
-  & > span.nn {
+  & > span.nn,
+  & > span.nv {
     color: var(--color-text);
   }
 
@@ -989,7 +990,7 @@ html[data-theme="dark"] div.highlight > pre {
   & > span.mf {
     color: var(--color-purple);
   }
-
+ 
   & > span.k,
   & > span.ow {
     color: var(--color-blue);

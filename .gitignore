@@ -132,7 +132,7 @@ testing/
 
 docs/build
 docs/docs
-docs/generate*
+docs/generate_plan.md
 
 src/lapyx/markdown.py
 

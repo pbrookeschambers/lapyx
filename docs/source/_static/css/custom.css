@@ -631,7 +631,7 @@ html[data-theme="dark"] {
   --pst-color-attention: var(--color-yellow) !important;
   --pst-color-text-base: var(--color-text) !important;
   --pst-color-text-muted: var(--color-subtext) !important;
-  --pst-color-shadow: #212121 !important;
+  --pst-color-shadow: var(--color-surface) !important;
   --pst-color-border: var(--color-overlay) !important;
   --pst-color-inline-code: var(--color-orange) !important;
   --pst-color-target: var(--color-orange) !important;
@@ -646,7 +646,7 @@ html[data-theme="light"] {
   --pst-color-attention: var(--color-yellow) !important;
   --pst-color-text-base: var(--color-text) !important;
   --pst-color-text-muted: var(--color-subtext) !important;
-  --pst-color-shadow: #212121 !important;
+  --pst-color-shadow: var(--color-surface) !important;
   --pst-color-border: var(--color-overlay) !important;
   --pst-color-inline-code: var(--color-teal) !important;
   --pst-color-target: var(--color-orange) !important;
@@ -902,7 +902,9 @@ html[data-theme="dark"] div.highlight > pre > span.n,
 html[data-theme="light"] div.highlight > pre > span.nu,
 html[data-theme="dark"] div.highlight > pre > span.nu,
 html[data-theme="light"] div.highlight > pre > span.nn,
-html[data-theme="dark"] div.highlight > pre > span.nn {
+html[data-theme="dark"] div.highlight > pre > span.nn,
+html[data-theme="light"] div.highlight > pre > span.nv,
+html[data-theme="dark"] div.highlight > pre > span.nv {
   color: var(--color-text);
 }
 html[data-theme="light"] div.highlight > pre > span.p,

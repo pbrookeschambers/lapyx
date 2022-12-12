@@ -47,7 +47,8 @@ def _find_matching_bracket(string: str) -> int:
 def _set_base_dir() -> None:
     global base_dir
     # base_dir = os.getcwd()
-    base_dir = Path(__file__).parent.absolute() 
+    # base_dir = Path(__file__).parent.absolute() 
+    base_dir = Path.cwd()
 
 
 def process_file(
@@ -113,6 +114,7 @@ def process_file(
         output_file_name = output.with_suffix(".pdf")
     else:
         output_file_name = f"{jobname}.pdf"
+        output_file_name = Path(output_file_name)
 
     if isinstance(base_dir, str):
         base_dir = Path(base_dir)
@@ -250,7 +252,7 @@ _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
 
         # move newly-created pdf to `jobname.pdf`
         if verbose:
-            print(f"Moving {latex_temp_file_name.absolute()[:-4]}.pdf to {output_file_name.absolute()}")
+            print(f"Moving {str(latex_temp_file_name.absolute())[:-4]}.pdf to {output_file_name.absolute()}")
         (temp_dir / f"{temp_prefix}lapyx_temp.pdf").rename(output_file_name)
     elif not quiet:
         print("Skikping compilation")
@@ -299,8 +301,8 @@ def _handle_inline_py(line: str, latex_comments: bool = False) -> Tuple[List[str
         # if the code is a single line, does not call export, and does not have an = sign, add export
 
         last_segment = code.split(";")[-1]
-        # if last_segment doesn't have a match to ^\s*\w+?\s*=\s*[\w\(\{\[].*$, add export
-        if len(last_segment.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\w\(\{\[].*$", last_segment):
+        # if last_segment doesn't have a match to ^\s*\w+?\s*=\s*[\"\w\(\{\[].*$, add export
+        if len(last_segment.strip()) > 0 and not re.match(r"^\s*\w+?\s*=\s*[\"\w\(\{\[].*$", last_segment):
             if not last_segment.lstrip().startswith("export(") and not last_segment.lstrip().startswith("import"):
                 last_segment = f"export({last_segment})"
         code = "\n".join(code.split(";")[:-1] + [last_segment])

@@ -2178,6 +2178,8 @@ class Itemize(Environment):
             self.content.insert(index, content)
 
     def __str__(self):
+        if len(self.content) == 0:
+            return ""
         # start_line = f"\\begin{{{self.name}}}{''.join([str(o) for o in self.arguments])}"
         start_line = str(Macro("begin", [self.name] + self.arguments))
         # end_line = f"\\end{{{self.name}}}"

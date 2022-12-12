@@ -39,7 +39,7 @@ def replace_titles_with_links(file, root_path):
     # parse the text as a link with parse_link
     # replace the text with an a tag with the link and original text
     i = 0
-    for span in soup.find_all('span', class_='sig-name descname'):
+    for span in soup.find_all('span', class_ = 'sig-name descname'):
         # get the span inside the span
         inner_span = span.find('span')
         # get the text
@@ -47,10 +47,20 @@ def replace_titles_with_links(file, root_path):
         # parse the text as a link
         try:
             url, external = parse_link(text, file.parent)
-        except FileNotFoundError:
-            # print the error, print the original span, and continue
-            print(f"Could not find file for link {text}")
-            print(span)
+        except FileNotFoundError as e:
+            # print(e)
+            # get the line number of the span in the original file
+            i = 0
+            with open(file, 'r') as f:
+                found = False
+                for line in f:
+                    i += 1
+                    if str(span) in line:
+                        found = True
+                        break
+            if not found:
+                i = -1
+            print(f"Could not find link for {text} in file {file} at line {i}.")
             continue
         # if the url and the file are the same, continue
         url = str(url).strip()
@@ -64,11 +74,12 @@ def replace_titles_with_links(file, root_path):
             a['target'] = '_blank'
         a.string = text
         inner_span.replace_with(a)
+
     if i > 0 and not quiet:
         print(f"Found {i} class or function link{'s' if i > 1 else ''} in file {file}")
         # Write the new html to the file
-        with open(file, 'w') as f:
-            f.write(str(soup))
+    with open(file, 'w') as f:
+        f.write(str(soup))
 
 def replace_codelinks(file, root_path):
     global quiet
@@ -117,9 +128,9 @@ def replace_codelinks(file, root_path):
 
     if i > 0 and not quiet:
         print(f"Found {i} codelink{'s' if i > 1 else ''} in file {file}")
-        # Write the new html to the file
-        with open(file, 'w') as f:
-            f.write(str(soup))
+    # Write the new html to the file
+    with open(file, 'w') as f:
+        f.write(str(soup))
 
 def parse_link(link, root_path):
     # link could be a file, file and header, header, or a python module, class or function.
@@ -160,7 +171,7 @@ def parse_link(link, root_path):
                     # return the path relative to the root_path
                     return path.relative_to(root_path), external
 
-            raise FileNotFoundError(f"Could not find file for link {link}")
+            raise FileNotFoundError(f"Could not find file for link `{link}`")
         return link.replace('.', '/') + '.html', external
 
 def main():
