@@ -51,6 +51,11 @@
     - Should be able to avoid accidentally parsing non-markdown text as markdown since it will need to be in a `\begin{markdown}...\end{markdown}` environment
 - [ ] Some toggle for using QoLaTeX packages?
 - [ ] Add `-u`, `--usepackages` option, to automatically add necessary packages to the preamble if they aren't already included (e.g., subcaption, longtable, enumitem etc.)
+- [ ] Add a submodule specifically for tikz commands
+- [ ] Arg, OptArg, and KWArg are quite annoying to use - fix this
+    - Make it easier to manage arguments on the Macro/Environment object instead
+- [ ] Add a `Length` class to `components`
+- [ ] New submodule `preamble`
 
 ## KWArgs
 

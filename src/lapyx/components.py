@@ -5,6 +5,9 @@ import io
 from pathlib import Path
 from typing import Any, List, Tuple, Type
 from abc import ABC, abstractmethod
+
+from .exceptions import LatexParsingError
+
 try:
     import numpy as np
     has_numpy = True
@@ -19,7 +22,7 @@ except ImportError:
 
 import csv
 
-from lapyx.main import _generate_ID
+from .main import EnumEx, _generate_ID
 
 try:
     from matplotlib.figure import Figure as mplFigure
@@ -1791,8 +1794,25 @@ class CommandBase(ABC):
         for a in arguments:
             self.add_argument(a)
 
+    def add_optional_argument(self, argument: str | Arg | OptArg | dict | List[str]):
+        """Add an optional argument to the macro or environment.
 
-    def add_argument(self, argument: Arg | OptArg | str, optional: bool = False):
+        Parameters
+        ----------
+        argument : str | Arg | OptArg | dict | List[str | Arg | OptArg]
+            Argument to add
+        """        
+        if isinstance(argument, dict):
+            argument = KWArgs(dict)
+        if isinstance(argument, list) or isinstance(argument, tuple):
+            argument = OptArg(argument)
+        elif isinstance(argument, Arg):
+            argument = OptArg(argument.value)
+        else:
+            argument = OptArg(str(argument))
+        self.arguments.append(argument)
+
+    def add_argument(self, argument: str | Arg | OptArg | dict | List[str], optional: bool = False):
         """Add an argument to the macro or environment.
 
         Parameters
@@ -1803,11 +1823,17 @@ class CommandBase(ABC):
             If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
             ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
         """        
-        if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
-            if optional:
-                argument = OptArg(argument)
-            else:
-                argument = Arg(argument)
+        if optional:
+            self.add_optional_argument(argument)
+            return
+        if isinstance(argument, dict):
+            argument = KWArgs(dict)
+        if isinstance(argument, list) or isinstance(argument, tuple):
+            argument = Arg(argument)
+        elif isinstance(argument, OptArg):
+            argument = Arg(argument.value)
+        else:
+            argument = Arg(str(argument))
         self.arguments.append(argument)
     
     def set_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
@@ -2678,5 +2704,4 @@ class Subfigures():
             fig.add_content(Macro("label", self.label))
         
         return str(fig)
-        
         
