@@ -3,11 +3,102 @@
 from __future__ import annotations
 
 from typing import List
-from .main import EnumEx
+
+import random
+import string
+from enum import Enum
+
 from .exceptions import LatexParsingError
 
 
+class EnumEx(Enum):
+    # Extended enum class that allows for comparison with integers and other enums more consistently
+    def __eq__(self, other):
+        from enum import Enum
+        # return self is other or (type(other) == Enum and self.value == other.value) or (type(other) == int and self.value == other)
+        if isinstance(other, EnumEx) or isinstance(other, Enum):
+            return self is other or self.value == other.value
+        if isinstance(other, int):
+            return self.value == other
+        if isinstance(other, str):
+            return self.name.lower() == other.lower()
+        return False
 
+    def __int__(self):
+        return self.value
+
+    def __add__(self, other):
+        if type(other) == type(self):
+            return self.value + other.value
+        return self.value + other
+
+    def __sub__(self, other):
+        if type(other) == type(self):
+            return self.value - other.value
+        return self.value - other
+
+    def __mul__(self, other):
+        if type(other) == type(self):
+            return self.value * other.value
+        return self.value * other
+
+    def __truediv__(self, other):
+        if type(other) == type(self):
+            return self.value / other.value
+        return self.value / other
+
+    def __str__(self):
+        return f"{self.name}: \t{self.value}"
+
+    def __gt__(self, other):
+        if type(other) == type(self):
+            return self.value > other.value
+        return self.value > other
+
+    def __lt__(self, other):
+        if type(other) == type(self):
+            return self.value < other.value
+        return self.value < other
+
+    def __ge__(self, other):
+        if type(other) == type(self):
+            return self.value >= other.value
+        return self.value >= other
+
+    def __le__(self, other):
+        if type(other) == type(self):
+            return self.value <= other.value
+        return self.value <= other
+
+    def __ne__(self, other):
+        if type(other) == type(self):
+            return self.value != other.value
+        return self.value != other
+
+def _generate_ID() -> str:  
+    return ''.join(
+        random.choice(
+            string.ascii_uppercase
+            + string.ascii_lowercase
+            + string.digits
+        ) for _ in range(10))
+
+def _find_matching_bracket(string: str) -> int:
+    bracketPairs = {
+        "{": "}",
+        "[": "]",
+        "(": ")"
+    }
+    endBracket = bracketPairs[string[0]]
+    bracketCount = 1
+    for i in range(1, len(string)):
+        if string[i] == string[0]:
+            bracketCount += 1
+        elif string[i] == endBracket:
+            bracketCount -= 1
+        if bracketCount == 0:
+            return i
+    return None
 
 def split_at_char_outside_bracket(string: str, split_char: str) -> List[str]:
     # find the first instance of split_char that is not inside a bracket
@@ -40,7 +131,6 @@ def split_at_char_outside_bracket(string: str, split_char: str) -> List[str]:
     else:
         return [string.strip(), ""]
 
-
 class KeyVal:
 
     # self._key is always a string
@@ -63,7 +153,7 @@ class KeyVal:
             self._value = None
     
     @staticmethod
-    def parse_value(value: str) -> str | Length | Arg:
+    def parse_value(value: str) -> str | Arg:
         if value is None or value == "":
             return None
         
@@ -150,7 +240,6 @@ class KeyVal:
             raise LatexParsingError(f"Value must be an Arg, not {type(new_value)}")
         # current value *must* be an Arg, so just update it
         self._value.update(new_value)
-
 
 class Arg:
     # Contains a list of KeyVal objects, some of which may have a value of None
@@ -350,231 +439,3 @@ class Arg:
 
 
     
-
-
-# def options_to_dict(options: str) -> dict:
-#     # options will be a string of the form
-#     # "key1, key2=value2, key3={value3}, key4={value4, subkey1: subvalue1, subkey2: subvalue2}"
-#     # This should be parsed into a dictionary: {"key1": None, "key2": value2, "key3": value3, "key4": {subkey1: subvalue1, subkey2: subvalue2}}
-#     if options is None or options == "":
-#         return {}
-
-#     parsed_options = {}
-
-#     while len(options) > 0:
-#         # First, we remove any leading whitespace
-#         options = options.lstrip()
-
-#         # Now we can split the string at the first comma
-#         # We need to make sure that the comma is not inside a bracket or quotation mark
-#         # We can use a stack to keep track of the brackets and quotation marks
-#         stack = []
-#         for i, char in enumerate(options):
-#             if char in ["[", "{", "("]:
-#                 stack.append(char)
-#             elif char in ["]", "}", ")"]:
-#                 stack.pop()
-#             elif char == ",":
-#                 if len(stack) == 0:
-#                     # We have found the first comma that is not inside a bracket or quotation mark
-#                     break
-#         else:
-#             # We have reached the end of the string without finding a comma
-#             i = len(options)
-
-#         # Now we can split the string at the comma
-#         option = options[:i]
-#         options = options[i+1:]
-
-#         # Now we can split the option at the equals sign
-#         # We need to make sure that the equals sign is not inside a bracket or quotation mark
-#         # We can use a stack to keep track of the brackets and quotation marks
-#         stack = []
-#         for i, char in enumerate(option):
-#             if char in ["[", "{", "("]:
-#                 stack.append(char)
-#             elif char in ["]", "}", ")"]:
-#                 stack.pop()
-#             elif char == "=":
-#                 if len(stack) == 0:
-#                     # We have found the equals sign that is not inside a bracket or quotation mark
-#                     break
-#         else:
-#             # We have reached the end of the string without finding an equals sign
-#             i = len(option)
-
-#         # Now we can split the string at the equals sign
-#         key = option[:i].strip()
-#         # check if there is a value
-#         if i < len(option):
-#             value = option[i+1:].strip()
-#         else:
-#             value = None
-        
-#         # Now we can parse the value
-#         if value is not None:
-#             # check if the value is a dictionary
-#             if value.startswith("{"):
-#                 # we need to parse the value into a dictionary
-#                 value = options_to_dict(value[1:-1])
-#             elif value.startswith("["):
-#                 # we need to parse the value into a list
-#                 value = options_to_dict(value[1:-1])
-#             elif value.startswith("("):
-#                 # we need to parse the value into a tuple
-#                 value = options_to_dict(value[1:-1])
-#             elif value.startswith('"') and value.endswith('"'):
-#                 # we need to remove the quotation marks
-#                 value = value[1:-1]
-#             elif value.startswith("'") and value.endswith("'"):
-#                 # we need to remove the quotation marks
-#                 value = value[1:-1]
-#             else:
-#                 # value could be string, int, float, or length. Try int, then float, then length
-#                 try:
-#                     value = int(value)
-#                 except ValueError:
-#                     try:
-#                         value = float(value)
-#                     except ValueError:
-#                         try:
-#                             value = Length(value)
-#                         except ValueError:
-#                             # value is a string
-#                             pass
-        
-#         # Now we can add the key-value pair to the dictionary
-#         parsed_options[key] = value
-
-#     return parsed_options
-
-# def dict_to_latex(dictionary: dict) -> str:
-#     # Convert a dictionary to a string of LaTeX options, recursively. Keys with a value of None will be passed as just the key
-#     # e.g. {"key1": "value1", "key2": {"subkey1": "subvalue1", "subkey2": None}} -> "key1 = value1, key2 = {subkey1 = subvalue1, subkey2}"
-#     if dictionary is None or len(dictionary) == 0:
-#         return ""
-#     if isinstance(dictionary, str):
-#         return dictionary
-#     options_str = []
-#     for key, value in dictionary.items():
-#         if value is None:
-#             options_str.append(key)
-#         elif isinstance(value, dict):
-#             if len(value) == 0:
-#                 options_str.append(key)
-#             else:
-#                 options_str.append(f"{key} = {{{dict_to_latex(value)}}}")
-#         else:
-#             options_str.append(f"{key} = {value}")
-#     return ", ".join(options_str)
-
-
-
-class Unit(EnumEx):
-    # LaTeX length units
-    PT = 0
-    MM = 1
-    CM = 2
-    IN = 3
-    BP = 4
-    PC = 5
-    DD = 6
-    EX = 7
-    EM = 8
-
-class Length:
-
-    def __init__(self, value: str | float, unit: str | Unit = None):
-        if isinstance(value, int) or isinstance(value, float):
-            self.value = value
-            if unit is None:
-                self.unit = Unit.CM # default unit
-            else:
-                if isinstance(unit, str):
-                    self.unit = Unit(unit.upper())
-                else:
-                    self.unit = unit
-        if isinstance(value, str):
-            # if it ends with a unit symbol, use that
-            for unit in Unit:
-                if value.lower().endswith(unit.name.lower()):
-                    self.value = float(value[:-len(unit.name.lower())])
-                    self.unit = unit
-                    return
-
-            # otherwise, assume cm
-            try: 
-                self.value = float(value)
-                self.unit = Unit.CM
-            except ValueError:
-                raise LatexParsingError(f"Could not parse length {value}")
-    
-    def __str__(self):
-        return f"{self.value}{self.unit.name.lower()}"
-
-    def __repr__(self):
-        return f"Length({self.value}, {self.unit.name.lower()})"
-
-    def _value_as_pt(self):
-        # values taken from https://tex.stackexchange.com/a/113513
-        # convert to pt
-        if self.unit == Unit.PT:
-            return self.value
-        elif self.unit == Unit.MM:
-            return self.value * 7227 / 2540
-        elif self.unit == Unit.CM:
-            return self.value * 7227 / 254
-        elif self.unit == Unit.IN:
-            return self.value * 7227 / 100
-        elif self.unit == Unit.BP:
-            return self.value * 803 / 800
-        elif self.unit == Unit.PC:
-            return self.value * 12
-        elif self.unit == Unit.DD:
-            return self.value * 1238 / 1157
-        elif self.unit == Unit.EX:
-            # use standard font size of 12
-            return self.value * 35271 / 8192
-        elif self.unit == Unit.EM:
-            # use standard font size of 12
-            return self.value * 655361 / 65536
-        else:
-            raise ValueError(f"Unknown unit {self.unit.name}")
-
-    @staticmethod
-    def _pt_to_unit(value: float, unit: Unit | str):
-        if isinstance(unit, str):
-            unit = Unit(unit.upper())
-        # convert to pt
-        if unit == Unit.PT:
-            return value
-        elif unit == Unit.MM:
-            return value * 2540 / 7227
-        elif unit == Unit.CM:
-            return value * 254 / 7227
-        elif unit == Unit.IN:
-            return value * 100 / 7227
-        elif unit == Unit.BP:
-            return value * 800 / 803
-        elif unit == Unit.PC:
-            return value / 12
-        elif unit == Unit.DD:
-            return value * 1157 / 1238
-        elif unit == Unit.EX:
-            # use standard font size of 12
-            return value * 8192 / 35271
-        elif unit == Unit.EM:
-            # use standard font size of 12
-            return value * 65536 / 655361
-        else:
-            raise ValueError(f"Unknown unit {unit.name}")
-
-
-    def convert_to(self, unit: Unit | str):
-        if isinstance(unit, str):
-            unit = Unit(unit.upper())
-        if self.unit == unit:
-            return self
-        
-        return Length(self._pt_to_unit(self._value_as_pt(), unit), unit)
-        

@@ -138,3 +138,5 @@ src/lapyx/markdown.py
 
 numpy_defaults.mustache
 .vscode
+
+overview/

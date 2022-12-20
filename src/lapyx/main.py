@@ -2,110 +2,23 @@
 # extraction and running of the python code, and the generation and
 # compilation of the LaTeX file.
 
-from enum import Enum
 from pathlib import Path
-import random
-import string
-import os
 import subprocess
 from typing import List, Tuple
 import re
+
+from .parsing import _generate_ID, _find_matching_bracket
+from .exceptions import LatexParsingError
+
 
 base_dir = ""
 py_block_start = r"\begin{python}"
 py_block_end = r"\end{python}"
 inline_py_start = r"\py{"
 
-class EnumEx(Enum):
-    # Extended enum class that allows for comparison with integers and other enums more consistently
-    def __eq__(self, other):
-        from enum import Enum
-        # return self is other or (type(other) == Enum and self.value == other.value) or (type(other) == int and self.value == other)
-        if isinstance(other, EnumEx) or isinstance(other, Enum):
-            return self is other or self.value == other.value
-        if isinstance(other, int):
-            return self.value == other
-        if isinstance(other, str):
-            return self.name.lower() == other.lower()
-        return False
-
-    def __int__(self):
-        return self.value
-
-    def __add__(self, other):
-        if type(other) == type(self):
-            return self.value + other.value
-        return self.value + other
-
-    def __sub__(self, other):
-        if type(other) == type(self):
-            return self.value - other.value
-        return self.value - other
-
-    def __mul__(self, other):
-        if type(other) == type(self):
-            return self.value * other.value
-        return self.value * other
-
-    def __truediv__(self, other):
-        if type(other) == type(self):
-            return self.value / other.value
-        return self.value / other
-
-    def __str__(self):
-        return f"{self.name}: \t{self.value}"
-
-    def __gt__(self, other):
-        if type(other) == type(self):
-            return self.value > other.value
-        return self.value > other
-
-    def __lt__(self, other):
-        if type(other) == type(self):
-            return self.value < other.value
-        return self.value < other
-
-    def __ge__(self, other):
-        if type(other) == type(self):
-            return self.value >= other.value
-        return self.value >= other
-
-    def __le__(self, other):
-        if type(other) == type(self):
-            return self.value <= other.value
-        return self.value <= other
-
-    def __ne__(self, other):
-        if type(other) == type(self):
-            return self.value != other.value
-        return self.value != other
 
 
-def _generate_ID() -> str:  
-    return ''.join(
-        random.choice(
-            string.ascii_uppercase
-            + string.ascii_lowercase
-            + string.digits
-        ) for _ in range(10))
 
-
-def _find_matching_bracket(string: str) -> int:
-    bracketPairs = {
-        "{": "}",
-        "[": "]",
-        "(": ")"
-    }
-    endBracket = bracketPairs[string[0]]
-    bracketCount = 1
-    for i in range(1, len(string)):
-        if string[i] == string[0]:
-            bracketCount += 1
-        elif string[i] == endBracket:
-            bracketCount -= 1
-        if bracketCount == 0:
-            return i
-    return None
 
 
 def _set_base_dir() -> None:

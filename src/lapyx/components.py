@@ -4,9 +4,10 @@
 import io
 from pathlib import Path
 from typing import Any, List, Tuple, Type
-from abc import ABC, abstractmethod
 
 from .exceptions import LatexParsingError
+from .environments import Environment, Container, Macro
+from .parsing import Arg, KeyVal, EnumEx, _generate_ID
 
 try:
     import numpy as np
@@ -22,7 +23,6 @@ except ImportError:
 
 import csv
 
-from .main import EnumEx, _generate_ID
 
 try:
     from matplotlib.figure import Figure as mplFigure
@@ -30,7 +30,6 @@ try:
     has_matplotlib = True
 except ImportError:
     has_matplotlib = False
-import os
 
 
 class Table:    
@@ -879,7 +878,7 @@ class Table:
             The complete LaTeX markup for the table.
         """        
 
-        container = EmptyEnvironment()
+        container = Container()
         
         if self.split_table_into_columns is not None:
             # work out how many rows should be in each column to be most evenly distributed
@@ -1442,7 +1441,7 @@ class Figure:
             The complete LaTeX markup for the figure.
         """        
 
-        container = EmptyEnvironment()           
+        container = Container()           
 
         if isinstance(base_dir, str):
             base_dir = Path(base_dir)
@@ -1503,614 +1502,12 @@ class Figure:
                 container.add_content(includegraphics)
         return str(container)
 
-class KWArgs:
-
-    def __init__(self, args: dict = None):
-        """``KWArgs`` is a helper class for storing key-value paris of LaTeX arguments, and 
-        simplifying the process of converting them to LaTeX markup. ``KWArgs`` will throw an error
-        if an argument is passed which is not a string or an instance of ``Arg`` (or by extension 
-        ``OptArg``).
-
-        Parameters
-        ----------
-        args : dict, optional, default ``None``
-            An initial dictionary of arguments to add to the ``KWArgs`` object. The value of each
-            key-value pair should be a string, or an instance of ``Arg``.
-        """        
-        if args is None:
-            args = {}
-        self.args = args
-        self._check_values()
-        
-    def _check_values(self):
-
-        #check that all values are either strings or `Arg` instances
-        for key, value in self.args.items():
-            if  (
-                not isinstance(value, str) and 
-                not isinstance(value, int) and
-                not isinstance(value, float) and
-                not isinstance(value, bool) and 
-                not isinstance(value, Arg) 
-            ):
-                raise TypeError(f"Value for argument {key} must be a string or an `Arg` instance.")
-
-
-    def add_argument(self, key: str, value: str):
-        """Add an argument to the ``KWArgs`` object. The value of the argument should be a string,
-        or an instance of ``Arg``.
-
-        Parameters
-        ----------
-
-        key : str
-            The name of the argument.
-        value : str
-            The value of the argument. This should be a string, or an instance of ``Arg``.
-        """
-        self.args[key] = value
-        self._check_values()
-    
-    def set_argument(self, key: str, value: str):
-        """Set an argument in the ``KWArgs`` object. If the argument does not already exist, it
-        will be added. The value of the argument should be a string, or an instance of ``Arg``.
-
-        Parameters
-        ----------
-        key : str
-            The name of the argument.
-        value : str
-            The value of the argument. This should be a string, or an instance of ``Arg``.
-        """        
-        self.add_argument(key, value)
-
-    def remove_argument(self, key: str):
-        """Remove an argument from the ``KWArgs`` object.
-
-        Parameters
-        ----------
-
-        key : str
-            The name of the argument to remove.
-        """
-        del self.args[key]
-
-    def set_arguments(self, new_values: dict):
-        """Set multiple key-value pairs simultaneously. The values of the arguments should be strings,
-        or instances of ``Arg``. Any keys which already exist will be overwritten.
-
-        Parameters
-        ----------
-        new_values : dict
-            A dictionary of key-value pairs to add to the ``KWArgs`` object.
-        """        
-        self.args = {**self.args, **new_values}
-        self._check_values()
-
-    def remove_arguments(self, keys: List[str]):
-        """Remove multiple arguments from the ``KWArgs`` object.
-
-        Parameters
-        ----------
-        keys : List[str]
-            A list of the names of the arguments to remove.
-        """        
-        for key in keys:
-            self.remove_argument(key)
-
-    def __str__(self):
-        arg_strings = []
-        for key, value in self.args.items():
-            if isinstance(value, Arg):
-                arg_strings.append(f"{key} = {value}")
-            else:
-                arg_strings.append(f"{key} = {{{value}}}")
-        return ", ".join(arg_strings)
-
-    def is_empty(self) -> bool:
-        """Returns ``True`` if the ``KWArgs`` object is empty, ``False`` otherwise.
-
-        Returns
-        -------
-        bool
-            ``True`` if the ``KWArgs`` object is empty, ``False`` otherwise.
-        """        
-        return len(self.args) == 0
-
-class Arg:
-
-    brackets = ("{", "}")
-
-    def __init__(self, value: str | List[str | KWArgs] | KWArgs = None):
-        """``Arg`` is a helper class for storing LaTeX arguments, and simplifying the process of
-        converting them to LaTeX markup. Argument values can only be strings, lists of strings, or
-        ``KWArgs`` instances.
-
-        Parameters
-        ----------
-        value : str | List[str | KWArgs] | KWArgs, optional, default ``None``
-            The value of the argument. This should be a string, list of strings, or ``KWArgs`` instance(s).
-        """        
-        self.set_values(value)
-    
-    def set_values(self, new_values: str | List[str | KWArgs] | KWArgs = None):
-        """Set the value(s) of the argument. This will replace any existing values.
-
-        Parameters
-        ----------
-        new_values : str | List[str | KWArgs] | KWArgs, optional, default ``None``
-            The new value(s) to be stored in the argument.
-
-        Raises
-        ------
-        TypeError
-            If a nested list is passed as an argument value.
-        """        
-        if new_values is not None:
-            if not isinstance(new_values, List):
-                if isinstance(new_values, tuple):
-                    new_values = list(new_values)
-                elif isinstance(new_values, dict):
-                    new_values = [KWArgs(new_values)]
-                else:
-                    new_values = [new_values]
-            else: 
-                # it is a list, so check if any of the elements are dicts
-                for i, v in enumerate(new_values):
-                    if isinstance(v, dict):
-                        new_values[i] = KWArgs(v)
-                    elif isinstance(v, list) or isinstance(v, tuple):
-                        raise TypeError("Nested lists are not allowed.")
-            self.value = new_values
-        else:
-            self.value = []
-
-    def add_value(self, value: str | KWArgs):
-        """Append a single value to the argument.
-
-        Parameters
-        ----------
-        value : str | KWArgs
-            Value to be added to the argument.
-
-        Raises
-        ------
-        TypeError
-            If the new value is not a string or ``KWArgs`` instance.
-        """        
-        if isinstance(value, dict):
-            value = KWArgs(value)
-            self.value.append(value)
-            return
-        if not isinstance(value, str) and not isinstance(value, KWArgs):
-            raise TypeError(f"Value must be a string, dictionary, or ``KWArgs`` instance.")
-        self.value.append(value)
-    
-    def set_value(self, value: str | KWArgs, index: int):
-        """Set one of the values of the argument at a given index.
-
-        Parameters
-        ----------
-        value : str | KWArgs
-            The new value to be stored in the argument.
-        index : int
-            The which should be replaced.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of values in the argument
-        TypeError
-            If the new value is not a string or ``KWArgs`` instance.
-        """         
-        # check if index is in range
-        if index >= len(self.value):
-            raise IndexError(f"Cannot set value, index {index} is out of range.")
-        if isinstance(value, dict):
-            value = KWArgs(value)
-            self.value[index] = value
-            return
-        if not isinstance(value, str) and not isinstance(value, KWArgs):
-            raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
-        self.value[index] = value
-    
-    def insert_value(self, value: str | KWArgs, index: int):
-        """Insert a new value into the argument at a given index.
-
-        Parameters
-        ----------
-        value : str | KWArgs
-            The new value to be stored in the argument.
-        index : int
-            The index at which the value should be inserted.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of values in the argument.
-        TypeError
-            If the new value is not a string or ``KWArgs`` instance.
-        """        
-        # check if index is in range
-        if index > len(self.value):
-            raise IndexError(f"Cannot insert value, index {index} is out of range.")
-        if isinstance(value, dict):
-            value = KWArgs(value)
-            self.value.insert(index, value)
-            return
-        if not isinstance(value, str) and not isinstance(value, KWArgs):
-            raise TypeError(f"Value must be a string, dictionary, or KWArgs instance.")
-        self.value.insert(index, value)
-    
-    def remove_value(self, index: int):
-        """Remove the value at a given index from the argument.
-
-        Parameters
-        ----------
-        index : int
-            The index of the value to be removed.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of values in the argument.
-        """        
-        # check if index is in range
-        if index >= len(self.value):
-            raise IndexError(f"Cannot remove value, index {index} is out of range.")
-        del self.value[index]
-    
-    def __str__(self):
-        return self.brackets[0] + ", ".join([str(v) for v in self.value]) + self.brackets[1]
-
-    def __repr__(self):
-        return f"Args({self.value})"
-
-class OptArg(Arg):
-    """``OptArg`` extends ``Arg`` to represent optional arguments. It is identical in all aspects
-    except that it uses square brackets instead of curly braces when converting to LaTeX markup.
-    """    
-
-    brackets = ("[", "]")
-
-    def __repr__(self):
-        return f"OptArgs({self.value})"
-
-class CommandBase(ABC):
-    def __init__(
-        self,
-        name: str,
-        arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None
-    ):
-        self.name = name
-        self.arguments = []
-        if arguments is None:
-            arguments = []
-        elif not isinstance(arguments, list):
-            if isinstance(arguments, tuple):
-                arguments = list(arguments)
-            else:
-                arguments = [arguments]
-        for a in arguments:
-            self.add_argument(a)
-
-    def add_optional_argument(self, argument: str | Arg | OptArg | dict | List[str]):
-        """Add an optional argument to the macro or environment.
-
-        Parameters
-        ----------
-        argument : str | Arg | OptArg | dict | List[str | Arg | OptArg]
-            Argument to add
-        """        
-        if isinstance(argument, dict):
-            argument = KWArgs(dict)
-        if isinstance(argument, list) or isinstance(argument, tuple):
-            argument = OptArg(argument)
-        elif isinstance(argument, Arg):
-            argument = OptArg(argument.value)
-        else:
-            argument = OptArg(str(argument))
-        self.arguments.append(argument)
-
-    def add_argument(self, argument: str | Arg | OptArg | dict | List[str], optional: bool = False):
-        """Add an argument to the macro or environment.
-
-        Parameters
-        ----------
-        argument : Arg | OptArg | str
-            Argument to add
-        optional : bool, optional, default ``False``
-            If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
-            ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
-        """        
-        if optional:
-            self.add_optional_argument(argument)
-            return
-        if isinstance(argument, dict):
-            argument = KWArgs(dict)
-        if isinstance(argument, list) or isinstance(argument, tuple):
-            argument = Arg(argument)
-        elif isinstance(argument, OptArg):
-            argument = Arg(argument.value)
-        else:
-            argument = Arg(str(argument))
-        self.arguments.append(argument)
-    
-    def set_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
-        """Set an argument at a given index.
-
-        Parameters
-        ----------
-        argument : Arg | OptArg | str
-            The new argument to be stored.
-        index : int
-            The index of the argument to be replaced.
-        optional : bool, optional, default ``False``
-            If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
-            ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of arguments in the macro or environment.
-        """         
-        # Set an option at a specific index. If the index is out of range, raise an error
-        if index >= len(self.arguments):
-            raise IndexError(f"Cannot set option: index {index} is out of range for options list of length {len(self.arguments)}")
-        if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
-            if optional:
-                argument = OptArg(argument)
-            else:
-                argument = Arg(argument)
-        self.arguments[index] = argument
-
-    def insert_argument(self, argument: Arg | OptArg | str, index: int, optional: bool = False):
-        """Insert an argument at a given index, without replacing any existing arguments.
-
-        Parameters
-        ----------
-        argument : Arg | OptArg | str
-            The new argument to be stored.
-        index : int
-            The index at which the argument should be inserted.
-        optional : bool, optional, default ``False``
-            If ``True`` and the ``argument`` is a string, it will be converted to an ``OptArg``. If
-            ``False`` and the ``argument`` is a string, it will be converted to an ``Arg``.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of arguments in the macro or environment.
-        """        
-        # Insert an option at a specific index. If the index is out of range, raise an error
-        if index > len(self.arguments):
-            raise IndexError(f"Cannot insert option: index {index} is out of range for options list of length {len(self.arguments)}")
-        if not isinstance(argument, Arg) and not isinstance(argument, OptArg):
-            if optional:
-                argument = OptArg(argument)
-            else:
-                argument = Arg(argument)
-        self.arguments.insert(index, argument)
-    
-    def remove_argument(self, index: int):
-        """Remove the argument at a given index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the argument to be removed.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of arguments in the macro or environment.
-        """        
-        # Remove an option at a specific index. If the index is out of range, raise an error
-        if index >= len(self.arguments):
-            raise IndexError(f"Cannot remove option: index {index} is out of range for options list of length {len(self.arguments)}")
-        del self.arguments[index]
-    
-    @abstractmethod
-    def __str__(self):
-        pass
-
-class Macro(CommandBase):
-    def __init__(
-        self,
-        name: str,
-        arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None
-    ):
-        """``Macro`` is a helper class for storing and outputting LaTeX macros with (ordered) 
-        optional and required arguments.
-
-        Parameters
-        ----------
-        name : str
-            Name fo the macro as a string, without the leading ``\\``.
-        arguments : Arg | OptArg | str | List[str  |  Arg  |  OptArg], optional, default ``None``
-            A list of arguments to be passed to the macro. Each element should be a string, 
-            ``Arg``, or ``OptArg`` instance. ``KWArgs`` instances must be wrapped in an ``Arg``
-            or ``OptArg`` instance. If a single argument is passed, it will be wrapped in a list.
-        """    
-        super().__init__(name, arguments)
-
-    def __str__(self):
-        return f"\\{self.name}" + "".join([str(a) for a in self.arguments])
-
-    def __repr__(self):
-        return f"Macro({self.name}, {self.arguments})"
-
-class Environment(CommandBase):
-
-    def __init__(
-        self, 
-        name: str, 
-        arguments: Arg | OptArg | str | List[str | Arg | OptArg] = None,
-        content: str | Table | Figure | List[ str | Table | Figure]  = None 
-        # can also be Environment or list of Environments, but for type hints only in python >= 3.11   
-    ):
-        """A helper class for storing LaTeX environments and their arguments, possibly in a nested 
-        structure.
-
-        Parameters
-        ----------
-        name : str
-            The name of the environment, which will be rendered as ``\\begin{name}`` and
-            ``\\end{name}``.
-        arguments : Arg | OptArg | str | List[str  |  Arg  |  OptArg], optional, default ``None``
-            Argument or list of arguments for the environment. Each element should be a string,
-            ``Arg``, or ``OptArg`` instance. ``KWArgs`` instances must be wrapped in an ``Arg``
-            or ``OptArg`` instance. If a single argument is passed, it will be wrapped in a list.
-        content : str | Table | Figure | Macro | Environment | List[ str  |  Table  |  Figure Macro | Environment], optional, default ``None``
-            The content to be stored in and rendered in the environment. Any ``lapyx.components`` 
-            class is acceptable, except those derived from ``Arg`` or ``KWArgs``, including 
-            other Environments. A list of the same is also acceptable. These will be rendered in 
-            the order in which they are added.
-
-            .. warning::
-                Be careful not to add an ``Environment`` to its own content or that of its
-                children. Recursion is not checked, and will result in an infinite loop.  
-        """        
-        super().__init__(name, arguments)
-        
-        if content is None:
-            self.content = []
-        elif not isinstance(content, list):
-            self.content = [content]
-        else:
-            self.content = content
-    
-    def add_content(self, content: str | Table | Figure | Macro):
-        """Add content to the end of the environment.
-
-        Parameters
-        ----------
-        content : str | Table | Figure | Macro | Environment
-            The new content to be added. Any ``lapyx.components`` class is acceptable, except
-            those derived from ``Arg`` or ``KWArgs``, including other Environments. A list of 
-            the same is also acceptable and will be added in order. This will be appended as the 
-            last item within the environment.
-        """        
-        # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
-        if isinstance(content, list) or isinstance(content, tuple):
-            self.content.extend(content)
-        else:
-            self.content.append(content)
-
-    def set_content(self, content: str | Table | Figure | Macro, index: int):
-        """Set the content at a given index.
-
-        Parameters
-        ----------
-        content : str | Table | Figure | Macro | Environment
-            The new content to be stored. Any ``lapyx.components`` class is acceptable, except
-            those derived from ``Arg`` or ``KWArgs``, including other Environments.
-        index : int
-            The index of the content to be replaced.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of content items in the environment.
-        """        
-        # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
-        # Set an option at a specific index. If the index is out of range, raise an error
-        if index >= len(self.content):
-            raise IndexError(f"Cannot set content: index {index} is out of range for content list of length {len(self.content)}")
-        self.content[index] = content
-    
-    def insert_content(self, content: str | Table | Figure | Macro, index: int):
-        """Insert content at a given index, without replacing any existing content.
-
-        Parameters
-        ----------
-        content : str | Table | Figure | Macro | Environment
-            The new content to be stored. Any ``lapyx.components`` class is acceptable, except
-            those derived from ``Arg`` or ``KWArgs``, including other Environments.
-        index : int
-            The index at which the content should be inserted.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of content items in the environment.
-        """        
-        # content can also be Environment or list of Environments, but for type hints only in python >= 3.11   
-        # Insert an option at a specific index. If the index is out of range, raise an error, unless the index is the length of the array in which case just append
-        if index > len(self.content):
-            raise IndexError(f"Cannot insert content: index {index} is out of range for content list of length {len(self.content)}")
-        self.content.insert(index, content)
-    
-    def remove_content(self, index: int):
-        """Remove the content at a given index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the content to be removed.
-
-        Raises
-        ------
-        IndexError
-            If the index is out of range for the number of content items in the environment.
-        """        
-        # Remove an option at a specific index. If the index is out of range, raise an error
-        if index >= len(self.content):
-            raise IndexError(f"Cannot remove content: index {index} is out of range for content list of length {len(self.content)}")
-        del self.content[index]
-
-    def set_parent(self, other):
-        """Adds this environment to the content of another environment.
-
-        Parameters
-        ----------
-        other : Environment
-            The environment to which this environment should be appended as content.
-
-        Raises
-        ------
-        TypeError
-            If the other object is not an ``Environment`` instance.
-        """        
-        if not isinstance(other, Environment):
-            raise TypeError(f"Cannot set parent: {other} is not an Environment")
-        other.add_content(self)
-
-    def __str__(self):
-        # start_line = f"\\begin{{{self.name}}}{''.join([str(o) for o in self.arguments])}"
-        start_line = str(Macro("begin", [self.name] + self.arguments))
-        # end_line = f"\\end{{{self.name}}}"
-        end_line = str(Macro("end", [self.name]))
-        mid_lines = "\n".join([str(item) for item in self.content])
-        # indent each of mid_lines by one tab
-        mid_lines = "\n".join(["\t" + line for line in mid_lines.split("\n")])
-        return start_line + "\n" + mid_lines + "\n" + end_line
-    
-class EmptyEnvironment(Environment):
-    """``EmptyEnvironment`` is a convenience class for creating an ``Environment`` object which 
-    will not be rendered in the final output, but **will** render its content. This is useful 
-    for consistency within Python, but has exactly the same effect as passing each element of
-    ``content`` to ``export()`` directly.
-
-    Parameters
-    ----------
-    content : str | Table | Figure | Macro | Environment | List[ str  |  Table  |  Figure Macro | Environment], optional, default ``None``
-        The content to be stored in and rendered in the environment. Any ``lapyx.components`` 
-        class is acceptable, except those derived from ``Arg`` or ``KWArgs``, including 
-        other Environments. A list of the same is also acceptable. These will be rendered in 
-        the order in which they are added.
-    """        
-    def __init__(self, content: str | Table | Figure | List[ str | Table | Figure] = None):
-        super().__init__(name = None, content = content)
-
-    def __str__(self):
-        return "\n".join([str(item) for item in self.content])
 
 class Itemize(Environment):
     def __init__(
             self, 
             content: str | Table | Figure | List[ str | Table | Figure]  = None,
-            arguments:  Arg | OptArg | str | List[str | Arg | OptArg] = None
+            arguments:  Arg | str | List[str | Arg] = None
         ):
         """``Itemize`` is a convenience class for creating unordered lists in LaTeX.
 
@@ -2215,6 +1612,7 @@ class Itemize(Environment):
         mid_lines = "\n".join(["\t" + line for line in mid_lines.split("\n")])
         return start_line + "\n" + mid_lines + "\n" + end_line
 
+
 class Enumerate(Itemize):
     """Extends the ``Itemize`` class to create an ``enumerate`` environment, which will render an
     ordered list. Any automatically generated ``Environment`` s arising from nested lists will also
@@ -2281,22 +1679,22 @@ class Subfigure(Figure):
                 )
 
 
-        includegraphics_opts = KWArgs()
+        includegraphics_opts = Arg()
         if self.size["width"] is not None:
             fig.add_argument(self.size["width"])
-            includegraphics_opts.add_argument("width", "\\textwidth")
+            includegraphics_opts.update([KeyVal("width", "\\textwidth")])
         else:
             # we *must* have a width, so default to 0.45\\textwidth
             fig.add_argument("0.45\\textwidth")
-            includegraphics_opts.add_argument("width", "\\textwidth")
+            includegraphics_opts.update([KeyVal("width", "\\textwidth")])
         if self.size["height"] is not None:
-            includegraphics_opts.add_argument("height", self.size["height"])
+            includegraphics_opts.update([KeyVal("height", self.size["height"])])
         if self.size["scale"] is not None:
-            includegraphics_opts.add_argument("scale", self.size["scale"])
+            includegraphics_opts.update([KeyVal("scale", self.size["scale"])])
         
         includegraphics = Macro("includegraphics")
         if not includegraphics_opts.is_empty():
-            includegraphics.add_argument(OptArg(includegraphics_opts))
+            includegraphics.add_argument(includegraphics_opts, optional = True)
         includegraphics.add_argument(figure_file_name)
 
         if self.alignment is not None:

@@ -1,7 +1,7 @@
 # Contains methods which will be called from within the temporary python file
 
 from pathlib import Path
-from lapyx.components import Table, Figure, Subfigures, Itemize, Enumerate, Environment, Macro, EmptyEnvironment
+from lapyx.components import Table, Figure, Subfigures, Itemize, Enumerate, Environment, Macro, Container
 
 output_dict = {}
 current_ID = ""
