@@ -6,6 +6,8 @@ from pathlib import Path
 import subprocess
 from typing import List, Tuple
 import re
+import json
+
 
 from .parsing import _generate_ID, _find_matching_bracket
 from .exceptions import LatexParsingError
@@ -15,16 +17,24 @@ base_dir = ""
 py_block_start = r"\begin{python}"
 py_block_end = r"\end{python}"
 inline_py_start = r"\py{"
+_verbose = False
+_quiet = False
 
+def _print_not_quiet(*args, **kwargs) -> None:
+    global _quiet
+    if not _quiet:
+        print(*args, **kwargs)
 
+def _print_verbose(*args, **kwargs) -> None:
+    global _verbose
+    if _verbose:
+        print(*args, **kwargs)
 
 
 
 
 def _set_base_dir() -> None:
     global base_dir
-    # base_dir = os.getcwd()
-    # base_dir = Path(__file__).parent.absolute() 
     base_dir = Path.cwd()
 
 
@@ -75,26 +85,82 @@ def process_file(
         If ``True``, lines staring with ``%`` will be treated as comments even if they occur inside
         a Python code block.
     """    
-    import json
     # set the base_dir
     _set_base_dir()
     global base_dir
+    global _verbose, _quiet
+
+    _verbose = verbose
+    _quiet = quiet
 
     if isinstance(input_file_path, str):
         input_file_path = Path(input_file_path)
+    if isinstance(base_dir, str):
+        base_dir = Path(base_dir)
+    if output is not None and isinstance(output, str):
+        output = Path(output)
+
+    jobname, output_file_name, temp_dir, temp_prefix = _prepare_directories(
+        input_file_path,
+        output,
+        temp
+    )
+
+    py_out_lines, latex_out_lines = _extract_py_code(
+        input_file_path,
+        temp_dir,
+        temp_prefix,
+        latex_comments,
+        quiet
+    )
+
+    # write py_out_lines to a temporary file `{temp_dir}/{temp_prefix}lapyx_temp.py`
+    temp_py_file_name = temp_dir / f"{temp_prefix}lapyx_temp.py"
+
+    _print_verbose(f"Writing extracted Python code to file {temp_py_file_name.absolute()}")
+
+    with temp_py_file_name.open("w") as temp_py_file:
+        temp_py_file.write("\n".join(py_out_lines))
+
+    # run the temporary python file as a subprocess
+    _print_not_quiet("Running extracted Python code as subprocess...", end = "", flush = True)
+
+    _run_temp_py_file(temp_py_file_name)
+
+    latex_temp_file_name = temp_dir / f"{temp_prefix}lapyx_temp.tex"
+    _insert_output_into_latex(temp_dir, temp_prefix, latex_out_lines, latex_temp_file_name)
+
+    if compile:
+        compile_kwargs = {}
+        if compiler_arguments:
+            compile_kwargs["compiler_arguments"] = compiler_arguments
+        _compile_latex(latex_temp_file_name, verbose = verbose, quiet = quiet, **compile_kwargs)
+
+        # move newly-created pdf to `jobname.pdf`
+        _print_verbose(f"Moving {str(latex_temp_file_name.absolute())[:-4]}.pdf to {output_file_name.absolute()}")
+        (temp_dir / f"{temp_prefix}lapyx_temp.pdf").rename(output_file_name)
+    else:
+        _print_not_quiet("Skikping compilation")
+
+    _clean_temp_files(temp_dir, temp_prefix, keep_figures = keep_figures, debug = debug)
+
+
+def _prepare_directories(
+    input_file_path: Path,
+    output: Path,
+    temp: str
+) -> List:
+    global base_dir
+
     jobname = input_file_path.stem
 
     if output:
-        if isinstance(output, str):
-            output = Path(output)
         # add .pdf extension if not present
         output_file_name = output.with_suffix(".pdf")
     else:
         output_file_name = f"{jobname}.pdf"
         output_file_name = Path(output_file_name)
 
-    if isinstance(base_dir, str):
-        base_dir = Path(base_dir)
 
     if temp:
         # temp is currently a string.
@@ -115,7 +181,17 @@ def process_file(
     # if temp_dir doesn't exist, create it
     if not temp_dir.exists():
         temp_dir.mkdir(parents=True)
+    
+    return jobname, output_file_name, temp_dir, temp_prefix
 
+def _extract_py_code(
+    latex_file_path: Path,
+    temp_dir: Path,
+    temp_prefix: str,
+    latex_comments: bool,
+    quiet: bool
+) -> Path:
+    
     py_out_lines = []
     latex_out_lines = []
 
@@ -126,12 +202,12 @@ from lapyx.components import *
 _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
 """)
 
-    # assume input_file_path is a valid path, checked by the main program
-    with input_file_path.open("r") as input_file:
+    # assume latex_file_path is a valid path, checked by the main program
+    with latex_file_path.open("r") as input_file:
         input_text = input_file.read()
     
     if not quiet:
-        print(f"Found file {input_file_path.absolute()}, extracting Python code...", end = "", flush = True)
+        print(f"Found file {latex_file_path.absolute()}, extracting Python code...", end = "", flush = True)
 
     skip_lines = 0
     input_lines = input_text.splitlines()
@@ -168,17 +244,10 @@ _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
     if not quiet:
         print(" Done")
 
-    # write py_out_lines to a temporary file `{temp_dir}/{temp_prefix}lapyx_temp.py`
-    temp_py_file_name = temp_dir / f"{temp_prefix}lapyx_temp.py"
-    if verbose:
-        print(f"Writing extracted Python code to file {temp_py_file_name.absolute()}")
-
-    with temp_py_file_name.open("w") as temp_py_file:
-        temp_py_file.write("\n".join(py_out_lines))
-
-    # run the temporary python file as a subprocess
-    if not quiet:
-        print("Running extracted Python code as subprocess...", end = "", flush = True)
+    return py_out_lines, latex_out_lines
+    
+def _run_temp_py_file(temp_py_file_name: Path):
+    global _verbose, _quiet
     result = subprocess.run(
         [
             "python3",
@@ -190,15 +259,23 @@ _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
         print("Error running python file. stdout:\n\n")
         print(result.stdout.decode("utf-8"))
         raise Exception(result.stderr.decode("utf-8"))
-    if not quiet:
-        print(" Done")
-    if verbose:
+    _print_not_quiet(" Done")
+
+    if _verbose:
         temp_output = result.stdout.decode("utf-8")
         if len(temp_output.strip()) > 0:
-            print(f"Python code output:\n{'OUTPUT START':-^40}")
-            print(temp_output + f"\n{'OUTPUT END':-^40}\n")
+            _print_verbose(f"Python code output:\n{'OUTPUT START':-^40}")
+            _print_verbose(temp_output + f"\n{'OUTPUT END':-^40}\n")
         else:
-            print("Python code produced no output to stdout")
+            _print_verbose("Python code produced no output to stdout")
+    
+def _insert_output_into_latex(
+    temp_dir: Path, 
+    temp_prefix: str, 
+    latex_out_lines: List[str],
+    latex_temp_file_name: Path
+):
+
     # read the temporary file `lapyx_output.json`
     with (temp_dir / f"{temp_prefix}lapyx_output.json").open("r") as output_file:
         output_json = json.load(output_file)
@@ -206,40 +283,30 @@ _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
     new_text = "\n".join(latex_out_lines)
 
     # replace all instances of \pyID{ID} with the corresponding output
-    if verbose:
-        print("Replacing Python blocks with output...", end = "", flush = True)
+    _print_verbose("Replacing Python blocks with output...", end = "", flush = True)
     for ID, output in output_json.items():
         new_text = new_text.replace(f"\\pyID{{{ID}}}", "\n".join(output))
-    if verbose:
-        print(" Done")
+    _print_verbose(" Done")
 
 
     # write the new text to the output file `base_dir/lapyx_temp.tex`
-    latex_temp_file_name = temp_dir / f"{temp_prefix}lapyx_temp.tex"
-    if verbose:
-        print(f"Writing LaTeX output to file {latex_temp_file_name}")
+
+    _print_verbose(f"Writing LaTeX output to file {latex_temp_file_name}")
     with latex_temp_file_name.open("w+") as output_file:
         output_file.write(new_text)
 
-    if compile:
-        compile_kwargs = {}
-        if compiler_arguments:
-            compile_kwargs["compiler_arguments"] = compiler_arguments
-        _compile_latex(latex_temp_file_name, verbose = verbose, quiet = quiet, **compile_kwargs)
-
-        # move newly-created pdf to `jobname.pdf`
-        if verbose:
-            print(f"Moving {str(latex_temp_file_name.absolute())[:-4]}.pdf to {output_file_name.absolute()}")
-        (temp_dir / f"{temp_prefix}lapyx_temp.pdf").rename(output_file_name)
-    elif not quiet:
-        print("Skikping compilation")
+def _clean_temp_files(
+    temp_dir: Path, 
+    temp_prefix: str, 
+    *, 
+    keep_figures: bool, 
+    debug: bool
+):
 
     if not keep_figures:
         # remove all figures, stored in `temp_dir/lapyx_figures`
-        if verbose:
-            print(f"Removing figures in {temp_dir.absolute()}/lapyx_figures")
-        elif not quiet:
-            print("Cleaning temporary figures")
+        _print_verbose(f"Removing figures in {temp_dir.absolute()}/lapyx_figures")
+        _print_not_quiet("Cleaning temporary figures")
         figures_dir = temp_dir / "lapyx_figures"
         if figures_dir.exists():
             for file in figures_dir.iterdir():
@@ -247,8 +314,7 @@ _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
             figures_dir.rmdir()
             
     if not debug:
-        if not quiet:
-            print("Cleaning temporary files")
+        _print_not_quiet("Cleaning temporary files")
         # remove any temporary files starting with `lapyx_temp`
         for file in temp_dir.iterdir():
             if file.name.startswith(f"{temp_prefix}lapyx_temp"):
@@ -257,9 +323,6 @@ _init("{base_dir.absolute()}","{temp_dir.absolute()}", "{temp_prefix}")
         # if temp_dir is not base_dir, remove it if its empty
         if temp_dir != base_dir and not list(temp_dir.iterdir()):
             temp_dir.rmdir()
-
-
-
 
 def _handle_inline_py(line: str, latex_comments: bool = False) -> Tuple[List[str], str]:
     new_lines = []

@@ -1,7 +1,9 @@
 # Contains methods which will be called from within the temporary python file
 
 from pathlib import Path
-from lapyx.components import Table, Figure, Subfigures, Itemize, Enumerate, Environment, Macro, Container
+from functools import singledispatch
+
+from .components import Table, Figure, Subfigures, Itemize, Enumerate, Environment, Macro, Container
 
 output_dict = {}
 current_ID = ""
@@ -32,12 +34,13 @@ def no_export() -> None:
     global should_export
     should_export = False
 
-def export(output: str | Table | Figure, **kwargs) -> None:
+@singledispatch
+def export(output):
     """Export the arguments to the output LaTeX file, converting LaTeX objects to strings. 
 
     Parameters
     ----------
-    output : str | :class:`~lapyx.components.Table` | :class:`~lapyx.components.Figure`
+    output : str | :codelink:`Table` | :code:`Figure` | :code:`Subfigures` | :code:`Environment` | :code:`Macro` | :code:`Container`
         The object to export. If a string, it will be exported as-is. If a Table, Figure, 
         Subfigures, or Environment, these will be correctly formatted as LaTeX markup. Any other
         type will be converted to a string using its ``__str__`` method.
@@ -47,7 +50,7 @@ def export(output: str | Table | Figure, **kwargs) -> None:
     Exception
         If ``export`` is somehow called before an ID is set.
     """    
-    # For now say that this only takes a string, expand support later
+
     global output_dict
     global current_ID
     global temp_dir
@@ -58,25 +61,20 @@ def export(output: str | Table | Figure, **kwargs) -> None:
 
     if current_ID == "":
         raise Exception("No ID set")
-    if isinstance(output, Table):
-        output_dict[current_ID].append(output.to_latex())
-        return
-
-    if isinstance(output, Figure):
-        output_dict[current_ID].append(output.to_latex(base_dir, temp_dir, **kwargs))
-        return
-
-    if isinstance(output, Subfigures):
-        output_dict[current_ID].append(output.to_latex(base_dir, temp_dir, **kwargs))
-        return
-
-
-    if isinstance(output, str):
-        output_dict[current_ID].append(output)
-        return
-
-    # otherwise, just try to convert it to a string
+    
     output_dict[current_ID].append(str(output))
+
+@export.register
+def _(output: Table) -> None:
+    export(output.to_latex())
+
+@export.register
+def _(output: Figure, **kwargs) -> None:
+    export(output.to_latex(base_dir, temp_dir, **kwargs))
+
+@export.register
+def _(output: Subfigures, **kwargs) -> None:
+    export(output.to_latex(base_dir, temp_dir, **kwargs))
 
 def _setID(ID: str) -> None:
     global output_dict

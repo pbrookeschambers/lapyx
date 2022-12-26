@@ -1,6 +1,7 @@
 # contains functions for parsing latex style arguments, especially key-value pairs.
 
 from __future__ import annotations
+from functools import singledispatch
 
 from typing import List
 
