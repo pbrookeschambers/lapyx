@@ -3,7 +3,7 @@
 from __future__ import annotations
 from functools import singledispatch
 
-from typing import List
+from typing import List, Type
 
 import random
 import string
@@ -75,6 +75,48 @@ class EnumEx(Enum):
         if type(other) == type(self):
             return self.value != other.value
         return self.value != other
+
+    @classmethod
+    def _options(cls):
+        # get class name
+        cls_name = cls.__name__
+        # get all enum names and values
+        enum_names = [e.name for e in cls]
+        enum_values = [e.value for e in cls]
+        arrow = "\u27FC"
+
+        return [
+            f"{cls_name}.{name} ({value})" for name, value in zip(enum_names, enum_values)
+        ]
+def _enum_options(enum: Type[EnumEx], indent_level = 1):
+    # check that enum is an EnumEx
+    if not issubclass(enum, EnumEx):
+        raise TypeError(f"Expected EnumEx, got {type(enum)}")
+    # get class name
+    cls_name = enum.__name__
+    # get all enum names and values
+    enum_names = [e.name for e in enum]
+    enum_values = [e.value for e in enum]
+    arrow = "\u27FC"
+
+    has_default = hasattr(enum, "_default")
+
+    # get the length of the longest name (plus class name +1)
+    max_name_length = max([len(name) for name in enum_names] + [len("_default")]) + len(cls_name) + 1
+    # round up to the next multiple of 4
+    pad_length = (max_name_length + 3) // 4 * 4
+
+    out = []
+    for name, value in zip(enum_names, enum_values):
+        if has_default and enum._default == value:
+            out.append(f"{f'{cls_name}.{name}': <{pad_length}} = {repr(value)} ({cls_name}._default)")
+        else:
+            out.append(f"{f'{cls_name}.{name}': <{pad_length}} = {repr(value)}")
+    # if has_default:
+    #     out.append(f"{f'{cls_name}._default': <{pad_length - 1}} {arrow}  {cls_name}.{enum._default.name}")
+
+
+    return out
 
 def _generate_ID() -> str:  
     return ''.join(
@@ -439,4 +481,14 @@ class Arg:
                     return
 
 
+def _index_out_of_bounds(index: int, length: int, strict: bool = False):
+    if index >= length:
+        return True
     
+    if strict and index < 0:
+        return True
+
+    if index < -length:
+        return True
+    
+    return False
