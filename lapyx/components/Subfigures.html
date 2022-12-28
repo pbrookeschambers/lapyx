@@ -1,0 +1,838 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.19: https://docutils.sourceforge.io/" name="generator"/>
+<title>Subfigures — LaPyX 0.1 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/copybutton.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/css/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94" rel="preload">
+<link as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94" rel="preload">
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/sphinx_highlight.js"></script>
+<script src="../../_static/clipboard.min.js"></script>
+<script src="../../_static/copybutton.js"></script>
+<script src="../../_static/design-tabs.js"></script>
+<script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'lapyx/components/Subfigures';</script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="Subfigures/set_alignment.html" rel="next" title="Subfigures.set_alignment"/>
+<link href="Subfigure/from_Figure.html" rel="prev" title="Subfigure.from_Figure"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+</link></link></head>
+<body data-default-mode="dark" data-offset="180" data-spy="scroll" data-target="#bd-toc-nav">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+<label class="sidebar-toggle primary-toggle" for="__primary">
+<span class="fa-solid fa-bars"></span>
+</label>
+<div id="navbar-start">
+<a class="navbar-brand logo" href="../../index.html">
+<p class="title logo__title">LaPyX 0.1 documentation</p>
+</a>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="mr-auto" id="navbar-center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../../lapyx.html">
+                        lapyx
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../components.html">
+                        lapyx.components
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../main.html">
+                        lapyx.main
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../output.html">
+                        lapyx.output
+                      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div id="navbar-end">
+<div class="navbar-end-item navbar-persistent--container">
+<button aria-label="Search" class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<div class="navbar-end-item">
+<button aria-label="light/dark" class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+<span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+<span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+</ul>
+</div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<label class="sidebar-toggle secondary-toggle" for="__secondary">
+<span class="fa-solid fa-outdent"></span>
+</label>
+</div>
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../../lapyx.html">
+                        lapyx
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../components.html">
+                        lapyx.components
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../main.html">
+                        lapyx.main
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../output.html">
+                        lapyx.output
+                      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-end-item">
+<button aria-label="light/dark" class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+<span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+<span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebar-start-items sidebar-primary__section">
+<div class="sidebar-start-items__item"><nav aria-label="Section navigation" class="bd-links" id="bd-docs-nav">
+<p aria-level="1" class="bd-links__title" role="heading">
+    Section Navigation
+  </p>
+<div class="bd-toc-item navbar-nav">
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../components.html">lapyx.components</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="Table.html">Table</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_data.html">Table.set_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/add_row.html">Table.add_row</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/add_rows.html">Table.add_rows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/add_column.html">Table.add_column</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/add_columns.html">Table.add_columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/transpose.html">Table.transpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/center.html">Table.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/float.html">Table.float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/long.html">Table.long</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_headers.html">Table.set_headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_alignment.html">Table.set_alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_column_widths.html">Table.set_column_widths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_format.html">Table.set_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_header_format.html">Table.set_header_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_caption.html">Table.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/set_label.html">Table.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/use_headers.html">Table.use_headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/split_after_rows.html">Table.split_after_rows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/split_into_columns.html">Table.split_into_columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Table/to_latex.html">Table.to_latex</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Figure.html">Figure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_figure.html">Figure.set_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_caption.html">Figure.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_label.html">Figure.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_size.html">Figure.set_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_width.html">Figure.set_width</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_height.html">Figure.set_height</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/set_scale.html">Figure.set_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/float.html">Figure.float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/center.html">Figure.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/plot.html">Figure.plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/scatter.html">Figure.scatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/errorbar.html">Figure.errorbar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/hist.html">Figure.hist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/imshow.html">Figure.imshow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/xlabel.html">Figure.xlabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/ylabel.html">Figure.ylabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/title.html">Figure.title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/legend.html">Figure.legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/xlim.html">Figure.xlim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/ylim.html">Figure.ylim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/savefig.html">Figure.savefig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Figure/to_latex.html">Figure.to_latex</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="KWArgs.html">KWArgs</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="KWArgs/add_argument.html">KWArgs.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="KWArgs/set_argument.html">KWArgs.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="KWArgs/remove_argument.html">KWArgs.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="KWArgs/set_arguments.html">KWArgs.set_arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="KWArgs/remove_arguments.html">KWArgs.remove_arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="KWArgs/is_empty.html">KWArgs.is_empty</a></li>
+</ul>
+</input></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Arg.html">Arg</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Arg/set_values.html">Arg.set_values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Arg/add_value.html">Arg.add_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Arg/set_value.html">Arg.set_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Arg/insert_value.html">Arg.insert_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Arg/remove_value.html">Arg.remove_value</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="OptArg.html">OptArg</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="OptArg/set_values.html">OptArg.set_values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OptArg/add_value.html">OptArg.add_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OptArg/set_value.html">OptArg.set_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OptArg/insert_value.html">OptArg.insert_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OptArg/remove_value.html">OptArg.remove_value</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Macro.html">Macro</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Macro/add_argument.html">Macro.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Macro/set_argument.html">Macro.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Macro/insert_argument.html">Macro.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Macro/remove_argument.html">Macro.remove_argument</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Environment.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Environment/add_argument.html">Environment.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/set_argument.html">Environment.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/insert_argument.html">Environment.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/remove_argument.html">Environment.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/add_content.html">Environment.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/set_content.html">Environment.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/insert_content.html">Environment.insert_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/remove_content.html">Environment.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Environment/set_parent.html">Environment.set_parent</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="EmptyEnvironment.html">EmptyEnvironment</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/add_argument.html">EmptyEnvironment.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/set_argument.html">EmptyEnvironment.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/insert_argument.html">EmptyEnvironment.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/remove_argument.html">EmptyEnvironment.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/add_content.html">EmptyEnvironment.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/set_content.html">EmptyEnvironment.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/insert_content.html">EmptyEnvironment.insert_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/remove_content.html">EmptyEnvironment.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="EmptyEnvironment/set_parent.html">EmptyEnvironment.set_parent</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Itemize.html">Itemize</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/add_argument.html">Itemize.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/set_argument.html">Itemize.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/insert_argument.html">Itemize.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/remove_argument.html">Itemize.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/remove_content.html">Itemize.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/set_parent.html">Itemize.set_parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/add_content.html">Itemize.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/set_content.html">Itemize.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Itemize/insert_content.html">Itemize.insert_content</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Enumerate.html">Enumerate</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/add_argument.html">Enumerate.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/set_argument.html">Enumerate.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/insert_argument.html">Enumerate.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/remove_argument.html">Enumerate.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/remove_content.html">Enumerate.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/set_parent.html">Enumerate.set_parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/add_content.html">Enumerate.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/set_content.html">Enumerate.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Enumerate/insert_content.html">Enumerate.insert_content</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="Subfigure.html">Subfigure</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_figure.html">Subfigure.set_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_caption.html">Subfigure.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_label.html">Subfigure.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_size.html">Subfigure.set_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_width.html">Subfigure.set_width</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_height.html">Subfigure.set_height</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_scale.html">Subfigure.set_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/plot.html">Subfigure.plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/scatter.html">Subfigure.scatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/errorbar.html">Subfigure.errorbar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/hist.html">Subfigure.hist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/imshow.html">Subfigure.imshow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/xlabel.html">Subfigure.xlabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/ylabel.html">Subfigure.ylabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/title.html">Subfigure.title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/legend.html">Subfigure.legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/xlim.html">Subfigure.xlim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/ylim.html">Subfigure.ylim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/savefig.html">Subfigure.savefig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/to_latex.html">Subfigure.to_latex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/float.html">Subfigure.float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/center.html">Subfigure.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/set_alignment.html">Subfigure.set_alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigure/from_Figure.html">Subfigure.from_Figure</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Subfigures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/set_alignment.html">Subfigures.set_alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/set_floating_pos.html">Subfigures.set_floating_pos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/set_caption.html">Subfigures.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/set_label.html">Subfigures.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/add_figure.html">Subfigures.add_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/add_figures.html">Subfigures.add_figures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/insert_figure.html">Subfigures.insert_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/insert_figures.html">Subfigures.insert_figures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/set_figure.html">Subfigures.set_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/remove_figure.html">Subfigures.remove_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Subfigures/to_latex.html">Subfigures.to_latex</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../main.html">lapyx.main</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../main/process_file.html">process_file</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../output.html">lapyx.output</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../output/no_export.html">no_export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../output/export.html">export</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+</div>
+</div>
+<div class="sidebar-end-items sidebar-primary__section">
+<div class="sidebar-end-items__item">
+</div>
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+</div>
+<article class="bd-article" role="main">
+<section id="subfigures">
+<span id="lapyx-components-subfigures"></span><h1>Subfigures<a class="headerlink" href="#subfigures" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>In addition to the <code class="docutils literal notranslate"><span class="pre">Figure</span></code> class, LaPyX provides the <code class="docutils literal notranslate">Subfigures</code> class for easier grouping and organising of multiple figures. A <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> instance keeps a list of figures (which should be <code class="docutils literal notranslate"><span class="pre">Subfigure</span></code> instances, though <code class="docutils literal notranslate"><span class="pre">Figure</span></code> instances will usually be converted automatically - see the <a href="lapyx/components/Subfigure.html"><code class="docutils literal notranslate">Subfigure</code></a> documentation for more detail). This allows easy modifications to groups of figures, as well as access to the individual captions and group caption. The below example uses a <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> instance to create a <span class="math notranslate nohighlight">\(2\times2\)</span> grid of random walks:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 example-dropdown sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg aria-hidden="true" class="sd-octicon sd-octicon-code-square" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zm9.22 3.72a.75.75 0 000 1.06L10.69 8 9.22 9.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM6.78 6.53a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 101.06-1.06L5.31 8l1.47-1.47z" fill-rule="evenodd"></path></svg></span>Subfigures Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>\<span class="n">begin</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="k">def</span> <span class="nf">random_walk</span><span class="p">(</span><span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># Generate a random walk of `steps` steps with a `strength`%</span>
+        <span class="c1"># chance of moving in the `bias` direction</span>
+        <span class="n">step_dirs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">steps</span><span class="p">)</span>
+        <span class="n">bias_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="n">steps</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">strength</span>
+        <span class="n">step_dirs</span><span class="p">[</span><span class="n">bias_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="c1"># Convert the step directions into x and y coordinates. left: 0, up: 1, right: 2, down: 3</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+    <span class="c1"># Create the parent Subfigures object</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">Subfigures</span><span class="p">(</span><span class="n">caption</span> <span class="o">=</span> <span class="s2">"Random walks with differing biases"</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">"fig:random_walks"</span><span class="p">)</span>
+
+    <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"up"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">,</span> <span class="s2">"down"</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">bias</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">mpl_fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">mpl_fig</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random_walk</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="nb">max</span><span class="p">(</span><span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">())]</span>
+            <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">())]</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Walk </span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="n">dirs</span><span class="p">[</span><span class="n">bias</span><span class="p">])</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="c1"># Add the subfigures to the parent</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">add_figures</span><span class="p">(</span><span class="n">figs</span><span class="p">)</span>
+
+    <span class="c1"># set appropriate axis limits</span>
+    <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fig</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlims</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+
+    <span class="n">parent</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s2">"Random walks with differing biases"</span><span class="p">)</span>
+
+    <span class="n">export</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="light-dark-mode docutils container">
+<div class="latex subfigures docutils container">
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_left.svg" src="../../_images/random_walk_left.svg"/><p class="sd-card-text">left</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_up.svg" src="../../_images/random_walk_up.svg"/><p class="sd-card-text">up</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_right.svg" src="../../_images/random_walk_right.svg"/><p class="sd-card-text">right</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_down.svg" src="../../_images/random_walk_down.svg"/><p class="sd-card-text">down</p>
+</div>
+<p class="sd-card-text">Random walks with differing biases</p>
+</div>
+<div class="latex subfigures docutils container">
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_left1.svg" src="../../_images/random_walk_left1.svg"/><p class="sd-card-text">left</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_up1.svg" src="../../_images/random_walk_up1.svg"/><p class="sd-card-text">up</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_right1.svg" src="../../_images/random_walk_right1.svg"/><p class="sd-card-text">right</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../../_images/random_walk_down1.svg" src="../../_images/random_walk_down1.svg"/><p class="sd-card-text">down</p>
+</div>
+<p class="sd-card-text">Random walks with differing biases</p>
+</div>
+</div>
+</div>
+</details><section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lapyx.components.</span></span><span class="sig-name descname"><span class="pre">Subfigures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">lapyx.components.Subfigure</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lapyx.components.Figure</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floating_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caption</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> instance, which will render a <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment with
+multiple <code class="docutils literal notranslate"><span class="pre">subfigure</span></code> s using the <code class="docutils literal notranslate"><span class="pre">subcaption</span></code> package. The <code class="docutils literal notranslate"><span class="pre">subcaption</span></code> package must
+be loaded in the preamble for this class to work correctly.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>figures</strong><span class="classifier">List[Subfigure  |  Figure], optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>A list of figures to be included. These must be <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instances, not <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> instances.</p>
+</dd>
+<dt><strong>alignment</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>Alignment of the subfigures within the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> LaTeX environment.</p>
+</dd>
+<dt><strong>floating_pos</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The optional positional argument to be passed to the <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment if the
+figure is floating. Setting this does not set <code class="docutils literal notranslate"><span class="pre">floating</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>caption</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The caption to be used for the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment. Setting this sets
+<code class="docutils literal notranslate"><span class="pre">floating</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>label</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The label to be used for the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment. Setting this sets
+<code class="docutils literal notranslate"><span class="pre">floating</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>, and forces an empty caption if <code class="docutils literal notranslate"><span class="pre">caption</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>gap</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The horizontal gap between each subfigure. This must be a valid LaTeX length.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If any element of <code class="docutils literal notranslate"><span class="pre">figures</span></code> is not a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Table/set_alignment.html">set_alignment</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Set the vertical alignment of the subfigures within the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> LaTeX
+environment.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>alignment</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The alignment optional argument to the <code class="docutils literal notranslate"><span class="pre">subfigure</span></code> environment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigures/set_floating_pos.html">set_floating_pos</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">floating_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Set the position of the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> LaTeX environment.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>floating_pos</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The optional position argument passed to the <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Table/set_caption.html">set_caption</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caption</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Set the caption of the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> LaTeX environment.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>caption</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The caption to be used for the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Table/set_label.html">set_label</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Set the label of the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> LaTeX environment.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>label</strong><span class="classifier">str, optional, default <code class="docutils literal notranslate"><span class="pre">None</span></code></span></dt><dd><p>The label to be used for the outer <code class="docutils literal notranslate"><span class="pre">figure</span></code> environment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigures/add_figure.html">add_figure</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">lapyx.components.Subfigure</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lapyx.components.Figure</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Append a new figure to the list of figures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>figure</strong><span class="classifier">Subfigure | Figure</span></dt><dd><p>The figure to be added. This must be a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instance, not a <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> instance.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">figure</span></code> is not a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or <code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code>
+instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigures/add_figures.html">add_figures</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">lapyx.components.Subfigure</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lapyx.components.Figure</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Append multiple figures to the list of figures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>figures</strong><span class="classifier">List[Subfigure  |  Figure]</span></dt><dd><p>The new figures to be added. These must be <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instances, not <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> instances.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>TypeError</dt><dd><p>If any element of <code class="docutils literal notranslate"><span class="pre">figures</span></code> is not a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigures/insert_figure.html">insert_figure</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">lapyx.components.Subfigure</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lapyx.components.Figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Insert a new figure into the list of figures at the specified index, shifting all
+subsequent figures to the right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>figure</strong><span class="classifier">Subfigure | Figure</span></dt><dd><p>The new figure to be inserted. This must be a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instance, not a <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> instance.</p>
+</dd>
+<dt><strong>index</strong><span class="classifier">int</span></dt><dd><p>The index at which to insert the new figure.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>IndexError</dt><dd><p>If the index is out of range for the number of figures.</p>
+</dd>
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">figure</span></code> is not a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or <code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code>
+instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigures/insert_figures.html">insert_figures</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">lapyx.components.Subfigure</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lapyx.components.Figure</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Insert multiple new figures into the list of figures at the specified index, shifting
+all subsequent figures to the right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>figures</strong><span class="classifier">List[Subfigure  |  Figure]</span></dt><dd><p>The new figures to be inserted. These must be <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instances, not <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> instances.</p>
+</dd>
+<dt><strong>index</strong><span class="classifier">int</span></dt><dd><p>The index at which to insert the new figures.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>IndexError</dt><dd><p>If the index is out of range for the number of figures.</p>
+</dd>
+<dt>TypeError</dt><dd><p>If any element of <code class="docutils literal notranslate"><span class="pre">figures</span></code> is not a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigure/set_figure.html">set_figure</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">lapyx.components.Subfigure</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lapyx.components.Figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Replace the figure at the specified index with a new figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>figure</strong><span class="classifier">Subfigure | Figure</span></dt><dd><p>The new figure to be inserted. This must be a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code> instance, not a <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> instance.</p>
+</dd>
+<dt><strong>index</strong><span class="classifier">int</span></dt><dd><p>The index of the figure to be replaced.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>IndexError</dt><dd><p>If the index is out of range for the number of figures.</p>
+</dd>
+<dt>TypeError</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">figure</span></code> is not a <code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure</span></code> or <code class="docutils literal notranslate"><span class="pre">lapyx.components.Subfigure</span></code>
+instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Subfigures/remove_figure.html">remove_figure</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove the figure at the specified index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">int</span></dt><dd><p>The index of the figure to be removed.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>IndexError</dt><dd><p>If the index is out of range for the number of figures.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><a href="Table/to_latex.html">to_latex</a></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span></dt>
+<dd><p>Export the <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> object to valid LaTeX markup, paying attention to all
+formatting options which have been applied. Each <code class="docutils literal notranslate"><span class="pre">Subfigure</span></code> object within the
+<code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> instance will be exported according to
+<code class="docutils literal notranslate"><span class="pre">lapyx.components.Figure.to_latex</span></code>, saving the matplotlib figures to a temporary
+file.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is advised that you do not call this method directly, and instead pass the <code class="docutils literal notranslate"><span class="pre">Figure</span></code>
+object to <code class="docutils literal notranslate"><span class="pre">export()</span></code> directly. This will ensure that <code class="docutils literal notranslate"><span class="pre">base_dir</span></code> and <code class="docutils literal notranslate"><span class="pre">temp_dir</span></code> are
+correctly set, and temporary files can be cleaned after compilation.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>base_dir</strong><span class="classifier">str</span></dt><dd><p>The base directory of the LaTeX document. This will be supplied automatically by the
+<code class="docutils literal notranslate"><span class="pre">export()</span></code> function.</p>
+</dd>
+<dt><strong>temp_dir</strong><span class="classifier">str</span></dt><dd><p>The temporary directory and prefix for the figure file. This will be supplied automatically
+by the <code class="docutils literal notranslate"><span class="pre">export()</span></code> function.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>The complete LaTeX markup for the figure and subfigures.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> object has no figures.</p>
+</dd>
+<dt>TypeError</dt><dd><p>If the gap cannot be converted to a valid LaTeX length.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
+</section>
+</article>
+<footer class="bd-footer-article">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+<a class="left-prev" href="Subfigure/from_Figure.html" id="prev-link" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Subfigure.from_Figure</p>
+</div>
+</a>
+<a class="right-next" href="Subfigures/set_alignment.html" id="next-link" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Subfigures.set_alignment</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="toc-item">
+<div class="tocsection onthispage">
+<i class="fa-solid fa-list"></i> On this page
+</div>
+<nav class="page-toc" id="bd-toc-nav">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#contents">
+   Contents
+  </a>
+</li>
+</ul>
+</nav>
+</div>
+<div class="toc-item">
+<div id="searchbox"></div>
+</div>
+<div class="toc-item">
+</div>
+<div class="toc-item">
+<div class="tocsection sourcelink">
+<a href="../../_sources/lapyx/components/Subfigures.rst.txt">
+<i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner">
+</div>
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+<footer class="bd-footer"><div class="bd-footer__inner container">
+<div class="footer-item">
+<p class="copyright">
+
+    © Copyright 2022, Peter Brookes Chambers.<br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
+</p>
+</div>
+</div>
+</footer>
+</body>
+</html>

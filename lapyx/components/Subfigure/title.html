@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.19: https://docutils.sourceforge.io/" name="generator"/>
+<title>Subfigure.title — LaPyX 0.1 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/copybutton.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/css/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94" rel="preload">
+<link as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94" rel="preload">
+<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script src="../../../_static/sphinx_highlight.js"></script>
+<script src="../../../_static/clipboard.min.js"></script>
+<script src="../../../_static/copybutton.js"></script>
+<script src="../../../_static/design-tabs.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'lapyx/components/Subfigure/title';</script>
+<link href="../../../genindex.html" rel="index" title="Index"/>
+<link href="../../../search.html" rel="search" title="Search"/>
+<link href="legend.html" rel="next" title="Subfigure.legend"/>
+<link href="ylabel.html" rel="prev" title="Subfigure.ylabel"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+</link></link></head>
+<body data-default-mode="dark" data-offset="180" data-spy="scroll" data-target="#bd-toc-nav">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../../../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+<label class="sidebar-toggle primary-toggle" for="__primary">
+<span class="fa-solid fa-bars"></span>
+</label>
+<div id="navbar-start">
+<a class="navbar-brand logo" href="../../../index.html">
+<p class="title logo__title">LaPyX 0.1 documentation</p>
+</a>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="mr-auto" id="navbar-center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../../../lapyx.html">
+                        lapyx
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../components.html">
+                        lapyx.components
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../main.html">
+                        lapyx.main
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../output.html">
+                        lapyx.output
+                      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div id="navbar-end">
+<div class="navbar-end-item navbar-persistent--container">
+<button aria-label="Search" class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<div class="navbar-end-item">
+<button aria-label="light/dark" class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+<span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+<span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+</ul>
+</div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<label class="sidebar-toggle secondary-toggle" for="__secondary">
+<span class="fa-solid fa-outdent"></span>
+</label>
+</div>
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../../../lapyx.html">
+                        lapyx
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../components.html">
+                        lapyx.components
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../main.html">
+                        lapyx.main
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../output.html">
+                        lapyx.output
+                      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-end-item">
+<button aria-label="light/dark" class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+<span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+<span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebar-start-items sidebar-primary__section">
+<div class="sidebar-start-items__item"><nav aria-label="Section navigation" class="bd-links" id="bd-docs-nav">
+<p aria-level="1" class="bd-links__title" role="heading">
+    Section Navigation
+  </p>
+<div class="bd-toc-item navbar-nav">
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../components.html">lapyx.components</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Table.html">Table</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_data.html">Table.set_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/add_row.html">Table.add_row</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/add_rows.html">Table.add_rows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/add_column.html">Table.add_column</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/add_columns.html">Table.add_columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/transpose.html">Table.transpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/center.html">Table.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/float.html">Table.float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/long.html">Table.long</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_headers.html">Table.set_headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_alignment.html">Table.set_alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_column_widths.html">Table.set_column_widths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_format.html">Table.set_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_header_format.html">Table.set_header_format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_caption.html">Table.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/set_label.html">Table.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/use_headers.html">Table.use_headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/split_after_rows.html">Table.split_after_rows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/split_into_columns.html">Table.split_into_columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Table/to_latex.html">Table.to_latex</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Figure.html">Figure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_figure.html">Figure.set_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_caption.html">Figure.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_label.html">Figure.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_size.html">Figure.set_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_width.html">Figure.set_width</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_height.html">Figure.set_height</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/set_scale.html">Figure.set_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/float.html">Figure.float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/center.html">Figure.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/plot.html">Figure.plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/scatter.html">Figure.scatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/errorbar.html">Figure.errorbar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/hist.html">Figure.hist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/imshow.html">Figure.imshow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/xlabel.html">Figure.xlabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/ylabel.html">Figure.ylabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/title.html">Figure.title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/legend.html">Figure.legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/xlim.html">Figure.xlim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/ylim.html">Figure.ylim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/savefig.html">Figure.savefig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Figure/to_latex.html">Figure.to_latex</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../KWArgs.html">KWArgs</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../KWArgs/add_argument.html">KWArgs.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../KWArgs/set_argument.html">KWArgs.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../KWArgs/remove_argument.html">KWArgs.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../KWArgs/set_arguments.html">KWArgs.set_arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../KWArgs/remove_arguments.html">KWArgs.remove_arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../KWArgs/is_empty.html">KWArgs.is_empty</a></li>
+</ul>
+</input></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Arg.html">Arg</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Arg/set_values.html">Arg.set_values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Arg/add_value.html">Arg.add_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Arg/set_value.html">Arg.set_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Arg/insert_value.html">Arg.insert_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Arg/remove_value.html">Arg.remove_value</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../OptArg.html">OptArg</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../OptArg/set_values.html">OptArg.set_values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../OptArg/add_value.html">OptArg.add_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../OptArg/set_value.html">OptArg.set_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../OptArg/insert_value.html">OptArg.insert_value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../OptArg/remove_value.html">OptArg.remove_value</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Macro.html">Macro</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Macro/add_argument.html">Macro.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Macro/set_argument.html">Macro.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Macro/insert_argument.html">Macro.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Macro/remove_argument.html">Macro.remove_argument</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Environment.html">Environment</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/add_argument.html">Environment.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/set_argument.html">Environment.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/insert_argument.html">Environment.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/remove_argument.html">Environment.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/add_content.html">Environment.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/set_content.html">Environment.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/insert_content.html">Environment.insert_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/remove_content.html">Environment.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Environment/set_parent.html">Environment.set_parent</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../EmptyEnvironment.html">EmptyEnvironment</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/add_argument.html">EmptyEnvironment.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/set_argument.html">EmptyEnvironment.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/insert_argument.html">EmptyEnvironment.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/remove_argument.html">EmptyEnvironment.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/add_content.html">EmptyEnvironment.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/set_content.html">EmptyEnvironment.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/insert_content.html">EmptyEnvironment.insert_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/remove_content.html">EmptyEnvironment.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../EmptyEnvironment/set_parent.html">EmptyEnvironment.set_parent</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Itemize.html">Itemize</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/add_argument.html">Itemize.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/set_argument.html">Itemize.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/insert_argument.html">Itemize.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/remove_argument.html">Itemize.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/remove_content.html">Itemize.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/set_parent.html">Itemize.set_parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/add_content.html">Itemize.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/set_content.html">Itemize.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Itemize/insert_content.html">Itemize.insert_content</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Enumerate.html">Enumerate</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/add_argument.html">Enumerate.add_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/set_argument.html">Enumerate.set_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/insert_argument.html">Enumerate.insert_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/remove_argument.html">Enumerate.remove_argument</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/remove_content.html">Enumerate.remove_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/set_parent.html">Enumerate.set_parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/add_content.html">Enumerate.add_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/set_content.html">Enumerate.set_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Enumerate/insert_content.html">Enumerate.insert_content</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../Subfigure.html">Subfigure</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="set_figure.html">Subfigure.set_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_caption.html">Subfigure.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_label.html">Subfigure.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_size.html">Subfigure.set_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_width.html">Subfigure.set_width</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_height.html">Subfigure.set_height</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_scale.html">Subfigure.set_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot.html">Subfigure.plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scatter.html">Subfigure.scatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="errorbar.html">Subfigure.errorbar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hist.html">Subfigure.hist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imshow.html">Subfigure.imshow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xlabel.html">Subfigure.xlabel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ylabel.html">Subfigure.ylabel</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Subfigure.title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="legend.html">Subfigure.legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xlim.html">Subfigure.xlim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ylim.html">Subfigure.ylim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="savefig.html">Subfigure.savefig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="to_latex.html">Subfigure.to_latex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="float.html">Subfigure.float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="center.html">Subfigure.center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set_alignment.html">Subfigure.set_alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="from_Figure.html">Subfigure.from_Figure</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../Subfigures.html">Subfigures</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/set_alignment.html">Subfigures.set_alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/set_floating_pos.html">Subfigures.set_floating_pos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/set_caption.html">Subfigures.set_caption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/set_label.html">Subfigures.set_label</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/add_figure.html">Subfigures.add_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/add_figures.html">Subfigures.add_figures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/insert_figure.html">Subfigures.insert_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/insert_figures.html">Subfigures.insert_figures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/set_figure.html">Subfigures.set_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/remove_figure.html">Subfigures.remove_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Subfigures/to_latex.html">Subfigures.to_latex</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../main.html">lapyx.main</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../main/process_file.html">process_file</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../output.html">lapyx.output</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../output/no_export.html">no_export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../output/export.html">export</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+</div>
+</div>
+<div class="sidebar-end-items sidebar-primary__section">
+<div class="sidebar-end-items__item">
+</div>
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+</div>
+<article class="bd-article" role="main">
+<section id="subfigure-title">
+<span id="rst-lapyx-components-subfigure-title"></span><h1>Subfigure.title<a class="headerlink" href="#subfigure-title" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">lapyx.components.Subfigure.</span></span><span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>A wrapper for <code class="docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.gca().title</span></code>. All arguments and keyword
+arguments are passed directly to the <code class="docutils literal notranslate"><span class="pre">title</span></code> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If there is no matplotlib figure associated with this Figure object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+</section>
+</article>
+<footer class="bd-footer-article">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+<a class="left-prev" href="ylabel.html" id="prev-link" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Subfigure.ylabel</p>
+</div>
+</a>
+<a class="right-next" href="legend.html" id="next-link" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Subfigure.legend</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="toc-item">
+<div id="searchbox"></div>
+</div>
+<div class="toc-item">
+</div>
+<div class="toc-item">
+<div class="tocsection sourcelink">
+<a href="../../../_sources/lapyx/components/Subfigure/title.rst.txt">
+<i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner">
+</div>
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+<footer class="bd-footer"><div class="bd-footer__inner container">
+<div class="footer-item">
+<p class="copyright">
+
+    © Copyright 2022, Peter Brookes Chambers.<br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
+</p>
+</div>
+</div>
+</footer>
+</body>
+</html>

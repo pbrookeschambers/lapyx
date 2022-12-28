@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.19: https://docutils.sourceforge.io/" name="generator"/>
+<title>Table — LaPyX 0.1 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94" rel="preload">
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94" rel="preload">
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<script src="../_static/clipboard.min.js"></script>
+<script src="../_static/copybutton.js"></script>
+<script src="../_static/design-tabs.js"></script>
+<script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'lapyx/components_extras';</script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+</link></link></head>
+<body data-default-mode="dark" data-offset="180" data-spy="scroll" data-target="#bd-toc-nav">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+<label class="sidebar-toggle primary-toggle" for="__primary">
+<span class="fa-solid fa-bars"></span>
+</label>
+<div id="navbar-start">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">LaPyX 0.1 documentation</p>
+</a>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="mr-auto" id="navbar-center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../lapyx.html">
+                        lapyx
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="components.html">
+                        lapyx.components
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="main.html">
+                        lapyx.main
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="output.html">
+                        lapyx.output
+                      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div id="navbar-end">
+<div class="navbar-end-item navbar-persistent--container">
+<button aria-label="Search" class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<div class="navbar-end-item">
+<button aria-label="light/dark" class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+<span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+<span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+</ul>
+</div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<label class="sidebar-toggle secondary-toggle" for="__secondary">
+<span class="fa-solid fa-outdent"></span>
+</label>
+</div>
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../lapyx.html">
+                        lapyx
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="components.html">
+                        lapyx.components
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="main.html">
+                        lapyx.main
+                      </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="output.html">
+                        lapyx.output
+                      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-end-item">
+<button aria-label="light/dark" class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+<span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+<span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebar-end-items sidebar-primary__section">
+<div class="sidebar-end-items__item">
+</div>
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+</div>
+<article class="bd-article" role="main">
+<p>The <code class="docutils literal notranslate"><span class="pre">lapyx.components</span></code> submodule provides a number of helper classes to make handling various LaTeX features easier and more programmatic. These are all imported by default, so you don’t need to import them explicitly. Below are some simple examples of each.</p>
+<section id="table">
+<h1><code class="docutils literal notranslate"><span class="pre">Table</span></code><a class="headerlink" href="#table" title="Permalink to this heading">#</a></h1>
+<p>Creating tables in LaTeX is notoriously annoying. To help alleviate this, LaPyX provides a <a href="lapyx/components/Table.html"><code class="docutils literal notranslate">Table</code></a> class which can hold and manipulate data before generating a (optionally floating) tabular environment, with a variety of formatting options. Data can be read form a CSV file, a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, or a nested list, or added manually. The following example creates a table of random numbers, then adds a new column with any shared prime factors:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 example-dropdown sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg aria-hidden="true" class="sd-octicon sd-octicon-code-square" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zm9.22 3.72a.75.75 0 000 1.06L10.69 8 9.22 9.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM6.78 6.53a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 101.06-1.06L5.31 8l1.47-1.47z" fill-rule="evenodd"></path></svg></span>Table Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>\<span class="n">begin</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">from</span> <span class="nn">sympy.ntheory</span> <span class="kn">import</span> <span class="n">primefactors</span>
+
+    <span class="c1"># Create a list of random numbers:</span>
+    <span class="n">rnd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># Create a table from rnd:</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">rnd</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"$R_1$"</span><span class="p">,</span> <span class="s2">"$R_2$"</span><span class="p">])</span>
+
+    <span class="c1"># generate the list of prime factors (as strings)</span>
+    <span class="n">factors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="ow">in</span> <span class="n">rnd</span><span class="p">:</span>
+        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">primefactors</span><span class="p">(</span><span class="n">r1</span><span class="p">),</span> <span class="n">primefactors</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+        <span class="c1"># check for any shared factors</span>
+        <span class="n">shared</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">f1</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">f2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">shared</span><span class="p">:</span>
+            <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">shared</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\textit</span><span class="si">{none}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># Add the new column</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">factors</span><span class="p">,</span> <span class="n">column_name</span> <span class="o">=</span> <span class="s2">"Shared Prime Factors"</span><span class="p">)</span>
+
+    <span class="c1"># Add a caption</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s2">"Random numbers and their shared prime factors"</span><span class="p">)</span>
+
+    <span class="c1"># Export the table</span>
+    <span class="n">export</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="latex center latex-table docutils container">
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text"><span class="math notranslate nohighlight">\(R_1\)</span></p></th>
+<th class="head"><p class="sd-card-text"><span class="math notranslate nohighlight">\(R_2\)</span></p></th>
+<th class="head"><p class="sd-card-text">Shared Prime Factors</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">65</p></td>
+<td><p class="sd-card-text">93</p></td>
+<td><p class="sd-card-text"><em>none</em></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">0</p></td>
+<td><p class="sd-card-text">46</p></td>
+<td><p class="sd-card-text"><em>none</em></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">80</p></td>
+<td><p class="sd-card-text">16</p></td>
+<td><p class="sd-card-text">2</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">21</p></td>
+<td><p class="sd-card-text">7</p></td>
+<td><p class="sd-card-text">7</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">56</p></td>
+<td><p class="sd-card-text">36</p></td>
+<td><p class="sd-card-text">2</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">71</p></td>
+<td><p class="sd-card-text">18</p></td>
+<td><p class="sd-card-text"><em>none</em></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">67</p></td>
+<td><p class="sd-card-text">89</p></td>
+<td><p class="sd-card-text"><em>none</em></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">49</p></td>
+<td><p class="sd-card-text">68</p></td>
+<td><p class="sd-card-text"><em>none</em></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">42</p></td>
+<td><p class="sd-card-text">18</p></td>
+<td><p class="sd-card-text">2, 3</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">74</p></td>
+<td><p class="sd-card-text">48</p></td>
+<td><p class="sd-card-text">2</p></td>
+</tr>
+</tbody>
+</table>
+<p class="sd-card-text">Random numbers and their shared prime factors</p>
+</div>
+</div>
+</details></section>
+<section id="figure">
+<h1><code class="docutils literal notranslate"><span class="pre">Figure</span></code><a class="headerlink" href="#figure" title="Permalink to this heading">#</a></h1>
+<p>The <a href="lapyx/components/Figure.html"><code class="docutils literal notranslate">Figure</code></a> class helps to include <cite>matplotlib</cite> figures which are generated within the document, as well as pre-existing image files. The following example generates a random walk and plots it using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> (with some appropriate styling applied):</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 example-dropdown sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg aria-hidden="true" class="sd-octicon sd-octicon-code-square" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zm9.22 3.72a.75.75 0 000 1.06L10.69 8 9.22 9.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM6.78 6.53a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 101.06-1.06L5.31 8l1.47-1.47z" fill-rule="evenodd"></path></svg></span>Figure Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>\<span class="n">begin</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="c1"># Generate a random walk</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">steps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">steps</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">steps</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">steps</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+    <span class="c1"># Plot the walk</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">"equal"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Random Walk"</span><span class="p">)</span>
+
+    <span class="c1"># Create a figure object</span>
+    <span class="n">figure</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s2">"A random walk in 2D"</span><span class="p">)</span>
+
+    <span class="c1"># Export the figure</span>
+    <span class="n">export</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="light-dark-mode docutils container">
+<div class="latex center latex-figure docutils container">
+<img alt="../_images/random_walk.svg" src="../_images/random_walk.svg"/><p class="sd-card-text">A random walk in 2D</p>
+</div>
+<div class="latex center latex-figure docutils container">
+<img alt="../_images/random_walk1.svg" src="../_images/random_walk1.svg"/><p class="sd-card-text">A random walk in 2D</p>
+</div>
+</div>
+</div>
+</details></section>
+<section id="subfigures">
+<h1><code class="docutils literal notranslate"><span class="pre">Subfigures</span></code><a class="headerlink" href="#subfigures" title="Permalink to this heading">#</a></h1>
+<p>In addition to the <code class="docutils literal notranslate"><span class="pre">Figure</span></code> class, LaPyX provides the <a href="lapyx/components/Subfigures.html"><code class="docutils literal notranslate">Subfigures</code></a> class for easier grouping and organising of multiple figures. A <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> instance keeps a list of figures (which should be <code class="docutils literal notranslate"><span class="pre">Subfigure</span></code> instances, though <code class="docutils literal notranslate"><span class="pre">Figure</span></code> instances will usually be converted automatically - see the <a href="lapyx/components/Subfigure.html"><code class="docutils literal notranslate">Subfigure</code></a> documentation for more detail). This allows easy modifications to groups of figures, as well as access to the individual captions and group caption. The below example uses a <code class="docutils literal notranslate"><span class="pre">Subfigures</span></code> instance to create a <span class="math notranslate nohighlight">\(2\times2\)</span> grid of random walks:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 example-dropdown sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg aria-hidden="true" class="sd-octicon sd-octicon-code-square" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zm9.22 3.72a.75.75 0 000 1.06L10.69 8 9.22 9.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM6.78 6.53a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 101.06-1.06L5.31 8l1.47-1.47z" fill-rule="evenodd"></path></svg></span>Subfigures Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>\<span class="n">begin</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="k">def</span> <span class="nf">random_walk</span><span class="p">(</span><span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># Generate a random walk of `steps` steps with a `strength`%</span>
+        <span class="c1"># chance of moving in the `bias` direction</span>
+        <span class="n">step_dirs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">steps</span><span class="p">)</span>
+        <span class="n">bias_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="n">steps</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">strength</span>
+        <span class="n">step_dirs</span><span class="p">[</span><span class="n">bias_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="c1"># Convert the step directions into x and y coordinates. left: 0, up: 1, right: 2, down: 3</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">step_dirs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+    <span class="c1"># Create the parent Subfigures object</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">Subfigures</span><span class="p">(</span><span class="n">caption</span> <span class="o">=</span> <span class="s2">"Random walks with differing biases"</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">"fig:random_walks"</span><span class="p">)</span>
+
+    <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"up"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">,</span> <span class="s2">"down"</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">bias</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">mpl_fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">mpl_fig</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random_walk</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="nb">max</span><span class="p">(</span><span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">())]</span>
+            <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">())]</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Walk </span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="n">dirs</span><span class="p">[</span><span class="n">bias</span><span class="p">])</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="c1"># Add the subfigures to the parent</span>
+    <span class="n">parent</span><span class="o">.</span><span class="n">add_figures</span><span class="p">(</span><span class="n">figs</span><span class="p">)</span>
+
+    <span class="c1"># set appropriate axis limits</span>
+    <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fig</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlims</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+
+    <span class="n">parent</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s2">"Random walks with differing biases"</span><span class="p">)</span>
+
+    <span class="n">export</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="light-dark-mode docutils container">
+<div class="latex subfigures docutils container">
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_left.svg" src="../_images/random_walk_left.svg"/><p class="sd-card-text">left</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_up.svg" src="../_images/random_walk_up.svg"/><p class="sd-card-text">up</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_right.svg" src="../_images/random_walk_right.svg"/><p class="sd-card-text">right</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_down.svg" src="../_images/random_walk_down.svg"/><p class="sd-card-text">down</p>
+</div>
+<p class="sd-card-text">Random walks with differing biases</p>
+</div>
+<div class="latex subfigures docutils container">
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_left1.svg" src="../_images/random_walk_left1.svg"/><p class="sd-card-text">left</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_up1.svg" src="../_images/random_walk_up1.svg"/><p class="sd-card-text">up</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_right1.svg" src="../_images/random_walk_right1.svg"/><p class="sd-card-text">right</p>
+</div>
+<div class="latex-subfigure docutils container">
+<img alt="../_images/random_walk_down1.svg" src="../_images/random_walk_down1.svg"/><p class="sd-card-text">down</p>
+</div>
+<p class="sd-card-text">Random walks with differing biases</p>
+</div>
+</div>
+</div>
+</details></section>
+<section id="itemize-and-enumerate">
+<h1><code class="docutils literal notranslate"><span class="pre">Itemize</span></code> and <code class="docutils literal notranslate"><span class="pre">Enumerate</span></code><a class="headerlink" href="#itemize-and-enumerate" title="Permalink to this heading">#</a></h1>
+<p>Two other simple helper classes are included, <a href="lapyx/components/Itemize.html"><code class="docutils literal notranslate">Itemize</code></a> and <a href="lapyx/components/Enumerate.html"><code class="docutils literal notranslate">Enumerate</code></a>. These serve to generate and modify unordererd and ordered lists respectively, including nested lists. See their documentation (<a href="lapyx/components/Itemize.html"><code class="docutils literal notranslate">Itemize</code></a>, <a href="lapyx/components/Enumerate.html"><code class="docutils literal notranslate">Enumerate</code></a>) for more detailed examples, but the below example shows a simple ordered list, and a nested unordered list.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These will soon be able to take a dictionary as input for nested lists, but for now must take a <code class="docutils literal notranslate"><span class="pre">list</span></code> instance.</p>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 example-dropdown sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg aria-hidden="true" class="sd-octicon sd-octicon-code-square" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zm9.22 3.72a.75.75 0 000 1.06L10.69 8 9.22 9.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM6.78 6.53a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 101.06-1.06L5.31 8l1.47-1.47z" fill-rule="evenodd"></path></svg></span>Itemize Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">following</span> <span class="ow">is</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">colours</span><span class="p">:</span>
+\<span class="n">begin</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+    <span class="c1"># create the list of colors:</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Red"</span><span class="p">,</span> <span class="s2">"Green"</span><span class="p">,</span> <span class="s2">"Blue"</span><span class="p">,</span> <span class="s2">"Yellow"</span><span class="p">,</span> <span class="s2">"Orange"</span><span class="p">,</span> <span class="s2">"Purple"</span><span class="p">,</span> <span class="s2">"Black"</span><span class="p">,</span> <span class="s2">"White"</span><span class="p">]</span>
+    <span class="n">export</span><span class="p">(</span><span class="n">Itemize</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="latex docutils container">
+<p class="sd-card-text">The following is a list of colours:</p>
+<ul class="simple">
+<li><p class="sd-card-text">Red</p></li>
+<li><p class="sd-card-text">Green</p></li>
+<li><p class="sd-card-text">Blue</p></li>
+<li><p class="sd-card-text">Yellow</p></li>
+<li><p class="sd-card-text">Orange</p></li>
+<li><p class="sd-card-text">Purple</p></li>
+<li><p class="sd-card-text">Black</p></li>
+<li><p class="sd-card-text">White</p></li>
+</ul>
+</div>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 example-dropdown sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg aria-hidden="true" class="sd-octicon sd-octicon-code-square" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M1.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75zm9.22 3.72a.75.75 0 000 1.06L10.69 8 9.22 9.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM6.78 6.53a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 101.06-1.06L5.31 8l1.47-1.47z" fill-rule="evenodd"></path></svg></span>Enumerate Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">following</span> <span class="ow">is</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">colours</span> <span class="n">by</span> <span class="n">shade</span><span class="p">:</span>
+\<span class="n">begin</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+    <span class="c1"># create the list of colors:</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"Red"</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"Cherry"</span><span class="p">,</span> <span class="s2">"Crimson"</span><span class="p">,</span> <span class="s2">"Scarlet"</span><span class="p">],</span>
+        <span class="s2">"Orange"</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"Coral"</span><span class="p">,</span> <span class="s2">"Tangerine"</span><span class="p">,</span> <span class="s2">"Gold"</span><span class="p">],</span>
+        <span class="s2">"Yellow"</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"Lemon"</span><span class="p">,</span> <span class="s2">"Mustard"</span><span class="p">],</span>
+        <span class="s2">"Green"</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"Emerald"</span><span class="p">,</span> <span class="s2">"Forest"</span><span class="p">,</span> <span class="s2">"Mint"</span><span class="p">],</span>
+        <span class="s2">"Blue"</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"Navy"</span><span class="p">],</span>
+        <span class="s2">"Purple"</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"Lavender"</span><span class="p">],</span>
+        <span class="s2">"Black"</span><span class="p">,</span>
+        <span class="s2">"White"</span>
+    <span class="p">]</span>
+    <span class="n">export</span><span class="p">(</span><span class="n">Enumerate</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">python</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="latex docutils container">
+<p class="sd-card-text">The following is a list of colours by shade:</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Red</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Cherry</p></li>
+<li><p class="sd-card-text">Crimson</p></li>
+<li><p class="sd-card-text">Scarlet</p></li>
+</ol>
+</li>
+<li><p class="sd-card-text">Orange</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Coral</p></li>
+<li><p class="sd-card-text">Tangerine</p></li>
+<li><p class="sd-card-text">Gold</p></li>
+</ol>
+</li>
+<li><p class="sd-card-text">Yellow</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Lemon</p></li>
+<li><p class="sd-card-text">Mustard</p></li>
+</ol>
+</li>
+<li><p class="sd-card-text">Green</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Emerald</p></li>
+<li><p class="sd-card-text">Forest</p></li>
+<li><p class="sd-card-text">Mint</p></li>
+</ol>
+</li>
+<li><p class="sd-card-text">Blue</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Navy</p></li>
+</ol>
+</li>
+<li><p class="sd-card-text">Purple</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Lavender</p></li>
+</ol>
+</li>
+<li><p class="sd-card-text">Black</p></li>
+<li><p class="sd-card-text">White</p></li>
+</ol>
+</div>
+</div>
+</details></section>
+<section id="additional-classes">
+<h1>Additional Classes<a class="headerlink" href="#additional-classes" title="Permalink to this heading">#</a></h1>
+<p>In addition to the above, LaPyX provides a few more general helper classes:</p>
+<section id="macro">
+<h2><a href="lapyx/components/Macro.html"><code class="docutils literal notranslate">Macro</code></a><a class="headerlink" href="#macro" title="Permalink to this heading">#</a></h2>
+<p>A simple class for making the programmatic generation of macros easier, especially the handling of their arguments.</p>
+</section>
+<section id="environment">
+<h2><a href="lapyx/components/Environment.html"><code class="docutils literal notranslate">Environment</code></a><a class="headerlink" href="#environment" title="Permalink to this heading">#</a></h2>
+<p>A class for containing, managing, and exporting LaTeX environments in a nestable, DOM-like way.</p>
+</section>
+<section id="emptyenvironment">
+<h2><a href="lapyx/components/EmptyEnvironment.html"><code class="docutils literal notranslate">EmptyEnvironment</code></a><a class="headerlink" href="#emptyenvironment" title="Permalink to this heading">#</a></h2>
+<p>An extension of <a href="lapyx/components/Environment.html"><code class="docutils literal notranslate">Environment</code></a> for managing content without adding any LaTeX markup to the content.</p>
+</section>
+<section id="kwargs">
+<h2><a href="lapyx/components/KWArgs.html"><code class="docutils literal notranslate">KWArgs</code></a><a class="headerlink" href="#kwargs" title="Permalink to this heading">#</a></h2>
+<p>A class for managing LaTeX key-value pairs to be passed to macros and environments.</p>
+</section>
+<section id="arg">
+<h2><a href="lapyx/components/Arg.html"><code class="docutils literal notranslate">Arg</code></a><a class="headerlink" href="#arg" title="Permalink to this heading">#</a></h2>
+<p>A class for consistent handling of arguments to be passed to macros and environments. This class will mostly be used internally, but is publicly available.</p>
+</section>
+<section id="optarg">
+<h2><a href="lapyx/components/OptArg.html"><code class="docutils literal notranslate">OptArg</code></a><a class="headerlink" href="#optarg" title="Permalink to this heading">#</a></h2>
+<p>An extension of <a href="lapyx/components/Arg.html"><code class="docutils literal notranslate">Arg</code></a> for optional arguments. This class will mostly be used internally, but is publicly available.</p>
+</section>
+</section>
+</article>
+<footer class="bd-footer-article">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="toc-item">
+<div class="tocsection onthispage">
+<i class="fa-solid fa-list"></i> On this page
+</div>
+<nav class="page-toc" id="bd-toc-nav">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry">
+<a class="reference internal nav-link" href="#">
+<code class="docutils literal notranslate">
+<span class="pre">
+     Table
+    </span>
+</code>
+</a>
+</li>
+<li class="toc-h1 nav-item toc-entry">
+<a class="reference internal nav-link" href="#figure">
+<code class="docutils literal notranslate">
+<span class="pre">
+     Figure
+    </span>
+</code>
+</a>
+</li>
+<li class="toc-h1 nav-item toc-entry">
+<a class="reference internal nav-link" href="#subfigures">
+<code class="docutils literal notranslate">
+<span class="pre">
+     Subfigures
+    </span>
+</code>
+</a>
+</li>
+<li class="toc-h1 nav-item toc-entry">
+<a class="reference internal nav-link" href="#itemize-and-enumerate">
+<code class="docutils literal notranslate">
+<span class="pre">
+     Itemize
+    </span>
+</code>
+   and
+   <code class="docutils literal notranslate">
+<span class="pre">
+     Enumerate
+    </span>
+</code>
+</a>
+</li>
+<li class="toc-h1 nav-item toc-entry">
+<a class="reference internal nav-link" href="#additional-classes">
+   Additional Classes
+  </a>
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#macro">
+<a href="lapyx/components/Macro.html"><code class="docutils literal notranslate">Macro</code></a>
+</a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#environment">
+<a href="lapyx/components/Environment.html"><code class="docutils literal notranslate">Environment</code></a>
+</a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#emptyenvironment">
+<a href="lapyx/components/EmptyEnvironment.html"><code class="docutils literal notranslate">EmptyEnvironment</code></a>
+</a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#kwargs">
+<a href="lapyx/components/KWArgs.html"><code class="docutils literal notranslate">KWArgs</code></a>
+</a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#arg">
+<a href="lapyx/components/Arg.html"><code class="docutils literal notranslate">Arg</code></a>
+</a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#optarg">
+<a href="lapyx/components/OptArg.html"><code class="docutils literal notranslate">OptArg</code></a>
+</a>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+<div class="toc-item">
+<div id="searchbox"></div>
+</div>
+<div class="toc-item">
+</div>
+<div class="toc-item">
+<div class="tocsection sourcelink">
+<a href="../_sources/lapyx/components_extras.rst.txt">
+<i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner">
+</div>
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+<footer class="bd-footer"><div class="bd-footer__inner container">
+<div class="footer-item">
+<p class="copyright">
+
+    © Copyright 2022, Peter Brookes Chambers.<br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
+</p>
+</div>
+</div>
+</footer>
+</body>
+</html>
